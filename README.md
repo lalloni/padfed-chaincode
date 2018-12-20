@@ -1,5 +1,9 @@
 En este proyecto se mantiene el codigo fuente del chaincode **padfed_cc** escrito en GOLANG
 
+# Redmine
+
+https://redmine-blockchain.afip.gob.ar/projects/padfed-cc
+
 # Codigo fuente del chaincode
 
 En esta seccion exlicar temas referidos al codigo funete
