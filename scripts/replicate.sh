@@ -11,6 +11,11 @@ then
     GO_DEST=$GO_HOME
 fi
 
-mkdir -p $GO_DEST/src/afip/tribfed/chaincodes/padfed/$2
+echo Creando directorio si no existe $GO_DEST/src/afip/tribfed/chaincodes/padfed/$2
+mkdir -v -p $GO_DEST/src/afip/tribfed/chaincodes/padfed/$2
+mkdir -v -p $3/target/afip/tribfed/chaincodes/padfed/
 
-cp -u -r $3/src/main/afip/tribfed/chaincodes/padfed $GO_DEST/src/afip/tribfed/chaincodes/padfed/$2
+rm -r -f $GO_DEST/src/afip/tribfed/chaincodes/padfed/$2
+
+cp -u -r $3/src/main/afip/tribfed/chaincodes/padfed  $GO_DEST/src/afip/tribfed/chaincodes/padfed/$2
+cp -u -r $3/src/main/afip/tribfed/chaincodes/padfed  $3/target/afip/tribfed/chaincodes/
