@@ -38,7 +38,7 @@
                 <inherited>false</inherited>
                 <executions>
                     <execution>
-                        <id>sh</id>
+                        <id>sh1</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -54,8 +54,8 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>sh</id>
-                        <phase>package</phase>
+                        <id>sh2</id>
+                        <phase>install</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -87,6 +87,7 @@
                 </executions>
             </plugin>
 -->
+<!--
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.0.2</version>
@@ -109,6 +110,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
         </plugins>
     </build>
 </project>
