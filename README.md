@@ -6,9 +6,9 @@ En esta seccion exlicar temas referidos al codigo funete
 
 # Gestion del proyecto con maven
 
-El proyecto contiene un pom.xml para ser gestionado mediante maven
+El proyecto contiene un pom.xml 
 
-En esta primera versión del pom.xml incluye la siguiente funcionalidad:
+En esta primera versión del pom.xml incluye las siguientes funcionalidades:
 
     - Replicación de código fuente a directorio $GO_HOME o $HOME/GO segun entorno configurado
 
