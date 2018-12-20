@@ -24,8 +24,8 @@
     </distributionManagement>
 
     <scm>
-        <connection>scm:git:git@gitlab.cloudint.afip.gob.ar:blockchain-team/padfed-bulkloader.git</connection>
-        <developerConnection>scm:git:git@gitlab.cloudint.afip.gob.ar:blockchain-team/padfed-bulkloader.git
+        <connection>scm:git:git@gitlab.cloudint.afip.gob.ar:blockchain-team/padfed-chaincode.git</connection>
+        <developerConnection>scm:git:git@gitlab.cloudint.afip.gob.ar:blockchain-team/padfed-chaincode.git
         </developerConnection>
         <tag>master</tag>
     </scm>
