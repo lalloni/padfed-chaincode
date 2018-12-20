@@ -10,9 +10,7 @@ En esta seccion exlicar temas referidos al codigo funete
 
 # Gestion del proyecto con maven
 
-El proyecto contiene un pom.xml 
-
-En esta primera versión del pom.xml incluye las siguientes funcionalidades:
+En esta primera versión el pom.xml incluye las siguientes funcionalidades:
 
     - Replicación de código fuente a directorio $GO_HOME o $HOME/GO segun entorno configurado
 
@@ -22,5 +20,5 @@ Ejemplo:
 
     mvn package --> Genera empaquetado (aun no utilizado) y copia fuentes .go y vendor deps en $HOME/go o $GO_HOME
 
-    En el directorio de destino la tool generá un directorio versionado según la version pom.xml definida para mantener distintas versiones de fuentes
+    En el directorio de destino generá un directorio versionado según la version indicada en el pom.xml asignada para mantener distintas versiones del chaincode
 
