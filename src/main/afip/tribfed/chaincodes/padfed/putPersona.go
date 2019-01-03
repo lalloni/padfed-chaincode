@@ -76,7 +76,7 @@ func checkClientID(APIstub shim.ChaincodeStubInterface) error {
 	if err != nil {
 		return errors.New("Error at Get the client ID object [GetMSPID()]")
 	}
-	if mspid != "AFIPMSP" {
+	if mspid != "AFIP" {
 		return errors.New("mspid [" + mspid + "] - La funcion putPersona solo puede ser invocada por AFIP")
 	}
 	return err
