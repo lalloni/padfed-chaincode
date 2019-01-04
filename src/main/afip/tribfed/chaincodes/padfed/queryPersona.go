@@ -8,8 +8,8 @@ import (
 )
 
 func (s *SmartContract) queryPersona(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
-	_, err := strconv.ParseUint(args[0], 10, 64)
-	if err != nil {
+	var err error
+	if _, err = getCUITArgs(args); err != nil {
 		return shim.Error("CUIT [" + args[0] + "] invalido. " + err.Error())
 	}
 	p_full := false

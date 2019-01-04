@@ -12,9 +12,15 @@ func (s *SmartContract) queryPersonasByRange(APIstub shim.ChaincodeStubInterface
 	if err != nil {
 		return shim.Error("CUIT [" + args[0] + "] invalido. " + err.Error())
 	}
+	if len(args[0]) != 11 {
+		return shim.Error("Longitud del CUIT [" + args[0] + "], invalido.")
+	}
 	_, err = strconv.ParseUint(args[1], 10, 64)
 	if err != nil {
 		return shim.Error("CUIT [" + args[1] + "] invalido. " + err.Error())
+	}
+	if len(args[1]) != 11 {
+		return shim.Error("Longitud del CUIT [" + args[1] + "], invalido.")
 	}
 	switch len(args) {
 	case 2:
