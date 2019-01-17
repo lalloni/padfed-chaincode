@@ -62,7 +62,7 @@ func (s *SmartContract) putPersonas(APIstub shim.ChaincodeStubInterface, args []
 		}
 	}
 	msg := strconv.Itoa(rows) + " personas processed !!!"
-	log.Print(msg)
+	log.Println(msg)
 	return shim.Success([]byte(msg))
 }
 
@@ -83,6 +83,7 @@ func checkClientID(APIstub shim.ChaincodeStubInterface) error {
 }
 
 func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit uint64, newPersona *Persona) peer.Response {
+	tipoPersonaNull := false
 	cuitStr := strconv.FormatUint(cuit, 10)
 	if cuit != newPersona.CUIT {
 		return shim.Error("El parametro cuit [" + cuitStr + "] y la cuit [" + strconv.FormatUint(newPersona.CUIT, 10) + "] en la Persona deben ser iguales")
@@ -142,14 +143,63 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		if len(newPersona.FechaFallecimiento) > 0 {
 			return shim.Error("persona juridica con fechaFallecimiento")
 		}
+	case "":
+		tipoPersonaNull = true
+		if len(newPersona.RazonSocial) > 0 {
+			return shim.Error("razonSocial debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.Nombre) > 0 {
+			return shim.Error("nombre debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.EstadoCUIT) > 0 {
+			return shim.Error("estadoCuit debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.Apellido) > 0 {
+			return shim.Error("apellido debe ser nulo cuando tipoPersona es nulo")
+		}
+		if newPersona.IDFormaJuridica != 0 {
+			return shim.Error("idFormaJuridica debe ser nulo cuando tipoPersona es nulo")
+		}
+		if newPersona.TipoDoc != 0 {
+			return shim.Error("tipoDoc debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.Documento) > 0 {
+			return shim.Error("documento debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.Sexo) > 0 {
+			return shim.Error("sexo debe ser nulo cuando tipoPersona es nulo")
+		}
+		if newPersona.MesCierre != 0 {
+			return shim.Error("mesCierre debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.FechaNacimiento) > 0 {
+			return shim.Error("fechaNacimiento debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.FechaFallecimiento) > 0 {
+			return shim.Error("fechaFallecimiento debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.FechaInscripcion) > 0 {
+			return shim.Error("fechaInscripcion debe ser nulo cuando tipoPersona es nulo")
+		}
+		if len(newPersona.FechaCierre) > 0 {
+			return shim.Error("fechaCierre debe ser nulo cuando tipoPersona es nulo")
+		}
+		if newPersona.NuevaCUIT != 0 {
+			return shim.Error("nuevaCuit debe ser nulo cuando tipoPersona es nulo")
+		}
+		if newPersona.Impuestos == nil || len(newPersona.Impuestos) == 0 {
+			return shim.Error("cuando tipoPerona es nulo debe informarse por lo menos un item en alguno de los arrarys (impuestos, actividades, domicilios, ...)")
+		}
 	default:
-		return shim.Error("tipoPersona [" + newPersona.TipoPersona + "] invalido, debe ser F (Humana) o J (Juridica)")
+		return shim.Error("tipoPersona [" + newPersona.TipoPersona + "] invalido, debe ser F (Humana), J (Juridica) o nulo (para indicar que no se aplican cambios sobre el asset topo Persona) ")
 	}
-	switch newPersona.EstadoCUIT {
-	case "A":
-	case "I":
-	default:
-		return shim.Error("estadoCuit [" + newPersona.EstadoCUIT + "] invalido, debe ser A (Activa) o I (Inactiva)")
+	if !tipoPersonaNull {
+		switch newPersona.EstadoCUIT {
+		case "A":
+		case "I":
+		default:
+			return shim.Error("estadoCuit [" + newPersona.EstadoCUIT + "] invalido, debe ser A (Activa) o I (Inactiva)")
+		}
 	}
 
 	key := getPersonaKey(newPersona)
@@ -157,7 +207,10 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 	if exist, err := keyExists(APIstub, cuitStr); err != nil {
 		return s.businessErrorResponse(err.Error())
 	} else if !exist {
-		log.Print("Putting [" + cuitStr + "]...")
+		if tipoPersonaNull {
+			return shim.Error("No existe un asset [" + cuitStr + "] - Debe informarse los datos identificarios de la Persona")
+		}
+		log.Println("Putting [" + cuitStr + "]...")
 		if err := APIstub.PutState(cuitStr, []byte("{}")); err != nil {
 			return shim.Error("Error putting cuitStr [" + cuitStr + "]: " + err.Error())
 		}
@@ -166,19 +219,25 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 	var impuestos = newPersona.Impuestos
 	newPersona.Impuestos = nil
 
-	personaAsBytes, _ := json.Marshal(newPersona)
+	// Si tipo Persona es Null, no se guardan los datos de esa persona
+	if !tipoPersonaNull {
+		personaAsBytes, _ := json.Marshal(newPersona)
 
-	log.Print("Putting [" + key + "]...")
-	if err := APIstub.PutState(key, personaAsBytes); err != nil {
-		return shim.Error("Error putting key [" + key + "]: " + err.Error())
+		log.Println("Putting [" + key + "]...")
+		if err := APIstub.PutState(key, personaAsBytes); err != nil {
+			return shim.Error("Error putting key [" + key + "]: " + err.Error())
+		}
 	}
 
 	if rows, err := putPersonaImpuestos(APIstub, cuitStr, impuestos); err != nil {
-		log.Print(err.Error())
+		log.Println(err.Error())
 		return shim.Error(err.Error())
 	} else {
-		msg := strconv.Itoa(rows+1) + " assets processed !!!"
-		log.Print(msg)
+		if !tipoPersonaNull {
+			rows++
+		}
+		msg := strconv.Itoa(rows) + " assets processed !!!"
+		log.Println(msg)
 		return shim.Success([]byte(msg))
 	}
 }
