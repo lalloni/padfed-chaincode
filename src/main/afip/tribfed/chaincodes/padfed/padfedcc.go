@@ -132,11 +132,15 @@ func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	log.SetPrefix("LOG: ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 	s.debug = true
+
+	if err := s.setContext(stub); err != (Response{}) {
+		return s.peerResponse(err)
+	}
 	return s.peerResponse(s.setInitImpuestos(stub))
 }
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Response {
-	if err := s.setContext(APIstub); err == (Response{}) {
+	if err := s.setContext(APIstub); err != (Response{}) {
 		return s.peerResponse(err)
 	}
 	log.Print("=================================================================")
@@ -196,28 +200,30 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Respons
 }
 
 func (s *SmartContract) setContext(APIstub shim.ChaincodeStubInterface) Response {
-	// Get the client ID object
-	clientIdentity, err := cid.New(APIstub)
-	if err != nil {
-		return systemErrorResponse("Error at Get the client ID object [cid.New(APIstub)]")
-	}
-	mspid, err := clientIdentity.GetMSPID()
-	if err != nil {
-		return systemErrorResponse("Error at Get the client ID object [GetMSPID()]")
-	}
-	s.mspid = mspid
-
-	x509Certificate, err := clientIdentity.GetX509Certificate()
-	if err != nil {
-		return systemErrorResponse("Error at Get the x509Certificate object [GetX509Certificate()]")
-	}
-	s.certSubject = x509Certificate.Subject.String()
-	s.certIssuer = x509Certificate.Issuer.String()
-	log.Println("x509Certificate.Subject: " + x509Certificate.Subject.String())
-	log.Println("x509Certificate.Issuer: " + x509Certificate.Issuer.String())
-	// Get others data
 	s.txid = APIstub.GetTxID()
 	s.function, s.args = APIstub.GetFunctionAndParameters()
+
+	if !s.isModeTest {
+		// Get the client ID object
+		clientIdentity, err := cid.New(APIstub)
+		if err != nil {
+			return systemErrorResponse("Error at Get the client ID object [cid.New(APIstub)]")
+		}
+		mspid, err := clientIdentity.GetMSPID()
+		if err != nil {
+			return systemErrorResponse("Error at Get the client ID object [GetMSPID()]")
+		}
+		s.mspid = mspid
+
+		x509Certificate, err := clientIdentity.GetX509Certificate()
+		if err != nil {
+			return systemErrorResponse("Error at Get the x509Certificate object [GetX509Certificate()]")
+		}
+		s.certSubject = x509Certificate.Subject.String()
+		s.certIssuer = x509Certificate.Issuer.String()
+		log.Println("x509Certificate.Subject: " + x509Certificate.Subject.String())
+		log.Println("x509Certificate.Issuer: " + x509Certificate.Issuer.String())
+	}
 	return Response{}
 }
 

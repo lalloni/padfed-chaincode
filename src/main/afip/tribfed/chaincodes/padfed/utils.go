@@ -93,7 +93,7 @@ func argToPersonas(personasAsBytes []byte, personas *Personas, fType formatType)
 
 	for _, p := range personas.GetPersonas() {
 		err := validatePersona(p)
-		if err == (Response{}) {
+		if err != (Response{}) {
 			return err
 		}
 	}

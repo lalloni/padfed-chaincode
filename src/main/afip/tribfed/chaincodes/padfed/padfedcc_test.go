@@ -66,13 +66,13 @@ func getPesonaJSON(cuit uint64) string {
 func TestValidPersonaJSON(t *testing.T) {
 	var persona Persona
 	var personaJSON = getPesonaJSON(30679638943)
-	if err := argToPersona([]byte(personaJSON), &persona, JSON); err == (Response{}) {
+	if err := argToPersona([]byte(personaJSON), &persona, JSON); err != (Response{}) {
 		t.Error(err.Msg)
 	}
 	if getPersonaKey(&persona) != "PER_30679638943" {
 		t.Error("Persona.Key no valida " + getPersonaKey(&persona))
 	}
-	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err == (Response{}) {
+	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err != (Response{}) {
 		t.Error("JSON invalido, debe dar error" + err.Msg)
 	}
 }
