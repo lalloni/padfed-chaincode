@@ -66,14 +66,14 @@ func getPesonaJSON(cuit uint64) string {
 func TestValidPersonaJSON(t *testing.T) {
 	var persona Persona
 	var personaJSON = getPesonaJSON(30679638943)
-	if err := argToPersona([]byte(personaJSON), &persona, JSON); err != nil {
-		t.Error(err.Error())
+	if err := argToPersona([]byte(personaJSON), &persona, JSON); err == (Response{}) {
+		t.Error(err.Msg)
 	}
 	if getPersonaKey(&persona) != "PER_30679638943" {
 		t.Error("Persona.Key no valida " + getPersonaKey(&persona))
 	}
-	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err == nil {
-		t.Error("JSON invalido, debe dar error" + err.Error())
+	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err == (Response{}) {
+		t.Error("JSON invalido, debe dar error" + err.Msg)
 	}
 }
 
@@ -138,6 +138,7 @@ func putPersona(t *testing.T, stub *shim.MockStub, cuit uint64) pb.Response {
 func putPersonaProto(t *testing.T, stub *shim.MockStub, cuit uint64) pb.Response {
 	var personaJSON = getPesonaJSON(cuit)
 	var persona Persona
+
 	argToPersona([]byte(personaJSON), &persona, JSON)
 
 	personaPROTO, err := proto.Marshal(&persona)

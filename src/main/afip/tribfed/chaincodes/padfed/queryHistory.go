@@ -12,13 +12,13 @@ import (
 
 func (s *SmartContract) queryHistory(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
-		return shim.Error("Número incorrecto de parámetros. Se esperaba 1 con {asset_key}")
+		return s.peerResponse(clientErrorResponse("Número incorrecto de parámetros. Se esperaba 1 con {asset_key}"))
 	}
 	pKey := args[0]
 	resultsIterator, err := APIstub.GetHistoryForKey(pKey)
 	if err != nil {
 		log.Println("Error al leer historia")
-		return s.systemErrorResponse(err)
+		return s.peerResponse(systemErrorResponse(err.Error()))
 	}
 	defer resultsIterator.Close()
 
@@ -29,7 +29,7 @@ func (s *SmartContract) queryHistory(APIstub shim.ChaincodeStubInterface, args [
 	for resultsIterator.HasNext() {
 		response, err := resultsIterator.Next()
 		if err != nil {
-			return shim.Error(err.Error())
+			return s.peerResponse(systemErrorResponse(err.Error()))
 		}
 		count++
 

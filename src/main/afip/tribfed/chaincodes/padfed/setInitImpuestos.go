@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
 )
 
 var impuestosPrecarga = `[
@@ -155,6 +154,6 @@ var impuestosPrecarga = `[
     {"idImpuesto":5244,"idOrg":904,"nombre":"CONTRIBUCION MUNICIPAL"}                                                                         
     ]`
 
-func (s *SmartContract) setInitImpuestos(APIstub shim.ChaincodeStubInterface) peer.Response {
+func (s *SmartContract) setInitImpuestos(APIstub shim.ChaincodeStubInterface) Response {
 	return s.putParamImpuestos(APIstub, []string{impuestosPrecarga})
 }

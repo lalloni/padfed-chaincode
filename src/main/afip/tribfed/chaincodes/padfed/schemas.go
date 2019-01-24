@@ -97,7 +97,7 @@ const TelefonoSchema = `{
 const PersonaSchema = `{
     "description": "A representation of a person, company, organization, or place",
     "type": "object",
-    "required": ["cuit", "estadoCuit", "tipoPersona"],
+    "required": ["cuit"],
     "properties": {
         "cuit": {
             "type": "number"

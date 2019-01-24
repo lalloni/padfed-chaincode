@@ -10,11 +10,11 @@ import (
 
 func (s *SmartContract) queryByKey(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
-		return shim.Error("Numero incorrecto de parametros. Se espera {KEY}")
+		return s.peerResponse(clientErrorResponse("Numero incorrecto de parametros. Se espera {KEY}"))
 	}
 	registerAsBytes, err := APIstub.GetState(args[0])
 	if err != nil {
-		return shim.Error(err.Error())
+		return s.peerResponse(systemErrorResponse(err.Error()))
 	} else if registerAsBytes == nil {
 		log.Println("- queryByKey:[]")
 		return shim.Success([]byte("[]"))

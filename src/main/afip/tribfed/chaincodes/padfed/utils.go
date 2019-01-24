@@ -35,14 +35,14 @@ func getCUITArgs(args []string) (uint64, error) {
 	return uint64(cuit), nil
 }
 
-func argToPersona(personaAsBytes []byte, persona *Persona, fType formatType) error {
+func argToPersona(personaAsBytes []byte, persona *Persona, fType formatType) Response {
 	//fmt.Println(PersonaSchema)
 	switch fType {
 	case JSON:
 		documentLoader := gojsonschema.NewStringLoader(string(personaAsBytes))
 		result, err := gojsonschema.Validate(personaSchemaLoader, documentLoader)
 		if err != nil {
-			return errors.New("JSON schema invalido: " + err.Error() + " - " + string(personaAsBytes))
+			return clientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personaAsBytes))
 		}
 
 		if !result.Valid() {
@@ -50,11 +50,11 @@ func argToPersona(personaAsBytes []byte, persona *Persona, fType formatType) err
 			for _, desc := range result.Errors() {
 				errosStr += desc.Description() + ". "
 			}
-			return errors.New("JSON no cumple con el esquema: " + errosStr)
+			return clientErrorResponse("JSON no cumple con el esquema: " + errosStr)
 		}
 		err = json.Unmarshal(personaAsBytes, persona)
 		if err != nil {
-			return errors.New("JSON invalido: " + err.Error())
+			return systemErrorResponse("JSON invalido: " + err.Error())
 		}
 	case PROTOBUF:
 		err := proto.Unmarshal(personaAsBytes, persona)
@@ -65,25 +65,24 @@ func argToPersona(personaAsBytes []byte, persona *Persona, fType formatType) err
 	return validatePersona(persona)
 }
 
-func argToPersonas(personasAsBytes []byte, personas *Personas, fType formatType) error {
+func argToPersonas(personasAsBytes []byte, personas *Personas, fType formatType) Response {
 	switch fType {
 	case JSON:
 		documentLoader := gojsonschema.NewStringLoader(string(personasAsBytes))
 		result, err := gojsonschema.Validate(personasSchemaLoader, documentLoader)
 		if err != nil {
-			return errors.New("JSON schema invalido: " + err.Error() + " - " + string(personasAsBytes))
+			return clientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personasAsBytes))
 		}
-
 		if !result.Valid() {
 			var errosStr string
 			for _, desc := range result.Errors() {
 				errosStr += desc.Description() + ". "
 			}
-			return errors.New("JSON no cumple con el esquema: " + errosStr)
+			return clientErrorResponse("JSON no cumple con el esquema: " + errosStr)
 		}
 		err = json.Unmarshal(personasAsBytes, &personas)
 		if err != nil {
-			return errors.New("JSON invalido: " + err.Error())
+			return systemErrorResponse("JSON invalido: " + err.Error())
 		}
 	case PROTOBUF:
 		err := proto.Unmarshal(personasAsBytes, personas)
@@ -94,30 +93,30 @@ func argToPersonas(personasAsBytes []byte, personas *Personas, fType formatType)
 
 	for _, p := range personas.GetPersonas() {
 		err := validatePersona(p)
-		if err != nil {
+		if err == (Response{}) {
 			return err
 		}
 	}
-	return nil
+	return Response{}
 }
 
-func validatePersona(persona *Persona) error {
-	var err error
+func validatePersona(persona *Persona) Response {
+	var err Response
 	cuitStr := strconv.FormatUint(persona.CUIT, 10)
 	if !cuitVerifier.IsValid(persona.CUIT) {
-		return errors.New("cuit [" + cuitStr + "] invalida")
+		return clientErrorResponse("cuit [" + cuitStr + "] invalida")
 	}
 	if err := validateDate(persona.FechaNacimiento); err != nil {
-		return errors.New("fechaNacimiento [" + persona.FechaNacimiento + "] invalida: " + err.Error())
+		return clientErrorResponse("fechaNacimiento [" + persona.FechaNacimiento + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaInscripcion); err != nil {
-		return errors.New("fechaInscripcion [" + persona.FechaInscripcion + "] invalida: " + err.Error())
+		return clientErrorResponse("fechaInscripcion [" + persona.FechaInscripcion + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaCierre); err != nil {
-		return errors.New("fechaCierre [" + persona.FechaCierre + "] invalida: " + err.Error())
+		return clientErrorResponse("fechaCierre [" + persona.FechaCierre + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaFallecimiento); err != nil {
-		return errors.New("fechaFallecimiento [" + persona.FechaFallecimiento + "] invalida: " + err.Error())
+		return clientErrorResponse("fechaFallecimiento [" + persona.FechaFallecimiento + "] invalida: " + err.Error())
 	}
 	return err
 }
@@ -158,18 +157,18 @@ func getTxConfirmableKey(idOrganismo int, idTxc uint64) string {
 	return "ORG_" + idOrganismoStr + "_TXC_" + idTxcStr
 }
 
-func findPersona(APIstub shim.ChaincodeStubInterface, cuit uint64) (Persona, []byte, error) {
-	var cuitStr = strconv.FormatUint(cuit, 10)
-	personaAsBytes, err := APIstub.GetState("PER_" + cuitStr)
-	var persona Persona
-	if err != nil {
-		return persona, personaAsBytes, errors.New("Error al buscar la Persona " + cuitStr)
-	} else if personaAsBytes == nil {
-		return persona, personaAsBytes, errors.New("No existe Persona para " + cuitStr)
-	}
-	err = argToPersona(personaAsBytes, &persona, JSON)
-	return persona, personaAsBytes, nil
-}
+// func findPersona(APIstub shim.ChaincodeStubInterface, cuit uint64) (Persona, []byte, error) {
+// 	var cuitStr = strconv.FormatUint(cuit, 10)
+// 	personaAsBytes, err := APIstub.GetState("PER_" + cuitStr)
+// 	var persona Persona
+// 	if err != nil {
+// 		return persona, personaAsBytes, errors.New("Error al buscar la Persona " + cuitStr)
+// 	} else if personaAsBytes == nil {
+// 		return persona, personaAsBytes, errors.New("No existe Persona para " + cuitStr)
+// 	}
+// 	err = argToPersona(personaAsBytes, &persona, JSON)
+// 	return persona, personaAsBytes, nil
+// }
 
 func findImpuesto(APIstub shim.ChaincodeStubInterface, cuit uint64, idImpuesto int32) (Impuesto, []byte, error) {
 	var cuitStr = strconv.FormatUint(cuit, 10)
@@ -215,18 +214,17 @@ func validateDate(dateStr string) error {
 		if date.Year() != y || int(date.Month()) != m || date.Day() != d {
 			return fmt.Errorf("Fecha invalida, ingresada [%s-%s-%s], convertida a time [%d-%d-%d]", res[1], res[2], res[3], date.Year(), int(date.Month()), date.Day())
 		}
-
 	}
 	return nil
 }
 
 // keyExists returns true if the key exists
-func keyExists(APIstub shim.ChaincodeStubInterface, key string) (bool, error) {
+func keyExists(APIstub shim.ChaincodeStubInterface, key string) (bool, Response) {
 	log.Println("Key[" + key + "] using GetState...")
 	if assetAsByte, err := APIstub.GetState(key); err != nil {
-		return false, err
+		return false, systemErrorResponse(err.Error())
 	} else {
-		return assetAsByte != nil, nil
+		return assetAsByte != nil, Response{}
 	}
 }
 

@@ -20,13 +20,13 @@ func (s *SmartContract) queryPersonasByRangeFormated(APIstub shim.ChaincodeStubI
 	resultsIterator, err := APIstub.GetStateByRange(cuit_inicio, cuit_fin)
 	if err != nil {
 		log.Println(err.Error())
-		return shim.Error(err.Error())
+		return s.peerResponse(systemErrorResponse(err.Error()))
 	}
 	defer resultsIterator.Close()
 
 	buffer, err := buildResponse(resultsIterator, p_full, p_composed)
 	if err != nil {
-		return shim.Error(err.Error())
+		return s.peerResponse(systemErrorResponse(err.Error()))
 	}
 	log.Println("- query:" + buffer.String())
 

@@ -10,7 +10,7 @@ import (
 
 func (s *SmartContract) queryByKeyRange(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 2 {
-		return shim.Error("Numero incorrecto de parametros. Se espera {START_KEY, END_KEY}")
+		return s.peerResponse(clientErrorResponse("Numero incorrecto de parametros. Se espera {START_KEY, END_KEY}"))
 	}
 	START_KEY := args[0]
 	END_KEY := args[1] + "z"
@@ -19,7 +19,7 @@ func (s *SmartContract) queryByKeyRange(APIstub shim.ChaincodeStubInterface, arg
 	resultsIterator, err := APIstub.GetStateByRange(START_KEY, END_KEY)
 	if err != nil {
 		log.Println(err.Error())
-		return shim.Error(err.Error())
+		return s.peerResponse(systemErrorResponse(err.Error()))
 	}
 	defer resultsIterator.Close()
 	var buffer bytes.Buffer
@@ -29,7 +29,7 @@ func (s *SmartContract) queryByKeyRange(APIstub shim.ChaincodeStubInterface, arg
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
 		if err != nil {
-			return shim.Error(err.Error())
+			return s.peerResponse(systemErrorResponse(err.Error()))
 		}
 		writeInBuffer(&buffer, string(queryResponse.Value), queryResponse.Key, bArrayMemberAlreadyWritten)
 		bArrayMemberAlreadyWritten = true

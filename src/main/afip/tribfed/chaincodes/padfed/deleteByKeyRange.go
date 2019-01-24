@@ -7,12 +7,11 @@ import (
 	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
 )
 
-func (s *SmartContract) deleteByKeyRange(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (s *SmartContract) deleteByKeyRange(APIstub shim.ChaincodeStubInterface, args []string) Response {
 	if len(args) != 2 {
-		return shim.Error("Número incorrecto de parámetros. Se esperaba 2 parámetros con {RANGO_INICIO, RANGO_FIN}")
+		return clientErrorResponse("Número incorrecto de parámetros. Se esperaba 2 parámetros con {RANGO_INICIO, RANGO_FIN}")
 	}
 	resultsIterator, err := APIstub.GetStateByRange(args[0], args[1])
 	var total int
@@ -20,18 +19,18 @@ func (s *SmartContract) deleteByKeyRange(APIstub shim.ChaincodeStubInterface, ar
 	total = 100
 	log.Println("Se eliminaran los primeros 100 elementos para evitar un timeout")
 	if err != nil {
-		return shim.Error(err.Error())
+		return systemErrorResponse(err.Error())
 	}
 	var count int
 	count = 0
 	for resultsIterator.HasNext() {
 		count++
 		if count > total {
-			return shim.Success([]byte("{\"resultMessage\":\"eliminados " + strconv.Itoa(count) + " keys\",\"hasNext\":true}"))
+			break
 		}
 		result, err := resultsIterator.Next()
 		if err != nil {
-			return shim.Error(err.Error())
+			return systemErrorResponse(err.Error(), count)
 		}
 		if firstDeleted != "" {
 			lastDeleted = result.Key
@@ -56,8 +55,7 @@ func (s *SmartContract) deleteByKeyRange(APIstub shim.ChaincodeStubInterface, ar
 		APIstub.DelState(result.Key)
 	}
 	if firstDeleted != "" {
-		partialMsj = "; Desde: " + firstDeleted + ", Hasta: " + lastDeleted
+		partialMsj = "Keys eliminadas desde [" + firstDeleted + "] hasta [" + lastDeleted + "]"
 	}
-
-	return shim.Success([]byte("{\"resultMessage\":\"eliminados " + strconv.Itoa(count) + " keys\"" + partialMsj + " ,\"hasNext\":false}"))
+	return successResponse(partialMsj+" hasNext ["+strconv.FormatBool(count > total)+"]", count)
 }

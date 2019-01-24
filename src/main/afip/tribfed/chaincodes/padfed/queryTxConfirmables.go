@@ -13,14 +13,14 @@ import (
 
 func (s *SmartContract) queryTxConfirmables(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) < 1 || len(args) > 4 {
-		return shim.Error("Numero incorrecto de parametros. Se espera {ID_ORG, ID_TXC, CUIT, PENDIENTE}")
+		return s.peerResponse(clientErrorResponse("Numero incorrecto de parametros. Se espera {ID_ORG, ID_TXC, CUIT, PENDIENTE}"))
 	}
 	idOrg, err := strconv.Atoi(args[0])
 	if err != nil {
-		return shim.Error("ID_ORG [" + args[0] + "] invalido. " + err.Error())
+		return s.peerResponse(clientErrorResponse("ID_ORG [" + args[0] + "] invalido. " + err.Error()))
 	}
 	if idOrg < 900 || idOrg > 999 {
-		return shim.Error("ID_ORG incorrecto. Se espera el rango [900...999]")
+		return s.peerResponse(clientErrorResponse("ID_ORG incorrecto. Se espera el rango [900...999]"))
 	}
 	idTxc := ""
 	cuit := ""
@@ -29,28 +29,28 @@ func (s *SmartContract) queryTxConfirmables(APIstub shim.ChaincodeStubInterface,
 	case 2:
 		err = checkParam(args[1])
 		if err != nil {
-			return shim.Error("ID_TXC [" + args[1] + "] invalido. " + err.Error())
+			return s.peerResponse(clientErrorResponse("ID_TXC [" + args[1] + "] invalido. " + err.Error()))
 		}
 		idTxc = args[1]
 	case 3:
 		err = checkParam(args[1])
 		if err != nil {
-			return shim.Error("ID_TXC [" + args[1] + "] invalido. " + err.Error())
+			return s.peerResponse(clientErrorResponse("ID_TXC [" + args[1] + "] invalido. " + err.Error()))
 		}
 		err = checkParam(args[2])
 		if err != nil {
-			return shim.Error("CUIT [" + args[2] + "] invalido. " + err.Error())
+			return s.peerResponse(clientErrorResponse("CUIT [" + args[2] + "] invalido. " + err.Error()))
 		}
 		idTxc = args[1]
 		cuit = args[2]
 	case 4:
 		err = checkParam(args[1])
 		if err != nil {
-			return shim.Error("ID_TXC [" + args[1] + "] invalido. " + err.Error())
+			return s.peerResponse(clientErrorResponse("ID_TXC [" + args[1] + "] invalido. " + err.Error()))
 		}
 		err = checkParam(args[2])
 		if err != nil {
-			return shim.Error("CUIT [" + args[2] + "] invalido. " + err.Error())
+			return s.peerResponse(clientErrorResponse("CUIT [" + args[2] + "] invalido. " + err.Error()))
 		}
 		isPendiente = args[3]
 		idTxc = args[1]
@@ -61,7 +61,7 @@ func (s *SmartContract) queryTxConfirmables(APIstub shim.ChaincodeStubInterface,
 		startKey += idTxc
 	}
 	endKey := startKey + "z"
-	return queryByKeyRangeWithFilters(APIstub, startKey, endKey, cuit, isPendiente)
+	return s.queryByKeyRangeWithFilters(APIstub, startKey, endKey, cuit, isPendiente)
 }
 
 func checkParam(param string) error {
@@ -72,12 +72,12 @@ func checkParam(param string) error {
 	return nil
 }
 
-func queryByKeyRangeWithFilters(APIstub shim.ChaincodeStubInterface, startKey string, endKey string, cuit string, isPendiente string) peer.Response {
+func (s *SmartContract) queryByKeyRangeWithFilters(APIstub shim.ChaincodeStubInterface, startKey string, endKey string, cuit string, isPendiente string) peer.Response {
 	log.Println("Getting from: " + startKey + " to: " + endKey)
 	resultsIterator, err := APIstub.GetStateByRange(startKey, endKey)
 	if err != nil {
 		log.Println(err.Error())
-		return shim.Error(err.Error())
+		return s.peerResponse(systemErrorResponse(err.Error()))
 	}
 	defer resultsIterator.Close()
 	var buffer bytes.Buffer
@@ -87,13 +87,13 @@ func queryByKeyRangeWithFilters(APIstub shim.ChaincodeStubInterface, startKey st
 	for resultsIterator.HasNext() {
 		queryResponse, err := resultsIterator.Next()
 		if err != nil {
-			return shim.Error(err.Error())
+			return s.peerResponse(systemErrorResponse(err.Error()))
 		}
 		var txConfirmable TXConfirmable
 
 		err = json.Unmarshal(queryResponse.Value, &txConfirmable)
 		if err != nil {
-			return shim.Error("JSON invalido: " + err.Error())
+			return s.peerResponse(systemErrorResponse("JSON invalido: " + err.Error()))
 		}
 		if cuit != "" {
 			if strings.Compare(strconv.FormatUint(txConfirmable.CUIT, 10), cuit) != 0 {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	peer "github.com/hyperledger/fabric/protos/peer"
 )
@@ -26,18 +26,18 @@ type Persona struct {
 	Nombre             string      `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
 	Apellido           string      `protobuf:"bytes,3,opt,name=apellido,proto3" json:"apellido,omitempty"`
 	RazonSocial        string      `protobuf:"bytes,4,opt,name=razon_social,proto3" json:"razonSocial,omitempty"`
-	TipoPersona        string      `protobuf:"bytes,5,name=tipo_persona,proto3" json:"tipoPersona"`
-	EstadoCUIT         string      `protobuf:"bytes,6,name=estado_cuit,proto3" json:"estadoCuit"`
+	TipoPersona        string      `protobuf:"bytes,5,name=tipo_persona,proto3" json:"tipoPersona,omitempty"`
+	EstadoCUIT         string      `protobuf:"bytes,6,name=estado_cuit,proto3" json:"estadoCuit,omitempty"`
 	IDFormaJuridica    int32       `protobuf:"varint,7,opt,name=tipo_persona,proto3" json:"idFormaJuridica,omitempty"`
 	TipoDoc            int32       `protobuf:"varint,8,opt,name=tipo_doc,proto3" json:"tipoDoc,omitempty"`
-	Documento          string      `protobuf:"bytes,9,opt,name=documento,proto3" son:"documento,omitempty"`
-	Sexo               string      `protobuf:"bytes,10,opt,name=sexo,proto3" son:"sexo,omitempty"`
-	MesCierre          int32       `protobuf:"varint,11,opt,name=mes_cierre,proto3" son:"mesCierre,omitempty"`
-	FechaNacimiento    string      `protobuf:"bytes,12,opt,name=fecha_nacimiento,proto3" son:"fechaNacimiento,omitempty"`
-	FechaFallecimiento string      `protobuf:"bytes,13,opt,name=fecha_fallecimiento,proto3" son:"fechaFallecimiento,omitempty"`
-	FechaInscripcion   string      `protobuf:"bytes,14,opt,name=fecha_inscripcion,proto3" son:"fechaInscripcion,omitempty"`
-	FechaCierre        string      `protobuf:"bytes,15,opt,name=fecha_cierre,proto3" son:"fechaCierre,omitempty"`
-	NuevaCUIT          uint64      `protobuf:"varint,16,opt,name=nueva_cuit,proto3" son:"nuevaCuit,omitempty"`
+	Documento          string      `protobuf:"bytes,9,opt,name=documento,proto3" json:"documento,omitempty"`
+	Sexo               string      `protobuf:"bytes,10,opt,name=sexo,proto3" json:"sexo,omitempty"`
+	MesCierre          int32       `protobuf:"varint,11,opt,name=mes_cierre,proto3" json:"mesCierre,omitempty"`
+	FechaNacimiento    string      `protobuf:"bytes,12,opt,name=fecha_nacimiento,proto3" json:"fechaNacimiento,omitempty"`
+	FechaFallecimiento string      `protobuf:"bytes,13,opt,name=fecha_fallecimiento,proto3" json:"fechaFallecimiento,omitempty"`
+	FechaInscripcion   string      `protobuf:"bytes,14,opt,name=fecha_inscripcion,proto3" json:"fechaInscripcion,omitempty"`
+	FechaCierre        string      `protobuf:"bytes,15,opt,name=fecha_cierre,proto3" json:"fechaCierre,omitempty"`
+	NuevaCUIT          uint64      `protobuf:"varint,16,opt,name=nueva_cuit,proto3" json:"nuevaCuit,omitempty"`
 	Impuestos          []*Impuesto `protobuf:"group,17,rep,name=impuestos,proto3" json:"impuestos,omitempty"`
 }
 
@@ -112,6 +112,15 @@ type TXConfirmable struct {
 type SmartContract struct {
 	debug      bool
 	isModeTest bool
+	// current data transaction
+	txid     string
+	function string
+	args     []string
+	// Datos de clientIdentity
+	mspid       string
+	certIssuer  string
+	certSubject string
+	// --------
 }
 
 //const startKey = "PER_20000000001"
@@ -119,67 +128,97 @@ type SmartContract struct {
 
 var logger = shim.NewLogger("rut-afipcc")
 
-func (t *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
+func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	log.SetPrefix("LOG: ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
-	t.debug = true
-	return t.setInitImpuestos(stub)
+	s.debug = true
+	return s.peerResponse(s.setInitImpuestos(stub))
 }
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Response {
+	if err := s.setContext(APIstub); err == (Response{}) {
+		return s.peerResponse(err)
+	}
 	log.Print("=================================================================")
-	log.Print("TxID [" + APIstub.GetTxID() + "]")
-	function, args := APIstub.GetFunctionAndParameters()
-	log.Print("Function [" + function + "] args [" + strings.Join(args, " ") + "]")
+	log.Print("TxID [" + s.txid + "]")
+	log.Print("Function [" + s.function + "] args [" + strings.Join(s.args, " ") + "]")
 
-	switch function {
+	var r Response
+	switch s.function {
 	case "putPersona":
-		return s.putPersona(APIstub, args, JSON)
+		r = s.putPersona(APIstub, s.args, JSON)
 	case "putPersonaProto":
-		return s.putPersona(APIstub, args, PROTOBUF)
+		r = s.putPersona(APIstub, s.args, PROTOBUF)
 	case "putPersonas":
-		return s.putPersonas(APIstub, args, JSON)
+		r = s.putPersonas(APIstub, s.args, JSON)
 	case "putPersonasProto":
-		return s.putPersonas(APIstub, args, PROTOBUF)
+		r = s.putPersonas(APIstub, s.args, PROTOBUF)
 	case "putParamImpuestos":
-		return s.putParamImpuestos(APIstub, args)
+		r = s.putParamImpuestos(APIstub, s.args)
+	case "createTxConfirmable":
+		r = s.createTxConfirmable(APIstub, s.args)
+	case "responseTxConfirmable":
+		r = s.responseTxConfirmable(APIstub, s.args)
+	case "delPersona":
+		r = s.delPersona(APIstub, s.args)
+	case "delPersonasByRange":
+		r = s.delPersonasByRange(APIstub, s.args)
+	case "deleteAll":
+		r = s.deleteByKeyRange(APIstub, []string{"", ""})
+	case "deleteByKeyRange":
+		r = s.deleteByKeyRange(APIstub, s.args)
+	case "delParamImpuestosAll":
+		r = s.delParamImpuestosAll(APIstub)
+	case "putPersonaImpuestos":
+		r = s.putPersonaImpuestos(APIstub, s.args)
 	case "queryPersona":
-		return s.queryPersona(APIstub, args)
+		return s.queryPersona(APIstub, s.args)
 	case "queryPersonasByRange":
-		return s.queryPersonasByRange(APIstub, args)
+		return s.queryPersonasByRange(APIstub, s.args)
 	case "queryPersonaImpuestos":
-		return s.queryPersonaImpuestos(APIstub, args)
+		return s.queryPersonaImpuestos(APIstub, s.args)
 	case "queryAllPersona":
 		return s.queryAllPersona(APIstub)
 	case "queryByKey":
-		return s.queryByKey(APIstub, args)
+		return s.queryByKey(APIstub, s.args)
 	case "queryByKeyRange":
-		return s.queryByKeyRange(APIstub, args)
+		return s.queryByKeyRange(APIstub, s.args)
 	case "queryParamImpuestos":
 		return s.queryParamImpuestos(APIstub)
 	case "queryTxConfirmables":
-		return s.queryTxConfirmables(APIstub, args)
-	case "createTxConfirmable":
-		return s.createTxConfirmable(APIstub, args)
-	case "responseTxConfirmable":
-		return s.responseTxConfirmable(APIstub, args)
-	case "delPersona":
-		return s.delPersona(APIstub, args)
-	case "delPersonasByRange":
-		return s.delPersonasByRange(APIstub, args)
-	case "deleteAll":
-		return s.deleteByKeyRange(APIstub, []string{"", ""})
-	case "deleteByKeyRange":
-		return s.deleteByKeyRange(APIstub, args)
-	case "delParamImpuestosAll":
-		return s.delParamImpuestosAll(APIstub)
-	case "putPersonaImpuestos":
-		return s.putPersonaImpuestos(APIstub, args)
+		return s.queryTxConfirmables(APIstub, s.args)
 	case "queryHistory":
-		return s.queryHistory(APIstub, args)
+		return s.queryHistory(APIstub, s.args)
 	default:
-		return s.clientErrorResponse(errors.New("Invalid Smart Contract function name " + function))
+		r = clientErrorResponse("Invalid Smart Contract function name " + s.function)
 	}
+	return s.peerResponse(r)
+}
+
+func (s *SmartContract) setContext(APIstub shim.ChaincodeStubInterface) Response {
+	// Get the client ID object
+	clientIdentity, err := cid.New(APIstub)
+	if err != nil {
+		return systemErrorResponse("Error at Get the client ID object [cid.New(APIstub)]")
+	}
+	mspid, err := clientIdentity.GetMSPID()
+	if err != nil {
+		return systemErrorResponse("Error at Get the client ID object [GetMSPID()]")
+	}
+	s.mspid = mspid
+
+	x509Certificate, err := clientIdentity.GetX509Certificate()
+	if err != nil {
+		return systemErrorResponse("Error at Get the x509Certificate object [GetX509Certificate()]")
+	}
+	s.certSubject = x509Certificate.Subject.String()
+	s.certIssuer = x509Certificate.Issuer.String()
+	log.Println("x509Certificate.Subject: " + x509Certificate.Subject.String())
+	log.Println("x509Certificate.Issuer: " + x509Certificate.Issuer.String())
+	// Get others data
+	s.txid = APIstub.GetTxID()
+	s.function, s.args = APIstub.GetFunctionAndParameters()
+	return Response{}
 }
 
 func (s *SmartContract) initLedger(stub shim.ChaincodeStubInterface) peer.Response {
