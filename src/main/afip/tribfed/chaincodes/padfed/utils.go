@@ -201,10 +201,10 @@ func findTXConfirmable(APIstub shim.ChaincodeStubInterface, idOrganismo int, idT
 
 func validateDate(dateStr string) error {
 	if dateStr != "" {
-		regex := *regexp.MustCompile(`(?s)(\d{4})-(\d{2})-(\d{2})`)
+		regex := *regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
 		res := regex.FindStringSubmatch(dateStr)
 		if len(res) != 4 {
-			return fmt.Errorf("Fecha inválida %s", dateStr)
+			return fmt.Errorf("Fecha invalida %s", dateStr)
 		}
 		y, _ := strconv.Atoi(res[1])
 		m, _ := strconv.Atoi(res[2])
