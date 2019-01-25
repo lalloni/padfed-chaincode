@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -110,8 +111,9 @@ type TXConfirmable struct {
 
 // SmartContract Agrupador de funciones
 type SmartContract struct {
-	debug      bool
-	isModeTest bool
+	verboseMode bool
+	debug       bool
+	isModeTest  bool
 	// current data transaction
 	txid     string
 	function string
@@ -202,7 +204,13 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Respons
 func (s *SmartContract) setContext(APIstub shim.ChaincodeStubInterface) Response {
 	s.txid = APIstub.GetTxID()
 	s.function, s.args = APIstub.GetFunctionAndParameters()
-
+	// Check for verbose mode
+	regex := *regexp.MustCompile(`^(.*)(\?v)$`)
+	res := regex.FindStringSubmatch(s.function)
+	if len(res) != 0 {
+		s.function = res[1]
+		s.verboseMode = true
+	}
 	if !s.isModeTest {
 		// Get the client ID object
 		clientIdentity, err := cid.New(APIstub)
@@ -221,8 +229,6 @@ func (s *SmartContract) setContext(APIstub shim.ChaincodeStubInterface) Response
 		}
 		s.certSubject = x509Certificate.Subject.String()
 		s.certIssuer = x509Certificate.Issuer.String()
-		log.Println("x509Certificate.Subject: " + x509Certificate.Subject.String())
-		log.Println("x509Certificate.Issuer: " + x509Certificate.Issuer.String())
 	}
 	return Response{}
 }

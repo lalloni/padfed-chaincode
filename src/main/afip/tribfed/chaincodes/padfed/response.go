@@ -19,21 +19,15 @@ type Response struct {
 	Status      int32  `json:"status"`
 	Msg         string `json:"msg,omitempty"`
 	Txid        string `json:"txid"`
-	Function    string `json:"function"`
-	Mspid       string `json:"mspid"`
-	CertIssuer  string `json:"certIssuer"`
-	CertSubject string `json:"certSubject"`
+	Function    string `json:"function,omitempty"`
+	Mspid       string `json:"mspid,omitempty"`
+	CertIssuer  string `json:"certIssuer,omitempty"`
+	CertSubject string `json:"certSubject,omitempty"`
 	Assets      int    `json:"assets,omitempty"`
 	WrongItem   int    `json:"wrongItem,omitempty"`
 }
 
 func systemErrorResponse(msg string, wrongItem ...int) Response {
-	// var response Response
-	// response.Status = INTERNAL_SERVER_ERROR
-	// response.Msg = msg
-	// if len(wrongItem) > 0 {
-	// 	response.WrongItem = wrongItem[0]
-	// }
 	return errorResponse(msg, INTERNAL_SERVER_ERROR, wrongItem)
 }
 
@@ -65,10 +59,12 @@ func successResponse(msg string, assets int) Response {
 
 func (s *SmartContract) peerResponse(response Response) peer.Response {
 	response.Txid = s.txid
-	response.Function = s.function
-	response.Mspid = s.mspid
-	response.CertIssuer = s.certIssuer
-	response.CertSubject = s.certSubject
+	if s.verboseMode || response.Status != OK {
+		response.Function = s.function
+		response.Mspid = s.mspid
+		response.CertIssuer = s.certIssuer
+		response.CertSubject = s.certSubject
+	}
 	responseAsBytes, _ := json.Marshal(response)
 	if response.Status != OK {
 		return shim.Error(string(responseAsBytes))
