@@ -72,8 +72,8 @@ func TestValidPersonaJSON(t *testing.T) {
 	if getPersonaKey(&persona) != "PER_30679638943" {
 		t.Error("Persona.Key no valida " + getPersonaKey(&persona))
 	}
-	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err != (Response{}) {
-		t.Error("JSON invalido, debe dar error" + err.Msg)
+	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err == (Response{}) {
+		t.Error("JSON invalido, debe dar error " + err.Msg)
 	}
 }
 
