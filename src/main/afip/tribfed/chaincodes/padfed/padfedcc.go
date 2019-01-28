@@ -210,6 +210,8 @@ func (s *SmartContract) setContext(APIstub shim.ChaincodeStubInterface) Response
 	if len(res) != 0 {
 		s.function = res[1]
 		s.verboseMode = true
+	} else {
+		s.verboseMode = false
 	}
 	if !s.isModeTest {
 		// Get the client ID object
