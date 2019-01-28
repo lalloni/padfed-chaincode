@@ -64,6 +64,12 @@ func (s *SmartContract) peerResponse(response Response) peer.Response {
 		response.Mspid = s.mspid
 		response.CertIssuer = s.certIssuer
 		response.CertSubject = s.certSubject
+	} else {
+		response.Msg = ""
+		response.Function = ""
+		response.Mspid = ""
+		response.CertIssuer = ""
+		response.CertSubject = ""
 	}
 	responseAsBytes, _ := json.Marshal(response)
 	if response.Status != OK {
