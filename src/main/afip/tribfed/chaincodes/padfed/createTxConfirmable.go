@@ -65,7 +65,7 @@ func (s *SmartContract) createTxConfirmable(APIstub shim.ChaincodeStubInterface,
 
 	// Persona
 	exists, errP := keyExists(APIstub, strconv.FormatUint(cuit, 10))
-	if errP != (Response{}) {
+	if errP.isError() {
 		return errP
 	} else if !exists {
 		return clientErrorResponse("CUIT [" + strconv.FormatUint(cuit, 10) + "] inexistente")

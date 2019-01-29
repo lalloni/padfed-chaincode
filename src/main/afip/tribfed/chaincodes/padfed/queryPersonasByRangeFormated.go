@@ -6,10 +6,9 @@ import (
 	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
 )
 
-func (s *SmartContract) queryPersonasByRangeFormated(APIstub shim.ChaincodeStubInterface, cuit_inicio string, cuit_fin string, p_full bool, p_composed bool) peer.Response {
+func (s *SmartContract) queryPersonasByRangeFormated(APIstub shim.ChaincodeStubInterface, cuit_inicio string, cuit_fin string, p_full bool, p_composed bool) Response {
 	cuit_inicio = "PER_" + cuit_inicio
 	cuit_fin = "PER_" + cuit_fin
 
@@ -20,17 +19,17 @@ func (s *SmartContract) queryPersonasByRangeFormated(APIstub shim.ChaincodeStubI
 	resultsIterator, err := APIstub.GetStateByRange(cuit_inicio, cuit_fin)
 	if err != nil {
 		log.Println(err.Error())
-		return s.peerResponse(systemErrorResponse(err.Error()))
+		return systemErrorResponse(err.Error())
 	}
 	defer resultsIterator.Close()
 
 	buffer, err := buildResponse(resultsIterator, p_full, p_composed)
 	if err != nil {
-		return s.peerResponse(systemErrorResponse(err.Error()))
+		return systemErrorResponse(err.Error())
 	}
 	log.Println("- query:" + buffer.String())
 
-	return shim.Success(buffer.Bytes())
+	return successResponseWithBuffer(&buffer)
 }
 
 func buildResponse(resultsIterator shim.StateQueryIteratorInterface, p_full bool, p_composed bool) (bytes.Buffer, error) {

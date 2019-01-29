@@ -1,28 +1,28 @@
 package main
 
 import (
-	"bytes"
 	"log"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
 )
 
-func (s *SmartContract) queryByKey(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (s *SmartContract) queryByKey(APIstub shim.ChaincodeStubInterface, args []string) Response {
 	if len(args) != 1 {
-		return s.peerResponse(clientErrorResponse("Numero incorrecto de parametros. Se espera {KEY}"))
+		return clientErrorResponse("Numero incorrecto de parametros. Se espera {KEY}")
 	}
 	registerAsBytes, err := APIstub.GetState(args[0])
 	if err != nil {
-		return s.peerResponse(systemErrorResponse(err.Error()))
-	} else if registerAsBytes == nil {
-		log.Println("- queryByKey:[]")
-		return shim.Success([]byte("[]"))
+		return systemErrorResponse(err.Error())
 	}
-	var buffer bytes.Buffer
-	buffer.WriteString("[")
-	writeInBuffer(&buffer, string(registerAsBytes), args[0], false)
-	buffer.WriteString("]")
-	log.Println("- queryByKey: [" + buffer.String() + "]")
-	return shim.Success(buffer.Bytes())
+	var r Response
+	if registerAsBytes == nil {
+		log.Println("queryByKey:[]")
+		r.Buffer.WriteString("[]")
+		return r
+	}
+	r.Buffer.WriteString("[")
+	writeInBuffer(&r.Buffer, string(registerAsBytes), args[0], false)
+	r.Buffer.WriteString("]")
+	//	log.Println("queryByKey: [" + r.Buffer.String() + "]")
+	return r
 }

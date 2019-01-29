@@ -19,7 +19,7 @@ func (s *SmartContract) putPersonaImpuestos(APIstub shim.ChaincodeStubInterface,
 	if _, err := getCUITArgs(args); err != nil {
 		return clientErrorResponse("CUIT [" + cuitStr + "] invalida")
 	}
-	if exists, err := keyExists(APIstub, cuitStr); err != (Response{}) {
+	if exists, err := keyExists(APIstub, cuitStr); err.isError() {
 		return err
 	} else if !exists {
 		return clientErrorResponse("CUIT [" + cuitStr + "] inexistente")
@@ -31,7 +31,7 @@ func (s *SmartContract) putPersonaImpuestos(APIstub shim.ChaincodeStubInterface,
 		return systemErrorResponse("JSON invalido: " + err.Error())
 	}
 
-	if rows, err := s.commitPersonaImpuestos(APIstub, cuitStr, impuestos.Impuestos); err != (Response{}) {
+	if rows, err := s.commitPersonaImpuestos(APIstub, cuitStr, impuestos.Impuestos); err.isError() {
 		log.Print(err.Msg)
 		return err
 	} else {
@@ -52,11 +52,11 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 		if !(imp.IDOrganismo == 0 || imp.IDOrganismo == 1 || (imp.IDOrganismo >= 900 && imp.IDOrganismo <= 999)) {
 			return 0, clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrganismo))+"] must be an integer 1:AFIP or between 900 and 999", count)
 		}
-		if err := validateIdImpuesto(imp.IDImpuesto); err != (Response{}) {
+		if err := validateIdImpuesto(imp.IDImpuesto); err.isError() {
 			err.WrongItem = count
 			return 0, err
 		}
-		if exists, err := existsIdImpuesto(APIstub, imp.IDImpuesto); err != (Response{}) {
+		if exists, err := existsIdImpuesto(APIstub, imp.IDImpuesto); err.isError() {
 			err.WrongItem = count
 			return 0, err
 		} else if !exists {

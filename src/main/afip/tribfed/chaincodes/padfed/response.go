@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -16,15 +17,16 @@ const (
 )
 
 type Response struct {
-	Status      int32  `json:"status"`
-	Msg         string `json:"msg,omitempty"`
-	Txid        string `json:"txid"`
-	Function    string `json:"function,omitempty"`
-	Mspid       string `json:"mspid,omitempty"`
-	CertIssuer  string `json:"certIssuer,omitempty"`
-	CertSubject string `json:"certSubject,omitempty"`
-	Assets      int    `json:"assets,omitempty"`
-	WrongItem   int    `json:"wrongItem,omitempty"`
+	Status      int32        `json:"status"`
+	Buffer      bytes.Buffer `json:"buffer,omitempty"`
+	Msg         string       `json:"msg,omitempty"`
+	Txid        string       `json:"txid"`
+	Function    string       `json:"function,omitempty"`
+	Mspid       string       `json:"mspid,omitempty"`
+	CertIssuer  string       `json:"certIssuer,omitempty"`
+	CertSubject string       `json:"certSubject,omitempty"`
+	Assets      int          `json:"assets,omitempty"`
+	WrongItem   int          `json:"wrongItem,omitempty"`
 }
 
 func systemErrorResponse(msg string, wrongItem ...int) Response {
@@ -57,24 +59,44 @@ func successResponse(msg string, assets int) Response {
 	return response
 }
 
-func (s *SmartContract) peerResponse(response Response) peer.Response {
-	response.Txid = s.txid
-	if s.verboseMode || response.Status != OK {
-		response.Function = s.function
-		response.Mspid = s.mspid
-		response.CertIssuer = s.certIssuer
-		response.CertSubject = s.certSubject
+func successResponseWithBuffer(buffer *bytes.Buffer) Response {
+	var response Response
+	response.Status = OK
+	response.Buffer = *buffer
+	return response
+}
+
+func (response *Response) peerResponse(ctx Ctx) peer.Response {
+	if response.isOk() && response.Buffer.Len() > 0 {
+		return shim.Success(response.Buffer.Bytes())
 	} else {
-		response.Msg = ""
-		response.Function = ""
-		response.Mspid = ""
-		response.CertIssuer = ""
-		response.CertSubject = ""
+		response.Buffer.Reset()
+		response.Txid = ctx.txid
+		if ctx.verboseMode || response.isError() {
+			response.Function = ctx.function
+			response.Mspid = ctx.mspid
+			response.CertIssuer = ctx.certIssuer
+			response.CertSubject = ctx.certSubject
+		} else {
+			response.Msg = ""
+			response.Function = ""
+			response.Mspid = ""
+			response.CertIssuer = ""
+			response.CertSubject = ""
+		}
+		responseAsBytes, _ := json.Marshal(response)
+		if response.isError() {
+			return shim.Error(string(responseAsBytes))
+		} else {
+			return shim.Success(responseAsBytes)
+		}
 	}
-	responseAsBytes, _ := json.Marshal(response)
-	if response.Status != OK {
-		return shim.Error(string(responseAsBytes))
-	} else {
-		return shim.Success(responseAsBytes)
-	}
+}
+
+func (r *Response) isError() bool {
+	return !r.isOk()
+}
+
+func (r *Response) isOk() bool {
+	return r.Status == OK || r.Status == 0
 }

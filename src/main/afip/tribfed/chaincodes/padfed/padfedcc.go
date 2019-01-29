@@ -109,11 +109,9 @@ type TXConfirmable struct {
 	TipoRespuesta      int       `json:"tipoRespuesta"`
 }
 
-// SmartContract Agrupador de funciones
-type SmartContract struct {
+// Context
+type Ctx struct {
 	verboseMode bool
-	debug       bool
-	isModeTest  bool
 	// current data transaction
 	txid     string
 	function string
@@ -122,122 +120,144 @@ type SmartContract struct {
 	mspid       string
 	certIssuer  string
 	certSubject string
-	// --------
 }
 
-//const startKey = "PER_20000000001"
-//const endKey = "PER_35000000000"
+// SmartContract Agrupador de funciones
+type SmartContract struct {
+	isModeTest bool
+}
 
 var logger = shim.NewLogger("rut-afipcc")
+var FIND_VERBOSE_REGEXP = *regexp.MustCompile(`^(.*)(\?v)$`)
 
-func (s *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
+func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) peer.Response {
 	log.SetPrefix("LOG: ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
-	s.debug = true
 
-	if err := s.setContext(stub); err != (Response{}) {
-		return s.peerResponse(err)
+	var ctx Ctx
+	var r Response
+	if ctx, r = setContext(APIstub, s.isModeTest); r.isError() {
+		return r.peerResponse(ctx)
 	}
-	return s.peerResponse(s.setInitImpuestos(stub))
+	r = s.setInitImpuestos(APIstub)
+	return r.peerResponse(ctx)
 }
 
 func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Response {
-	if err := s.setContext(APIstub); err != (Response{}) {
-		return s.peerResponse(err)
+	var ctx Ctx
+	var r Response
+	if ctx, r = setContext(APIstub, s.isModeTest); r.isError() {
+		return r.peerResponse(ctx)
 	}
 	log.Print("=================================================================")
-	log.Print("TxID [" + s.txid + "]")
-	log.Print("Function [" + s.function + "] args [" + strings.Join(s.args, " ") + "]")
+	log.Print("TxID [" + ctx.txid + "]")
+	log.Print("Function [" + ctx.function + "] args [" + strings.Join(ctx.args, " ") + "]")
 
-	var r Response
-	switch s.function {
+	if !s.isModeTest {
+		switch ctx.function {
+		case "putPersona",
+			"putPersonaProto",
+			"putPersonas":
+			if err := checkClientID(ctx); err.isError() {
+				return err.peerResponse(ctx)
+			}
+		}
+	}
+	switch ctx.function {
 	case "putPersona":
-		r = s.putPersona(APIstub, s.args, JSON)
+		r = s.putPersona(APIstub, ctx.args, JSON)
 	case "putPersonaProto":
-		r = s.putPersona(APIstub, s.args, PROTOBUF)
+		r = s.putPersona(APIstub, ctx.args, PROTOBUF)
 	case "putPersonas":
-		r = s.putPersonas(APIstub, s.args, JSON)
+		r = s.putPersonas(APIstub, ctx.args, JSON)
 	case "putPersonasProto":
-		r = s.putPersonas(APIstub, s.args, PROTOBUF)
+		r = s.putPersonas(APIstub, ctx.args, PROTOBUF)
 	case "putParamImpuestos":
-		r = s.putParamImpuestos(APIstub, s.args)
+		r = s.putParamImpuestos(APIstub, ctx.args)
 	case "createTxConfirmable":
-		r = s.createTxConfirmable(APIstub, s.args)
+		r = s.createTxConfirmable(APIstub, ctx.args)
 	case "responseTxConfirmable":
-		r = s.responseTxConfirmable(APIstub, s.args)
+		r = s.responseTxConfirmable(APIstub, ctx.args)
 	case "delPersona":
-		r = s.delPersona(APIstub, s.args)
+		r = s.delPersona(APIstub, ctx.args)
 	case "delPersonasByRange":
-		r = s.delPersonasByRange(APIstub, s.args)
+		r = s.delPersonasByRange(APIstub, ctx.args)
 	case "deleteAll":
 		r = s.deleteByKeyRange(APIstub, []string{"", ""})
 	case "deleteByKeyRange":
-		r = s.deleteByKeyRange(APIstub, s.args)
+		r = s.deleteByKeyRange(APIstub, ctx.args)
 	case "delParamImpuestosAll":
 		r = s.delParamImpuestosAll(APIstub)
 	case "putPersonaImpuestos":
-		r = s.putPersonaImpuestos(APIstub, s.args)
+		r = s.putPersonaImpuestos(APIstub, ctx.args)
 	case "queryPersona":
-		return s.queryPersona(APIstub, s.args)
+		r = s.queryPersona(APIstub, ctx.args)
 	case "queryPersonasByRange":
-		return s.queryPersonasByRange(APIstub, s.args)
+		r = s.queryPersonasByRange(APIstub, ctx.args)
 	case "queryPersonaImpuestos":
-		return s.queryPersonaImpuestos(APIstub, s.args)
+		r = s.queryPersonaImpuestos(APIstub, ctx.args)
 	case "queryAllPersona":
-		return s.queryAllPersona(APIstub)
+		r = s.queryAllPersona(APIstub)
 	case "queryByKey":
-		return s.queryByKey(APIstub, s.args)
+		r = s.queryByKey(APIstub, ctx.args)
 	case "queryByKeyRange":
-		return s.queryByKeyRange(APIstub, s.args)
+		r = s.queryByKeyRange(APIstub, ctx.args)
 	case "queryParamImpuestos":
-		return s.queryParamImpuestos(APIstub)
+		r = s.queryParamImpuestos(APIstub)
 	case "queryTxConfirmables":
-		return s.queryTxConfirmables(APIstub, s.args)
+		r = s.queryTxConfirmables(APIstub, ctx.args)
 	case "queryHistory":
-		return s.queryHistory(APIstub, s.args)
+		r = s.queryHistory(APIstub, ctx.args)
 	default:
-		r = clientErrorResponse("Invalid Smart Contract function name " + s.function)
+		r = clientErrorResponse("Invalid Smart Contract function name " + ctx.function)
 	}
-	return s.peerResponse(r)
+	return r.peerResponse(ctx)
 }
 
-func (s *SmartContract) setContext(APIstub shim.ChaincodeStubInterface) Response {
-	s.txid = APIstub.GetTxID()
-	s.function, s.args = APIstub.GetFunctionAndParameters()
+func setContext(APIstub shim.ChaincodeStubInterface, isModeTest bool) (Ctx, Response) {
+	var ctx Ctx
+	ctx.txid = APIstub.GetTxID()
+	ctx.function, ctx.args = APIstub.GetFunctionAndParameters()
 	// Check for verbose mode
-	regex := *regexp.MustCompile(`^(.*)(\?v)$`)
-	res := regex.FindStringSubmatch(s.function)
+	res := FIND_VERBOSE_REGEXP.FindStringSubmatch(ctx.function)
 	if len(res) != 0 {
-		s.function = res[1]
-		s.verboseMode = true
+		ctx.function = res[1]
+		ctx.verboseMode = true
 	} else {
-		s.verboseMode = false
+		ctx.verboseMode = false
 	}
-	if !s.isModeTest {
+	if !isModeTest {
 		// Get the client ID object
 		clientIdentity, err := cid.New(APIstub)
 		if err != nil {
-			return systemErrorResponse("Error at Get the client ID object [cid.New(APIstub)]")
+			return Ctx{}, systemErrorResponse("Error at Get the client ID object [cid.New(APIstub)]")
 		}
 		mspid, err := clientIdentity.GetMSPID()
 		if err != nil {
-			return systemErrorResponse("Error at Get the client ID object [GetMSPID()]")
+			return Ctx{}, systemErrorResponse("Error at Get the client ID object [GetMSPID()]")
 		}
-		s.mspid = mspid
+		ctx.mspid = mspid
 
 		x509Certificate, err := clientIdentity.GetX509Certificate()
 		if err != nil {
-			return systemErrorResponse("Error at Get the x509Certificate object [GetX509Certificate()]")
+			return Ctx{}, systemErrorResponse("Error at Get the x509Certificate object [GetX509Certificate()]")
 		}
-		s.certSubject = x509Certificate.Subject.String()
-		s.certIssuer = x509Certificate.Issuer.String()
+		ctx.certSubject = x509Certificate.Subject.String()
+		ctx.certIssuer = x509Certificate.Issuer.String()
 	}
-	return Response{}
+	return ctx, Response{}
 }
 
 func (s *SmartContract) initLedger(stub shim.ChaincodeStubInterface) peer.Response {
 	fmt.Printf("Ledger inicializado")
 	return shim.Success(nil)
+}
+
+func checkClientID(ctx Ctx) Response {
+	if ctx.mspid != "AFIP" {
+		return forbiddenErrorResponse("mspid [" + ctx.mspid + "] - La funcion [" + ctx.function + "] solo puede ser invocada por AFIP")
+	}
+	return Response{}
 }
 
 // main function starts up the chaincode in the container during instantiate

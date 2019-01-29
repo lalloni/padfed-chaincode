@@ -7,18 +7,17 @@ import (
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
 )
 
-func (s *SmartContract) queryHistory(APIstub shim.ChaincodeStubInterface, args []string) peer.Response {
+func (s *SmartContract) queryHistory(APIstub shim.ChaincodeStubInterface, args []string) Response {
 	if len(args) != 1 {
-		return s.peerResponse(clientErrorResponse("Número incorrecto de parámetros. Se esperaba 1 con {asset_key}"))
+		return clientErrorResponse("Número incorrecto de parámetros. Se esperaba 1 con {asset_key}")
 	}
 	pKey := args[0]
 	resultsIterator, err := APIstub.GetHistoryForKey(pKey)
 	if err != nil {
 		log.Println("Error al leer historia")
-		return s.peerResponse(systemErrorResponse(err.Error()))
+		return systemErrorResponse(err.Error())
 	}
 	defer resultsIterator.Close()
 
@@ -29,7 +28,7 @@ func (s *SmartContract) queryHistory(APIstub shim.ChaincodeStubInterface, args [
 	for resultsIterator.HasNext() {
 		response, err := resultsIterator.Next()
 		if err != nil {
-			return s.peerResponse(systemErrorResponse(err.Error()))
+			return systemErrorResponse(err.Error())
 		}
 		count++
 
@@ -72,5 +71,5 @@ func (s *SmartContract) queryHistory(APIstub shim.ChaincodeStubInterface, args [
 
 	log.Println("- getHistory returning:" + buffer.String())
 
-	return shim.Success(buffer.Bytes())
+	return successResponseWithBuffer(&buffer)
 }

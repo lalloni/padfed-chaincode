@@ -22,6 +22,8 @@ var (
 	impuestoSchemaLoader = gojsonschema.NewStringLoader(ImpuestoSchema)
 )
 
+var CHECK_DATE_REGEXP = *regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
+
 func getCUITArgs(args []string) (uint64, error) {
 	var cuit int64
 	var err error
@@ -93,7 +95,7 @@ func argToPersonas(personasAsBytes []byte, personas *Personas, fType formatType)
 
 	for _, p := range personas.GetPersonas() {
 		err := validatePersona(p)
-		if err != (Response{}) {
+		if err.isError() {
 			return err
 		}
 	}
@@ -201,8 +203,7 @@ func findTXConfirmable(APIstub shim.ChaincodeStubInterface, idOrganismo int, idT
 
 func validateDate(dateStr string) error {
 	if dateStr != "" {
-		regex := *regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
-		res := regex.FindStringSubmatch(dateStr)
+		res := CHECK_DATE_REGEXP.FindStringSubmatch(dateStr)
 		if len(res) != 4 {
 			return fmt.Errorf("Fecha invalida %s", dateStr)
 		}

@@ -13,22 +13,17 @@ func (s *SmartContract) putPersona(APIstub shim.ChaincodeStubInterface, args []s
 	if len(args) != 2 {
 		return clientErrorResponse("Numero incorrecto de parametros. Se esperan 2 parametros {CUIT, JSON/PROTOBUF}")
 	}
-	isNotModeTest := !s.isModeTest
+	//time.Sleep(25 * time.Second)
 	var cuit uint64
 	var err error
 	var err_R Response
 	cuitStr := args[0]
-	if isNotModeTest {
-		if err_R = s.checkClientID(); err_R != (Response{}) {
-			return err_R
-		}
-	}
 	log.Print("cuit recibido [" + cuitStr + "]")
 	if cuit, err = getCUITArgs(args); err != nil {
 		return clientErrorResponse("CUIT [" + cuitStr + "] invalido")
 	}
 	var newPersona Persona
-	if err_R = argToPersona([]byte(args[1]), &newPersona, fType); err_R != (Response{}) {
+	if err_R = argToPersona([]byte(args[1]), &newPersona, fType); err_R.isError() {
 		return err_R
 	}
 	return s.savePersona(APIstub, cuit, &newPersona)
@@ -38,14 +33,8 @@ func (s *SmartContract) putPersonas(APIstub shim.ChaincodeStubInterface, args []
 	if len(args) != 1 {
 		return clientErrorResponse("Numero incorrecto de parametros. Se esperan 1 parametros {JSON/PROTOBUF}")
 	}
-	isNotModeTest := !s.isModeTest
-	if isNotModeTest {
-		if err := s.checkClientID(); err != (Response{}) {
-			return err
-		}
-	}
 	var newPersonas Personas
-	if err := argToPersonas([]byte(args[0]), &newPersonas, fType); err != (Response{}) {
+	if err := argToPersonas([]byte(args[0]), &newPersonas, fType); err.isError() {
 		return err
 	}
 
@@ -61,13 +50,6 @@ func (s *SmartContract) putPersonas(APIstub shim.ChaincodeStubInterface, args []
 	}
 	log.Println(strconv.Itoa(rows) + " personas processed !!!")
 	return successResponse("Ok", rows)
-}
-
-func (s *SmartContract) checkClientID() Response {
-	if s.mspid != "AFIP" {
-		return forbiddenErrorResponse("mspid [" + s.mspid + "] - La funcion putPersona solo puede ser invocada por AFIP")
-	}
-	return Response{}
 }
 
 func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit uint64, newPersona *Persona) Response {
@@ -192,7 +174,7 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 
 	key := getPersonaKey(newPersona)
 
-	if exist, err := keyExists(APIstub, cuitStr); err != (Response{}) {
+	if exist, err := keyExists(APIstub, cuitStr); err.isError() {
 		return err
 	} else if !exist {
 		if tipoPersonaNull {
@@ -217,7 +199,7 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		}
 	}
 
-	if rows, err := s.commitPersonaImpuestos(APIstub, cuitStr, impuestos); err != (Response{}) {
+	if rows, err := s.commitPersonaImpuestos(APIstub, cuitStr, impuestos); err.isError() {
 		log.Println(err.Msg)
 		return err
 	} else {

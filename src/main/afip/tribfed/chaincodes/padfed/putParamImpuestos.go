@@ -26,7 +26,7 @@ func (s *SmartContract) putParamImpuestos(APIstub shim.ChaincodeStubInterface, a
 			return clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrganismo))+"] debe ser un entero igual a 1:AFIP o entre 900 y 999", count)
 		}
 
-		if err := validateIdImpuesto(imp.IDImpuesto); err != (Response{}) {
+		if err := validateIdImpuesto(imp.IDImpuesto); err.isError() {
 			err.WrongItem = count
 			return err
 		}
@@ -52,7 +52,7 @@ func validateIdImpuesto(idImpuesto int32) Response {
 
 // existsIdImpuesto verifica que exista un asset "IMP_<idImpuesot>"
 func existsIdImpuesto(APIstub shim.ChaincodeStubInterface, idImpuesto int32) (bool, Response) {
-	if exists, err := keyExists(APIstub, getParamImpuestoKey(idImpuesto)); err != (Response{}) {
+	if exists, err := keyExists(APIstub, getParamImpuestoKey(idImpuesto)); err.isError() {
 		return false, err
 	} else {
 		return exists, Response{}
