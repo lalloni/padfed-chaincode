@@ -13,7 +13,6 @@ func (s *SmartContract) putPersona(APIstub shim.ChaincodeStubInterface, args []s
 	if len(args) != 2 {
 		return clientErrorResponse("Numero incorrecto de parametros. Se esperan 2 parametros {CUIT, JSON/PROTOBUF}")
 	}
-	//time.Sleep(25 * time.Second)
 	var cuit uint64
 	var err error
 	var err_R Response
