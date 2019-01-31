@@ -3,10 +3,13 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"regexp"
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
+
+var CHECK_PERIODO_FISCAL_REGEXP = *regexp.MustCompile(`^(19\d{2}|20[0-2]\d|2030)(0\d|1[0-2])$`)
 
 func (s *SmartContract) putPersonaImpuestos(APIstub shim.ChaincodeStubInterface, args []string) Response {
 
@@ -65,10 +68,11 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 		if err := validateDate(imp.FechaInscripcion); err != nil {
 			return 0, clientErrorResponse("fechaInscripcion [" + imp.FechaInscripcion + "]: " + err.Error())
 		}
-		if imp.Periodo < 190000 || imp.Periodo > 205012 {
-			return 0, clientErrorResponse("periodo ["+strconv.Itoa(int(imp.Periodo))+"] must be an integer between 190000 and 205012", count)
+		periodoString := strconv.FormatInt(int64(imp.Periodo), 10)
+		res := CHECK_PERIODO_FISCAL_REGEXP.FindStringSubmatch(periodoString)
+		if len(res) != 3 {
+			return 0, clientErrorResponse("periodo ["+strconv.Itoa(int(imp.Periodo))+"] debe tener formato YYYY00 o YYYYMM con YYYY entre 1900 y 2030", count)
 		}
-
 		key := "PER_" + cuit + "_IMP_" + strconv.Itoa(int(imp.IDImpuesto))
 		if err := APIstub.PutState(key, impuestoAsBytes); err != nil {
 			return 0, systemErrorResponse("Error putting key ["+key+"]: "+err.Error(), count)
