@@ -139,6 +139,9 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) peer.Response 
 	if ctx, r = setContext(APIstub, s.isModeTest); r.isError() {
 		return r.peerResponse(ctx)
 	}
+	if r = checkClientID(ctx); r.isError() {
+		return r.peerResponse(ctx)
+	}
 	r = s.setInitImpuestos(APIstub)
 	return r.peerResponse(ctx)
 }

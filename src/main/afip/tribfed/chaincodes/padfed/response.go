@@ -18,7 +18,7 @@ const (
 
 type Response struct {
 	Status      int32        `json:"status"`
-	Buffer      bytes.Buffer `json:"buffer,omitempty"`
+	Buffer      bytes.Buffer `json:"-"`
 	Msg         string       `json:"msg,omitempty"`
 	Txid        string       `json:"txid"`
 	Function    string       `json:"function,omitempty"`
