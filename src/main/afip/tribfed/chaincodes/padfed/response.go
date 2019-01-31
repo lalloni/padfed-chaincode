@@ -70,7 +70,6 @@ func (response *Response) peerResponse(ctx Ctx) peer.Response {
 	if response.isOk() && response.Buffer.Len() > 0 {
 		return shim.Success(response.Buffer.Bytes())
 	} else {
-		response.Buffer.Reset()
 		response.Txid = ctx.txid
 		if ctx.verboseMode || response.isError() {
 			response.Function = ctx.function
