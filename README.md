@@ -1,24 +1,16 @@
-En este proyecto se mantiene el codigo fuente del chaincode **padfed_cc** escrito en GOLANG
+Este proyecto mantiene el codigo fuente del chaincode (SmartContract) **padfedcc** escrito en GOLANG
 
-# Redmine
+- **Redmine** https://redmine-blockchain.afip.gob.ar/projects/padfed-cc
 
-https://redmine-blockchain.afip.gob.ar/projects/padfed-cc
+# Maven
 
-# Codigo fuente del chaincode
+El pom.xml incluye las siguientes funcionalidades:
 
-En esta seccion exlicar temas referidos al codigo funete
+- Replicación de código fuente a directorio $GO_HOME o $HOME/GO segun entorno configurado
 
-# Gestion del proyecto con maven
+- Empaquetado de fuentes y vendor deps en un jar para ser publicado en Nexus
 
-En esta primera versión el pom.xml incluye las siguientes funcionalidades:
-
-    - Replicación de código fuente a directorio $GO_HOME o $HOME/GO segun entorno configurado
-
-    - Empaquetado de fuentes y vendor deps para publicar en Nexus
-
-Ejemplo:
-
-    mvn package --> Genera empaquetado (aun no utilizado) y copia fuentes .go y vendor deps en $HOME/go o $GO_HOME
-
-    En el directorio de destino generá un directorio versionado según la version indicada en el pom.xml asignada para mantener distintas versiones del chaincode
+Ejecucion | Acción
+--- | ---
+mvn package | Genera un jar y copia los fuentes .go y vendor en $HOME/go o $GO_HOME. En el directorio de destino generá un directorio versionado según la version indicada en el pom.xml.
 
