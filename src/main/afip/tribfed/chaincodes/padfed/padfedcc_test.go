@@ -14,30 +14,30 @@ import (
 )
 
 func getPesonaJSON(cuit uint64) string {
-	var tipoPersona = "F"
+	var persona = "F"
 	var razonSocial = ""
 	var nombreApellido = `"nombre": "Pepe", "apellido": "Sanchez",`
-	var idFormaJuridica = "0"
-	var documento = `"documento": "27123456",`
+	var formaJuridica = "0"
+	var doc = `"doc": "27123456",`
 	var tipoDoc = "1"
-	var fechaNacimiento = `"fechaNacimiento":"1928-11-17",`
+	var nacimiento = `"nacimiento":"1928-11-17",`
 	if cuit >= 30000000000 {
-		tipoPersona = "J"
+		persona = "J"
 		razonSocial = `"razonSocial":"THE BIRTH OF MARIA CONCETTA",`
-		idFormaJuridica = "1"
+		formaJuridica = "1"
 		nombreApellido = ""
 		tipoDoc = "0"
-		documento = ""
-		fechaNacimiento = ""
+		doc = ""
+		nacimiento = ""
 	}
 	var personaJSON = `{
-	"cuit":$cuit,"tipoPersona":"$tipoPersona","estadoCuit":"A",$razonSocial $nombreApellido
-	"idFormaJuridica":$idFormaJuridica, "tipoDoc": $tipoDoc, $documento "fechaInscripcion":"1992-10-20","mesCierre":12, $fechaNacimiento
+	"cuit":$cuit,"persona":"$persona","estado":"A",$razonSocial $nombreApellido
+	"formaJuridica":$formaJuridica, "tipoDoc": $tipoDoc, $doc "inscripcion":"1992-10-20","mesCierre":12, $nacimiento
 	"impuestos":[
-		{"idImpuesto":30,"estado":"AC","periodo":199912},
-		{"idImpuesto":217,"estado":"AC","periodo":199605},
-		{"idImpuesto":301,"estado":"AC","periodo":199407},
-		{"idImpuesto":103,"estado":"AC","periodo":201112}
+		{"impuesto":30,"estado":"AC","periodo":199912},
+		{"impuesto":217,"estado":"AC","periodo":199605},
+		{"impuesto":301,"estado":"AC","periodo":199407},
+		{"impuesto":103,"estado":"AC","periodo":201112}
 	],
 	"actividades":[
 		{"codNomenclador":883,"idActividad":941100,"orden":1,"estado":"AC","periodo":201311}
@@ -53,13 +53,13 @@ func getPesonaJSON(cuit uint64) string {
 
 	cuitStr := strconv.FormatUint(cuit, 10)
 	personaJSON = strings.Replace(personaJSON, "$cuit", cuitStr, -1)
-	personaJSON = strings.Replace(personaJSON, "$tipoPersona", tipoPersona, -1)
+	personaJSON = strings.Replace(personaJSON, "$persona", persona, -1)
 	personaJSON = strings.Replace(personaJSON, "$razonSocial", razonSocial, -1)
 	personaJSON = strings.Replace(personaJSON, "$nombreApellido", nombreApellido, -1)
-	personaJSON = strings.Replace(personaJSON, "$idFormaJuridica", idFormaJuridica, -1)
+	personaJSON = strings.Replace(personaJSON, "$formaJuridica", formaJuridica, -1)
 	personaJSON = strings.Replace(personaJSON, "$tipoDoc", tipoDoc, -1)
-	personaJSON = strings.Replace(personaJSON, "$documento", documento, -1)
-	personaJSON = strings.Replace(personaJSON, "$fechaNacimiento", fechaNacimiento, -1)
+	personaJSON = strings.Replace(personaJSON, "$doc", doc, -1)
+	personaJSON = strings.Replace(personaJSON, "$nacimiento", nacimiento, -1)
 	return personaJSON
 }
 
@@ -88,7 +88,7 @@ func TestCuit(t *testing.T) {
 	}
 }
 
-func TestValidImpuestosJSON(t *testing.T) {
+func TestValimpuestosJSON(t *testing.T) {
 	const cuit = 30679638943
 	var impuestos Impuestos
 	var personaJSON = getPesonaJSON(cuit)
@@ -203,7 +203,7 @@ func TestPutPersonaProto(t *testing.T) {
 func TestPutPersonas(t *testing.T) {
 	stub := setInitTests(t)
 
-	var pJSON = `{"personas":[{"cuit":20066675573,"apellido":"GES","nombre":"THOMAS MICHAEL","tipoPersona":"F","estadoCuit":"A","tipoDoc":1,"documento":"6667557","sexo":"M","fechaNacimiento":"1928-11-17","impuestos":[{"idImpuesto":11,"estado":"BD","periodo":199901},{"idImpuesto":20,"estado":"BD","periodo":200907},{"idImpuesto":21,"estado":"BD","periodo":200907},{"idImpuesto":180,"estado":"AC","periodo":199807}],"categorias":[{"idCategoria":"11","estado":"BD","idImpuesto":20,"periodo":200907},{"idCategoria":"11","estado":"BD","idImpuesto":21,"periodo":200907}],"actividades":[{"codNomenclador":883,"idActividad":692000,"orden":1,"estado":"AC","periodo":201311}],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":2,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"HIPOLITO IRIGOYEN","numero":"57"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":9,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"SAN MARTIN ESQ IRIGO","numero":"8"}]},{"cuit":20066758193,"apellido":"RACCONTARE","nombre":"GUSTAVO FABIAN","tipoPersona":"F","estadoCuit":"A","tipoDoc":1,"documento":"6675819","sexo":"M","fechaNacimiento":"1933-01-22","impuestos":[{"idImpuesto":11,"estado":"AC","periodo":190101},{"idImpuesto":30,"estado":"AC","periodo":200408},{"idImpuesto":32,"estado":"BD","periodo":200408},{"idImpuesto":180,"estado":"AC","periodo":199105},{"idImpuesto":301,"estado":"AC","periodo":199407},{"idImpuesto":308,"estado":"AC","periodo":196501}],"categorias":[{"idCategoria":"501","estado":"AC","idImpuesto":308,"periodo":200703}],"actividadList":[],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":6,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"RIVADAVIA","numero":"572"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":1,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"URUGUAY","numero":"287"}]}]}`
+	var pJSON = `{"personas":[{"cuit":20066675573,"apellido":"GES","nombre":"THOMAS MICHAEL","persona":"F","estado":"A","tipoDoc":1,"doc":"6667557","sexo":"M","nacimiento":"1928-11-17","impuestos":[{"impuesto":11,"estado":"BD","periodo":199901},{"impuesto":20,"estado":"BD","periodo":200907},{"impuesto":21,"estado":"BD","periodo":200907},{"impuesto":180,"estado":"AC","periodo":199807}],"categorias":[{"idCategoria":"11","estado":"BD","impuesto":20,"periodo":200907},{"idCategoria":"11","estado":"BD","impuesto":21,"periodo":200907}],"actividades":[{"codNomenclador":883,"idActividad":692000,"orden":1,"estado":"AC","periodo":201311}],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":2,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"HIPOLITO IRIGOYEN","numero":"57"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":9,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"SAN MARTIN ESQ IRIGO","numero":"8"}]},{"cuit":20066758193,"apellido":"RACCONTARE","nombre":"GUSTAVO FABIAN","persona":"F","estado":"A","tipoDoc":1,"doc":"6675819","sexo":"M","nacimiento":"1933-01-22","impuestos":[{"impuesto":11,"estado":"AC","periodo":190101},{"impuesto":30,"estado":"AC","periodo":200408},{"impuesto":32,"estado":"BD","periodo":200408},{"impuesto":180,"estado":"AC","periodo":199105},{"impuesto":301,"estado":"AC","periodo":199407},{"impuesto":308,"estado":"AC","periodo":196501}],"categorias":[{"idCategoria":"501","estado":"AC","impuesto":308,"periodo":200703}],"actividadList":[],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":6,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"RIVADAVIA","numero":"572"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":1,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"URUGUAY","numero":"287"}]}]}`
 	res := stub.MockInvoke("1", [][]byte{[]byte("putPersonas"), []byte(pJSON)})
 	if res.Status != shim.OK {
 		fmt.Println("putPersonas", string(res.Message))
@@ -265,7 +265,7 @@ func TestPutPersonaImpuestos(t *testing.T) {
 		t.FailNow()
 	}
 
-	impuestosJSON := `{"impuestos":[{"idImpuesto":30,"estado":"AC","periodo":199912},{"idImpuesto":31,"idOrg":901,"estado":"AC","periodo":199912}]}`
+	impuestosJSON := `{"impuestos":[{"impuesto":30,"estado":"AC","periodo":199912},{"impuesto":31,"idOrg":901,"estado":"AC","periodo":199912}]}`
 
 	res = stub.MockInvoke("1", [][]byte{[]byte("putPersonaImpuestos"), []byte("30679638943"), []byte(impuestosJSON)})
 	if res.Status != shim.OK {
@@ -291,7 +291,7 @@ func TestCreateTxConfirmable(t *testing.T) {
 		[]byte("2"),
 		[]byte("1"),
 		[]byte("Impuesto"),
-		[]byte(`{"idImpuesto":217,"estado":"B","periodo":199605}`)})
+		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
 	if res.Status != shim.OK {
 		fmt.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()
@@ -305,7 +305,7 @@ func TestCreateTxConfirmable(t *testing.T) {
 		[]byte("2"),
 		[]byte("1"),
 		[]byte("Impuesto"),
-		[]byte(`{"idImpuesto":217,"estado":"B","periodo":199605}`)})
+		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
 	if res.Status != shim.OK {
 		fmt.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()
@@ -329,7 +329,7 @@ func TestResponseTxConfirmable(t *testing.T) {
 		[]byte("2"),
 		[]byte("1"),
 		[]byte("Impuesto"),
-		[]byte(`{"idImpuesto":217,"estado":"B","periodo":199605}`)})
+		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
 	if res.Status != shim.OK {
 		fmt.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()
@@ -366,7 +366,7 @@ func TestResponseTxConfirmable(t *testing.T) {
 		[]byte("2"),
 		[]byte("1"),
 		[]byte("Impuesto"),
-		[]byte(`{"idImpuesto":217,"estado":"B","periodo":199605}`)})
+		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
 	if res.Status != shim.OK {
 		fmt.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()
@@ -413,7 +413,7 @@ func TestQueryTxConfirmables(t *testing.T) {
 		[]byte("2"),
 		[]byte("900"),
 		[]byte("Impuesto"),
-		[]byte(`{"idImpuesto":217,"estado":"B","periodo":199605}`)})
+		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
 	if res.Status != shim.OK {
 		log.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()

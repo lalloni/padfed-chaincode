@@ -109,22 +109,22 @@ func validatePersona(persona *Persona) Response {
 		return clientErrorResponse("cuit [" + cuitStr + "] invalida")
 	}
 	if err := validateDate(persona.FechaNacimiento); err != nil {
-		return clientErrorResponse("fechaNacimiento [" + persona.FechaNacimiento + "] invalida: " + err.Error())
+		return clientErrorResponse("nacimiento [" + persona.FechaNacimiento + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaInscripcion); err != nil {
-		return clientErrorResponse("fechaInscripcion [" + persona.FechaInscripcion + "] invalida: " + err.Error())
+		return clientErrorResponse("inscripcion [" + persona.FechaInscripcion + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaCierre); err != nil {
 		return clientErrorResponse("fechaCierre [" + persona.FechaCierre + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaFallecimiento); err != nil {
-		return clientErrorResponse("fechaFallecimiento [" + persona.FechaFallecimiento + "] invalida: " + err.Error())
+		return clientErrorResponse("fallecimiento [" + persona.FechaFallecimiento + "] invalida: " + err.Error())
 	}
 	return err
 }
 
 /*
-hasDuplicatedImpuestos Chequea si en array impuestos existen impuestos con el mismo idImpuesto.
+hasDuplicatedImpuestos Chequea si en array impuestos existen impuestos con el mismo impuesto.
 return
  - true si existen impuestos duplicados y el primer impuesto que se repite.
  - false si no existen impuestos duplicados.
@@ -147,9 +147,9 @@ func getPersonaKey(persona *Persona) string {
 	return "PER_" + cuitStr
 }
 
-func getImpuestoKeyByCuitId(cuit uint64, idImpuesto int32) string {
+func getImpuestoKeyByCuitId(cuit uint64, impuesto int32) string {
 	cuitStr := strconv.FormatUint(cuit, 10)
-	impStr := strconv.Itoa(int(idImpuesto))
+	impStr := strconv.Itoa(int(impuesto))
 	return "PER_" + cuitStr + "_IMP_" + impStr
 }
 

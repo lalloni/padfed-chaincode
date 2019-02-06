@@ -2,15 +2,15 @@ package main
 
 const ImpuestoSchema = `{
     "type": "object",
-    "required": ["idImpuesto"],
+    "required": ["impuesto"],
     "properties": {
-        "idImpuesto": {
+        "impuesto": {
             "type": "number"
         },
         "idOrg": {
             "type": "number"
         },
-        "fechaInscripcion": {
+        "inscripcion": {
             "type": "string"
         },
         "periodo": {
@@ -20,6 +20,15 @@ const ImpuestoSchema = `{
             "type": "string"
         },
         "idTxc": {
+            "type": "number"
+        },
+        "ds": {
+            "type": "string"
+        },
+        "motivo": {
+            "type": "string"
+        },
+        "dia": {
             "type": "number"
         }
     }
@@ -111,19 +120,19 @@ const PersonaSchema = `{
         "razonSocial": {
             "type": "string"
         },
-        "tipoPersona": {
+        "persona": {
             "type": "string"
         },
-        "estadoCuit": {
+        "estado": {
             "type": "string"
         },
-        "idFormaJuridica": {
+        "formaJuridica": {
             "type": "number"
         },
         "tipoDoc": {
             "type": "number"
         },
-        "documento": {
+        "doc": {
             "type": "string"
         },
         "sexo": {
@@ -132,13 +141,13 @@ const PersonaSchema = `{
         "mesCierre": {
             "type": "number"
         },
-        "fechaNacimiento": {
+        "nacimiento": {
             "type": "string"
         },
-        "fechaFallecimiento": {
+        "fallecimiento": {
             "type": "string"
         },
-        "fechaInscripcion": {
+        "inscripcion": {
             "type": "string"
         },
         "fechaCierre": {
@@ -146,6 +155,18 @@ const PersonaSchema = `{
         },
         "nuevaCuit": {
             "type": "number"
+        },
+        "materno": {
+            "type": "string"
+        },
+        "pais": {
+            "type": "string"
+        },
+        "ch": {
+            "type": "string"
+        },
+        "ds": {
+            "type": "string"
         },
         "impuestos": {
             "type": "array",

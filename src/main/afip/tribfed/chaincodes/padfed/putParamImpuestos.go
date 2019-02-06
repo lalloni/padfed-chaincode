@@ -43,22 +43,22 @@ func (s *SmartContract) putParamImpuestos(APIstub shim.ChaincodeStubInterface, a
 }
 
 // validateIdImpuesto valida el codigo de impuesto sin acceder al State
-func validateIdImpuesto(idImpuesto int32) Response {
-	if !(idImpuesto >= 1 && idImpuesto <= 9999) {
-		return clientErrorResponse("idImpuesto [" + strconv.Itoa(int(idImpuesto)) + "] debe ser un entero entre 1 y 9999")
+func validateIdImpuesto(impuesto int32) Response {
+	if !(impuesto >= 1 && impuesto <= 9999) {
+		return clientErrorResponse("impuesto [" + strconv.Itoa(int(impuesto)) + "] debe ser un entero entre 1 y 9999")
 	}
 	return Response{}
 }
 
 // existsIdImpuesto verifica que exista un asset "IMP_<idImpuesot>"
-func existsIdImpuesto(APIstub shim.ChaincodeStubInterface, idImpuesto int32) (bool, Response) {
-	if exists, err := keyExists(APIstub, getParamImpuestoKey(idImpuesto)); err.isError() {
+func existsIdImpuesto(APIstub shim.ChaincodeStubInterface, impuesto int32) (bool, Response) {
+	if exists, err := keyExists(APIstub, getParamImpuestoKey(impuesto)); err.isError() {
 		return false, err
 	} else {
 		return exists, Response{}
 	}
 }
 
-func getParamImpuestoKey(idImpuesto int32) string {
-	return "IMP_" + strconv.Itoa(int(idImpuesto))
+func getParamImpuestoKey(impuesto int32) string {
+	return "IMP_" + strconv.Itoa(int(impuesto))
 }

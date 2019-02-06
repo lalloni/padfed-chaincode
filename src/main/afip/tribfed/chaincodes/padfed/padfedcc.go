@@ -27,19 +27,23 @@ type Persona struct {
 	Nombre             string      `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
 	Apellido           string      `protobuf:"bytes,3,opt,name=apellido,proto3" json:"apellido,omitempty"`
 	RazonSocial        string      `protobuf:"bytes,4,opt,name=razon_social,proto3" json:"razonSocial,omitempty"`
-	TipoPersona        string      `protobuf:"bytes,5,name=tipo_persona,proto3" json:"tipoPersona,omitempty"`
-	EstadoCUIT         string      `protobuf:"bytes,6,name=estado_cuit,proto3" json:"estadoCuit,omitempty"`
-	IDFormaJuridica    int32       `protobuf:"varint,7,opt,name=tipo_persona,proto3" json:"idFormaJuridica,omitempty"`
+	TipoPersona        string      `protobuf:"bytes,5,name=persona,proto3" json:"persona,omitempty"`
+	EstadoCUIT         string      `protobuf:"bytes,6,name=estado,proto3" json:"estado,omitempty"`
+	IDFormaJuridica    int32       `protobuf:"varint,7,opt,name=forma_juridica,proto3" json:"formaJuridica,omitempty"`
 	TipoDoc            int32       `protobuf:"varint,8,opt,name=tipo_doc,proto3" json:"tipoDoc,omitempty"`
-	Documento          string      `protobuf:"bytes,9,opt,name=documento,proto3" json:"documento,omitempty"`
+	Documento          string      `protobuf:"bytes,9,opt,name=doc,proto3" json:"doc,omitempty"`
 	Sexo               string      `protobuf:"bytes,10,opt,name=sexo,proto3" json:"sexo,omitempty"`
 	MesCierre          int32       `protobuf:"varint,11,opt,name=mes_cierre,proto3" json:"mesCierre,omitempty"`
-	FechaNacimiento    string      `protobuf:"bytes,12,opt,name=fecha_nacimiento,proto3" json:"fechaNacimiento,omitempty"`
-	FechaFallecimiento string      `protobuf:"bytes,13,opt,name=fecha_fallecimiento,proto3" json:"fechaFallecimiento,omitempty"`
-	FechaInscripcion   string      `protobuf:"bytes,14,opt,name=fecha_inscripcion,proto3" json:"fechaInscripcion,omitempty"`
+	FechaNacimiento    string      `protobuf:"bytes,12,opt,name=nacimiento,proto3" json:"nacimiento,omitempty"`
+	FechaFallecimiento string      `protobuf:"bytes,13,opt,name=fallecimiento,proto3" json:"fallecimiento,omitempty"`
+	FechaInscripcion   string      `protobuf:"bytes,14,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
 	FechaCierre        string      `protobuf:"bytes,15,opt,name=fecha_cierre,proto3" json:"fechaCierre,omitempty"`
 	NuevaCUIT          uint64      `protobuf:"varint,16,opt,name=nueva_cuit,proto3" json:"nuevaCuit,omitempty"`
-	Impuestos          []*Impuesto `protobuf:"group,17,rep,name=impuestos,proto3" json:"impuestos,omitempty"`
+	Materno            string      `protobuf:"bytes,17,opt,name=materno,proto3" json:"materno,omitempty"`
+	Pais               string      `protobuf:"bytes,18,opt,name=pais,proto3" json:"pais,omitempty"`
+	CH                 string      `protobuf:"bytes,19,opt,name=ch,proto3" json:"ch,omitempty"`
+	DS                 string      `protobuf:"bytes,20,opt,name=ds,proto3" json:"ds,omitempty"`
+	Impuestos          []*Impuesto `protobuf:"group,21,rep,name=impuestos,proto3" json:"impuestos,omitempty"`
 }
 
 func (m *Persona) Reset()         { *m = Persona{} }
@@ -54,12 +58,15 @@ func (m *Persona) GetImpuestos() []*Impuesto {
 
 // Impuesto asset
 type Impuesto struct {
-	IDImpuesto       int32  `protobuf:"varint,1,name=id_impuesto,proto3" json:"idImpuesto"`
+	IDImpuesto       int32  `protobuf:"varint,1,name=impuesto,proto3" json:"impuesto"`
 	IDOrganismo      int32  `protobuf:"varint,2,opt,name=id_org,proto3" json:"idOrg,omitempty"`
-	FechaInscripcion string `protobuf:"bytes,3,opt,name=fecha_inscripcion,proto3" json:"fechaInscripcion,omitempty"`
+	FechaInscripcion string `protobuf:"bytes,3,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
 	Periodo          int32  `protobuf:"varint,4,opt,name=periodo,proto3" json:"periodo,omitempty"`
 	Estado           string `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
 	IDTxc            uint64 `protobuf:"varint,6,opt,name=id_txc,proto3" json:"idTxc,omitempty"`
+	DS               string `protobuf:"bytes,7,opt,name=ds,proto3" json:"ds,omitempty"`
+	Motivo           string `protobuf:"bytes,8,opt,name=motivo,proto3" json:"motivo,omitempty"`
+	Dia              int32  `protobuf:"varint,9,opt,name=dia,proto3" json:"dia,omitempty"`
 }
 
 func (m *Impuesto) Reset()         { *m = Impuesto{} }
@@ -87,7 +94,7 @@ type Impuestos struct {
 
 // ParamImpuesto asset
 type ParamImpuesto struct {
-	IDImpuesto  int32  `json:"idImpuesto"`
+	IDImpuesto  int32  `json:"impuesto"`
 	IDOrganismo int32  `json:"idOrg"`
 	TipoRegimen string `json:"tipoRegimen"`
 	Nombre      string `json:"nombre"`
@@ -139,8 +146,10 @@ func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) peer.Response 
 	if ctx, r = setContext(APIstub, s.isModeTest); r.isError() {
 		return r.peerResponse(ctx)
 	}
-	if r = checkClientID(ctx); r.isError() {
-		return r.peerResponse(ctx)
+	if !s.isModeTest {
+		if r = checkClientID(ctx); r.isError() {
+			return r.peerResponse(ctx)
+		}
 	}
 	r = s.setInitImpuestos(APIstub)
 	return r.peerResponse(ctx)

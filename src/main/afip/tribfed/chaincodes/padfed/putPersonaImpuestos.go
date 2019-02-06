@@ -46,7 +46,7 @@ func (s *SmartContract) putPersonaImpuestos(APIstub shim.ChaincodeStubInterface,
 func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterface, cuit string, impuestos []*Impuesto) (int, Response) {
 
 	if hid, impuestoDuplicado := hasDuplicatedImpuestos(impuestos); hid {
-		return 0, clientErrorResponse("Array con idImpuesto [" + strconv.Itoa(int(impuestoDuplicado.IDImpuesto)) + "] duplicado")
+		return 0, clientErrorResponse("Array con impuesto [" + strconv.Itoa(int(impuestoDuplicado.IDImpuesto)) + "] duplicado")
 	}
 	count := 0
 	for _, imp := range impuestos {
@@ -63,10 +63,10 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 			err.WrongItem = count
 			return 0, err
 		} else if !exists {
-			return 0, clientErrorResponse("idImpuesto ["+strconv.Itoa(int(imp.IDImpuesto))+"] no definido en ParamImpuesto", count)
+			return 0, clientErrorResponse("impuesto ["+strconv.Itoa(int(imp.IDImpuesto))+"] no definido en ParamImpuesto", count)
 		}
 		if err := validateDate(imp.FechaInscripcion); err != nil {
-			return 0, clientErrorResponse("fechaInscripcion [" + imp.FechaInscripcion + "]: " + err.Error())
+			return 0, clientErrorResponse("inscripcion [" + imp.FechaInscripcion + "]: " + err.Error())
 		}
 		periodoString := strconv.FormatInt(int64(imp.Periodo), 10)
 		res := CHECK_PERIODO_FISCAL_REGEXP.FindStringSubmatch(periodoString)
