@@ -87,16 +87,16 @@ func (s *SmartContract) createTxConfirmable(APIstub shim.ChaincodeStubInterface,
 
 	var impuesto Impuesto
 	var existImpuesto bool
-	if impuesto, _, err = findImpuesto(APIstub, cuit, assetValue.IDImpuesto); err == nil {
+	if impuesto, _, err = findImpuesto(APIstub, cuit, assetValue.Impuesto); err == nil {
 		existImpuesto = true
 	}
 
 	if tipoTxc == 2 && !existImpuesto {
-		return clientErrorResponse("No se puede crear una TXC de tipo " + strconv.Itoa(tipoTxc) + " con key PER_" + strconv.FormatUint(cuit, 10) + "_IMP_" + strconv.Itoa(int(assetValue.IDImpuesto)) + " porque no existe un asset con esa key")
+		return clientErrorResponse("No se puede crear una TXC de tipo " + strconv.Itoa(tipoTxc) + " con key PER_" + strconv.FormatUint(cuit, 10) + "_IMP_" + strconv.Itoa(int(assetValue.Impuesto)) + " porque no existe un asset con esa key")
 	}
 
 	if tipoTxc == 2 && existImpuesto && strings.HasPrefix(impuesto.Estado, assetValue.Estado) {
-		return clientErrorResponse("No se puede crear una TXC de tipo " + strconv.Itoa(tipoTxc) + " con key PER_" + strconv.FormatUint(cuit, 10) + "_IMP_" + strconv.Itoa(int(assetValue.IDImpuesto)) + " porque existe un asset con esa misma key y con el mismo estado" + assetValue.Estado)
+		return clientErrorResponse("No se puede crear una TXC de tipo " + strconv.Itoa(tipoTxc) + " con key PER_" + strconv.FormatUint(cuit, 10) + "_IMP_" + strconv.Itoa(int(assetValue.Impuesto)) + " porque existe un asset con esa misma key y con el mismo estado" + assetValue.Estado)
 	}
 
 	txc.CUIT = cuit
@@ -104,7 +104,7 @@ func (s *SmartContract) createTxConfirmable(APIstub shim.ChaincodeStubInterface,
 
 	if existImpuesto {
 		impuesto.IDTxc = txc.IDTxc
-		key := getImpuestoKeyByCuitId(cuit, impuesto.IDImpuesto)
+		key := getImpuestoKeyByCuitId(cuit, impuesto.Impuesto)
 		impuestoAsBytes, _ := json.Marshal(impuesto)
 		log.Print("Se actualiza asset con key " + key)
 		log.Print("AssetValue " + string(impuestoAsBytes))

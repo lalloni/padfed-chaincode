@@ -46,7 +46,7 @@ func (s *SmartContract) putPersonaImpuestos(APIstub shim.ChaincodeStubInterface,
 func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterface, cuit string, impuestos []*Impuesto) (int, Response) {
 
 	if hid, impuestoDuplicado := hasDuplicatedImpuestos(impuestos); hid {
-		return 0, clientErrorResponse("Array con impuesto [" + strconv.Itoa(int(impuestoDuplicado.IDImpuesto)) + "] duplicado")
+		return 0, clientErrorResponse("Array con impuesto [" + strconv.Itoa(int(impuestoDuplicado.Impuesto)) + "] duplicado")
 	}
 	count := 0
 	for _, imp := range impuestos {
@@ -55,25 +55,25 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 		if !(imp.IDOrganismo == 0 || imp.IDOrganismo == 1 || (imp.IDOrganismo >= 900 && imp.IDOrganismo <= 999)) {
 			return 0, clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrganismo))+"] must be an integer 1:AFIP or between 900 and 999", count)
 		}
-		if err := validateIdImpuesto(imp.IDImpuesto); err.isError() {
+		if err := validateIdImpuesto(imp.Impuesto); err.isError() {
 			err.WrongItem = count
 			return 0, err
 		}
-		if exists, err := existsIdImpuesto(APIstub, imp.IDImpuesto); err.isError() {
+		if exists, err := existsIdImpuesto(APIstub, imp.Impuesto); err.isError() {
 			err.WrongItem = count
 			return 0, err
 		} else if !exists {
-			return 0, clientErrorResponse("impuesto ["+strconv.Itoa(int(imp.IDImpuesto))+"] no definido en ParamImpuesto", count)
+			return 0, clientErrorResponse("impuesto ["+strconv.Itoa(int(imp.Impuesto))+"] no definido en ParamImpuesto", count)
 		}
-		if err := validateDate(imp.FechaInscripcion); err != nil {
-			return 0, clientErrorResponse("inscripcion [" + imp.FechaInscripcion + "]: " + err.Error())
+		if err := validateDate(imp.Inscripcion); err != nil {
+			return 0, clientErrorResponse("inscripcion [" + imp.Inscripcion + "]: " + err.Error())
 		}
 		periodoString := strconv.FormatInt(int64(imp.Periodo), 10)
 		res := CHECK_PERIODO_FISCAL_REGEXP.FindStringSubmatch(periodoString)
 		if len(res) != 3 {
 			return 0, clientErrorResponse("periodo ["+strconv.Itoa(int(imp.Periodo))+"] debe tener formato YYYY00 o YYYYMM con YYYY entre 1900 y 2030", count)
 		}
-		key := "PER_" + cuit + "_IMP_" + strconv.Itoa(int(imp.IDImpuesto))
+		key := "PER_" + cuit + "_IMP_" + strconv.Itoa(int(imp.Impuesto))
 		if err := APIstub.PutState(key, impuestoAsBytes); err != nil {
 			return 0, systemErrorResponse("Error putting key ["+key+"]: "+err.Error(), count)
 		}

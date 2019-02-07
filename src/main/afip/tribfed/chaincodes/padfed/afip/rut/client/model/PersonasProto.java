@@ -752,43 +752,43 @@ public final class PersonasProto {
     com.google.protobuf.ByteString
         getRazonSocialBytes();
 
-    // required string persona = 5;
+    // required string tipoPersona = 5;
     /**
-     * <code>required string persona = 5;</code>
+     * <code>required string tipoPersona = 5;</code>
      */
     boolean hasTipoPersona();
     /**
-     * <code>required string persona = 5;</code>
+     * <code>required string tipoPersona = 5;</code>
      */
     java.lang.String getTipoPersona();
     /**
-     * <code>required string persona = 5;</code>
+     * <code>required string tipoPersona = 5;</code>
      */
     com.google.protobuf.ByteString
         getTipoPersonaBytes();
 
-    // required string estado = 6;
+    // required string estadoCuit = 6;
     /**
-     * <code>required string estado = 6;</code>
+     * <code>required string estadoCuit = 6;</code>
      */
     boolean hasEstadoCuit();
     /**
-     * <code>required string estado = 6;</code>
+     * <code>required string estadoCuit = 6;</code>
      */
     java.lang.String getEstadoCuit();
     /**
-     * <code>required string estado = 6;</code>
+     * <code>required string estadoCuit = 6;</code>
      */
     com.google.protobuf.ByteString
         getEstadoCuitBytes();
 
-    // optional int32 formaJuridica = 7;
+    // optional int32 idFormaJuridica = 7;
     /**
-     * <code>optional int32 formaJuridica = 7;</code>
+     * <code>optional int32 idFormaJuridica = 7;</code>
      */
     boolean hasIdFormaJuridica();
     /**
-     * <code>optional int32 formaJuridica = 7;</code>
+     * <code>optional int32 idFormaJuridica = 7;</code>
      */
     int getIdFormaJuridica();
 
@@ -802,17 +802,17 @@ public final class PersonasProto {
      */
     int getTipoDoc();
 
-    // optional string doc = 9;
+    // optional string documento = 9;
     /**
-     * <code>optional string doc = 9;</code>
+     * <code>optional string documento = 9;</code>
      */
     boolean hasDocumento();
     /**
-     * <code>optional string doc = 9;</code>
+     * <code>optional string documento = 9;</code>
      */
     java.lang.String getDocumento();
     /**
-     * <code>optional string doc = 9;</code>
+     * <code>optional string documento = 9;</code>
      */
     com.google.protobuf.ByteString
         getDocumentoBytes();
@@ -842,47 +842,47 @@ public final class PersonasProto {
      */
     int getMesCierre();
 
-    // optional string nacimiento = 12;
+    // optional string fechaNacimiento = 12;
     /**
-     * <code>optional string nacimiento = 12;</code>
+     * <code>optional string fechaNacimiento = 12;</code>
      */
     boolean hasFechaNacimiento();
     /**
-     * <code>optional string nacimiento = 12;</code>
+     * <code>optional string fechaNacimiento = 12;</code>
      */
     java.lang.String getFechaNacimiento();
     /**
-     * <code>optional string nacimiento = 12;</code>
+     * <code>optional string fechaNacimiento = 12;</code>
      */
     com.google.protobuf.ByteString
         getFechaNacimientoBytes();
 
-    // optional string fallecimiento = 13;
+    // optional string fechaFallecimiento = 13;
     /**
-     * <code>optional string fallecimiento = 13;</code>
+     * <code>optional string fechaFallecimiento = 13;</code>
      */
     boolean hasFechaFallecimiento();
     /**
-     * <code>optional string fallecimiento = 13;</code>
+     * <code>optional string fechaFallecimiento = 13;</code>
      */
     java.lang.String getFechaFallecimiento();
     /**
-     * <code>optional string fallecimiento = 13;</code>
+     * <code>optional string fechaFallecimiento = 13;</code>
      */
     com.google.protobuf.ByteString
         getFechaFallecimientoBytes();
 
-    // optional string inscripcion = 14;
+    // optional string fechaInscripcion = 14;
     /**
-     * <code>optional string inscripcion = 14;</code>
+     * <code>optional string fechaInscripcion = 14;</code>
      */
     boolean hasFechaInscripcion();
     /**
-     * <code>optional string inscripcion = 14;</code>
+     * <code>optional string fechaInscripcion = 14;</code>
      */
     java.lang.String getFechaInscripcion();
     /**
-     * <code>optional string inscripcion = 14;</code>
+     * <code>optional string fechaInscripcion = 14;</code>
      */
     com.google.protobuf.ByteString
         getFechaInscripcionBytes();
@@ -1010,17 +1010,17 @@ public final class PersonasProto {
             }
             case 42: {
               bitField0_ |= 0x00000010;
-              persona_ = input.readBytes();
+              tipoPersona_ = input.readBytes();
               break;
             }
             case 50: {
               bitField0_ |= 0x00000020;
-              estado_ = input.readBytes();
+              estadoCuit_ = input.readBytes();
               break;
             }
             case 56: {
               bitField0_ |= 0x00000040;
-              formaJuridica_ = input.readInt32();
+              idFormaJuridica_ = input.readInt32();
               break;
             }
             case 64: {
@@ -1030,7 +1030,7 @@ public final class PersonasProto {
             }
             case 74: {
               bitField0_ |= 0x00000100;
-              doc_ = input.readBytes();
+              documento_ = input.readBytes();
               break;
             }
             case 82: {
@@ -1045,17 +1045,17 @@ public final class PersonasProto {
             }
             case 98: {
               bitField0_ |= 0x00000800;
-              nacimiento_ = input.readBytes();
+              fechaNacimiento_ = input.readBytes();
               break;
             }
             case 106: {
               bitField0_ |= 0x00001000;
-              fallecimiento_ = input.readBytes();
+              fechaFallecimiento_ = input.readBytes();
               break;
             }
             case 114: {
               bitField0_ |= 0x00002000;
-              inscripcion_ = input.readBytes();
+              fechaInscripcion_ = input.readBytes();
               break;
             }
             case 122: {
@@ -1264,20 +1264,20 @@ public final class PersonasProto {
       }
     }
 
-    // required string persona = 5;
+    // required string tipoPersona = 5;
     public static final int TIPOPERSONA_FIELD_NUMBER = 5;
-    private java.lang.Object persona_;
+    private java.lang.Object tipoPersona_;
     /**
-     * <code>required string persona = 5;</code>
+     * <code>required string tipoPersona = 5;</code>
      */
     public boolean hasTipoPersona() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>required string persona = 5;</code>
+     * <code>required string tipoPersona = 5;</code>
      */
     public java.lang.String getTipoPersona() {
-      java.lang.Object ref = persona_;
+      java.lang.Object ref = tipoPersona_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1285,42 +1285,42 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          persona_ = s;
+          tipoPersona_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>required string persona = 5;</code>
+     * <code>required string tipoPersona = 5;</code>
      */
     public com.google.protobuf.ByteString
         getTipoPersonaBytes() {
-      java.lang.Object ref = persona_;
+      java.lang.Object ref = tipoPersona_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        persona_ = b;
+        tipoPersona_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // required string estado = 6;
+    // required string estadoCuit = 6;
     public static final int ESTADOCUIT_FIELD_NUMBER = 6;
-    private java.lang.Object estado_;
+    private java.lang.Object estadoCuit_;
     /**
-     * <code>required string estado = 6;</code>
+     * <code>required string estadoCuit = 6;</code>
      */
     public boolean hasEstadoCuit() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>required string estado = 6;</code>
+     * <code>required string estadoCuit = 6;</code>
      */
     public java.lang.String getEstadoCuit() {
-      java.lang.Object ref = estado_;
+      java.lang.Object ref = estadoCuit_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1328,42 +1328,42 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          estado_ = s;
+          estadoCuit_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>required string estado = 6;</code>
+     * <code>required string estadoCuit = 6;</code>
      */
     public com.google.protobuf.ByteString
         getEstadoCuitBytes() {
-      java.lang.Object ref = estado_;
+      java.lang.Object ref = estadoCuit_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        estado_ = b;
+        estadoCuit_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // optional int32 formaJuridica = 7;
+    // optional int32 idFormaJuridica = 7;
     public static final int IDFORMAJURIDICA_FIELD_NUMBER = 7;
-    private int formaJuridica_;
+    private int idFormaJuridica_;
     /**
-     * <code>optional int32 formaJuridica = 7;</code>
+     * <code>optional int32 idFormaJuridica = 7;</code>
      */
     public boolean hasIdFormaJuridica() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
     /**
-     * <code>optional int32 formaJuridica = 7;</code>
+     * <code>optional int32 idFormaJuridica = 7;</code>
      */
     public int getIdFormaJuridica() {
-      return formaJuridica_;
+      return idFormaJuridica_;
     }
 
     // optional int32 tipoDoc = 8;
@@ -1382,20 +1382,20 @@ public final class PersonasProto {
       return tipoDoc_;
     }
 
-    // optional string doc = 9;
+    // optional string documento = 9;
     public static final int DOCUMENTO_FIELD_NUMBER = 9;
-    private java.lang.Object doc_;
+    private java.lang.Object documento_;
     /**
-     * <code>optional string doc = 9;</code>
+     * <code>optional string documento = 9;</code>
      */
     public boolean hasDocumento() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
     /**
-     * <code>optional string doc = 9;</code>
+     * <code>optional string documento = 9;</code>
      */
     public java.lang.String getDocumento() {
-      java.lang.Object ref = doc_;
+      java.lang.Object ref = documento_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1403,22 +1403,22 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          doc_ = s;
+          documento_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string doc = 9;</code>
+     * <code>optional string documento = 9;</code>
      */
     public com.google.protobuf.ByteString
         getDocumentoBytes() {
-      java.lang.Object ref = doc_;
+      java.lang.Object ref = documento_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        doc_ = b;
+        documento_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -1484,20 +1484,20 @@ public final class PersonasProto {
       return mesCierre_;
     }
 
-    // optional string nacimiento = 12;
+    // optional string fechaNacimiento = 12;
     public static final int FECHANACIMIENTO_FIELD_NUMBER = 12;
-    private java.lang.Object nacimiento_;
+    private java.lang.Object fechaNacimiento_;
     /**
-     * <code>optional string nacimiento = 12;</code>
+     * <code>optional string fechaNacimiento = 12;</code>
      */
     public boolean hasFechaNacimiento() {
       return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     /**
-     * <code>optional string nacimiento = 12;</code>
+     * <code>optional string fechaNacimiento = 12;</code>
      */
     public java.lang.String getFechaNacimiento() {
-      java.lang.Object ref = nacimiento_;
+      java.lang.Object ref = fechaNacimiento_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1505,42 +1505,42 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          nacimiento_ = s;
+          fechaNacimiento_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string nacimiento = 12;</code>
+     * <code>optional string fechaNacimiento = 12;</code>
      */
     public com.google.protobuf.ByteString
         getFechaNacimientoBytes() {
-      java.lang.Object ref = nacimiento_;
+      java.lang.Object ref = fechaNacimiento_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        nacimiento_ = b;
+        fechaNacimiento_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // optional string fallecimiento = 13;
+    // optional string fechaFallecimiento = 13;
     public static final int FECHAFALLECIMIENTO_FIELD_NUMBER = 13;
-    private java.lang.Object fallecimiento_;
+    private java.lang.Object fechaFallecimiento_;
     /**
-     * <code>optional string fallecimiento = 13;</code>
+     * <code>optional string fechaFallecimiento = 13;</code>
      */
     public boolean hasFechaFallecimiento() {
       return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     /**
-     * <code>optional string fallecimiento = 13;</code>
+     * <code>optional string fechaFallecimiento = 13;</code>
      */
     public java.lang.String getFechaFallecimiento() {
-      java.lang.Object ref = fallecimiento_;
+      java.lang.Object ref = fechaFallecimiento_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1548,42 +1548,42 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          fallecimiento_ = s;
+          fechaFallecimiento_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string fallecimiento = 13;</code>
+     * <code>optional string fechaFallecimiento = 13;</code>
      */
     public com.google.protobuf.ByteString
         getFechaFallecimientoBytes() {
-      java.lang.Object ref = fallecimiento_;
+      java.lang.Object ref = fechaFallecimiento_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        fallecimiento_ = b;
+        fechaFallecimiento_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
 
-    // optional string inscripcion = 14;
+    // optional string fechaInscripcion = 14;
     public static final int FECHAINSCRIPCION_FIELD_NUMBER = 14;
-    private java.lang.Object inscripcion_;
+    private java.lang.Object fechaInscripcion_;
     /**
-     * <code>optional string inscripcion = 14;</code>
+     * <code>optional string fechaInscripcion = 14;</code>
      */
     public boolean hasFechaInscripcion() {
       return ((bitField0_ & 0x00002000) == 0x00002000);
     }
     /**
-     * <code>optional string inscripcion = 14;</code>
+     * <code>optional string fechaInscripcion = 14;</code>
      */
     public java.lang.String getFechaInscripcion() {
-      java.lang.Object ref = inscripcion_;
+      java.lang.Object ref = fechaInscripcion_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -1591,22 +1591,22 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          inscripcion_ = s;
+          fechaInscripcion_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string inscripcion = 14;</code>
+     * <code>optional string fechaInscripcion = 14;</code>
      */
     public com.google.protobuf.ByteString
         getFechaInscripcionBytes() {
-      java.lang.Object ref = inscripcion_;
+      java.lang.Object ref = fechaInscripcion_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        inscripcion_ = b;
+        fechaInscripcion_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -1713,16 +1713,16 @@ public final class PersonasProto {
       nombre_ = "";
       apellido_ = "";
       razonSocial_ = "";
-      persona_ = "";
-      estado_ = "";
-      formaJuridica_ = 0;
+      tipoPersona_ = "";
+      estadoCuit_ = "";
+      idFormaJuridica_ = 0;
       tipoDoc_ = 0;
-      doc_ = "";
+      documento_ = "";
       sexo_ = "";
       mesCierre_ = 0;
-      nacimiento_ = "";
-      fallecimiento_ = "";
-      inscripcion_ = "";
+      fechaNacimiento_ = "";
+      fechaFallecimiento_ = "";
+      fechaInscripcion_ = "";
       fechaCierre_ = "";
       nuevaCuit_ = 0L;
       impuestos_ = java.util.Collections.emptyList();
@@ -1776,7 +1776,7 @@ public final class PersonasProto {
         output.writeBytes(6, getEstadoCuitBytes());
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeInt32(7, formaJuridica_);
+        output.writeInt32(7, idFormaJuridica_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeInt32(8, tipoDoc_);
@@ -1843,7 +1843,7 @@ public final class PersonasProto {
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(7, formaJuridica_);
+          .computeInt32Size(7, idFormaJuridica_);
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2010,25 +2010,25 @@ public final class PersonasProto {
         bitField0_ = (bitField0_ & ~0x00000004);
         razonSocial_ = "";
         bitField0_ = (bitField0_ & ~0x00000008);
-        persona_ = "";
+        tipoPersona_ = "";
         bitField0_ = (bitField0_ & ~0x00000010);
-        estado_ = "";
+        estadoCuit_ = "";
         bitField0_ = (bitField0_ & ~0x00000020);
-        formaJuridica_ = 0;
+        idFormaJuridica_ = 0;
         bitField0_ = (bitField0_ & ~0x00000040);
         tipoDoc_ = 0;
         bitField0_ = (bitField0_ & ~0x00000080);
-        doc_ = "";
+        documento_ = "";
         bitField0_ = (bitField0_ & ~0x00000100);
         sexo_ = "";
         bitField0_ = (bitField0_ & ~0x00000200);
         mesCierre_ = 0;
         bitField0_ = (bitField0_ & ~0x00000400);
-        nacimiento_ = "";
+        fechaNacimiento_ = "";
         bitField0_ = (bitField0_ & ~0x00000800);
-        fallecimiento_ = "";
+        fechaFallecimiento_ = "";
         bitField0_ = (bitField0_ & ~0x00001000);
-        inscripcion_ = "";
+        fechaInscripcion_ = "";
         bitField0_ = (bitField0_ & ~0x00002000);
         fechaCierre_ = "";
         bitField0_ = (bitField0_ & ~0x00004000);
@@ -2087,15 +2087,15 @@ public final class PersonasProto {
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
         }
-        result.persona_ = persona_;
+        result.tipoPersona_ = tipoPersona_;
         if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
           to_bitField0_ |= 0x00000020;
         }
-        result.estado_ = estado_;
+        result.estadoCuit_ = estadoCuit_;
         if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
           to_bitField0_ |= 0x00000040;
         }
-        result.formaJuridica_ = formaJuridica_;
+        result.idFormaJuridica_ = idFormaJuridica_;
         if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
           to_bitField0_ |= 0x00000080;
         }
@@ -2103,7 +2103,7 @@ public final class PersonasProto {
         if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
           to_bitField0_ |= 0x00000100;
         }
-        result.doc_ = doc_;
+        result.documento_ = documento_;
         if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
           to_bitField0_ |= 0x00000200;
         }
@@ -2115,15 +2115,15 @@ public final class PersonasProto {
         if (((from_bitField0_ & 0x00000800) == 0x00000800)) {
           to_bitField0_ |= 0x00000800;
         }
-        result.nacimiento_ = nacimiento_;
+        result.fechaNacimiento_ = fechaNacimiento_;
         if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
           to_bitField0_ |= 0x00001000;
         }
-        result.fallecimiento_ = fallecimiento_;
+        result.fechaFallecimiento_ = fechaFallecimiento_;
         if (((from_bitField0_ & 0x00002000) == 0x00002000)) {
           to_bitField0_ |= 0x00002000;
         }
-        result.inscripcion_ = inscripcion_;
+        result.fechaInscripcion_ = fechaInscripcion_;
         if (((from_bitField0_ & 0x00004000) == 0x00004000)) {
           to_bitField0_ |= 0x00004000;
         }
@@ -2177,12 +2177,12 @@ public final class PersonasProto {
         }
         if (other.hasTipoPersona()) {
           bitField0_ |= 0x00000010;
-          persona_ = other.persona_;
+          tipoPersona_ = other.tipoPersona_;
           onChanged();
         }
         if (other.hasEstadoCuit()) {
           bitField0_ |= 0x00000020;
-          estado_ = other.estado_;
+          estadoCuit_ = other.estadoCuit_;
           onChanged();
         }
         if (other.hasIdFormaJuridica()) {
@@ -2193,7 +2193,7 @@ public final class PersonasProto {
         }
         if (other.hasDocumento()) {
           bitField0_ |= 0x00000100;
-          doc_ = other.doc_;
+          documento_ = other.documento_;
           onChanged();
         }
         if (other.hasSexo()) {
@@ -2206,17 +2206,17 @@ public final class PersonasProto {
         }
         if (other.hasFechaNacimiento()) {
           bitField0_ |= 0x00000800;
-          nacimiento_ = other.nacimiento_;
+          fechaNacimiento_ = other.fechaNacimiento_;
           onChanged();
         }
         if (other.hasFechaFallecimiento()) {
           bitField0_ |= 0x00001000;
-          fallecimiento_ = other.fallecimiento_;
+          fechaFallecimiento_ = other.fechaFallecimiento_;
           onChanged();
         }
         if (other.hasFechaInscripcion()) {
           bitField0_ |= 0x00002000;
-          inscripcion_ = other.inscripcion_;
+          fechaInscripcion_ = other.fechaInscripcion_;
           onChanged();
         }
         if (other.hasFechaCierre()) {
@@ -2553,46 +2553,46 @@ public final class PersonasProto {
         return this;
       }
 
-      // required string persona = 5;
-      private java.lang.Object persona_ = "";
+      // required string tipoPersona = 5;
+      private java.lang.Object tipoPersona_ = "";
       /**
-       * <code>required string persona = 5;</code>
+       * <code>required string tipoPersona = 5;</code>
        */
       public boolean hasTipoPersona() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>required string persona = 5;</code>
+       * <code>required string tipoPersona = 5;</code>
        */
       public java.lang.String getTipoPersona() {
-        java.lang.Object ref = persona_;
+        java.lang.Object ref = tipoPersona_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          persona_ = s;
+          tipoPersona_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string persona = 5;</code>
+       * <code>required string tipoPersona = 5;</code>
        */
       public com.google.protobuf.ByteString
           getTipoPersonaBytes() {
-        java.lang.Object ref = persona_;
+        java.lang.Object ref = tipoPersona_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          persona_ = b;
+          tipoPersona_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>required string persona = 5;</code>
+       * <code>required string tipoPersona = 5;</code>
        */
       public Builder setTipoPersona(
           java.lang.String value) {
@@ -2600,21 +2600,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000010;
-        persona_ = value;
+        tipoPersona_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string persona = 5;</code>
+       * <code>required string tipoPersona = 5;</code>
        */
       public Builder clearTipoPersona() {
         bitField0_ = (bitField0_ & ~0x00000010);
-        persona_ = getDefaultInstance().getTipoPersona();
+        tipoPersona_ = getDefaultInstance().getTipoPersona();
         onChanged();
         return this;
       }
       /**
-       * <code>required string persona = 5;</code>
+       * <code>required string tipoPersona = 5;</code>
        */
       public Builder setTipoPersonaBytes(
           com.google.protobuf.ByteString value) {
@@ -2622,51 +2622,51 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000010;
-        persona_ = value;
+        tipoPersona_ = value;
         onChanged();
         return this;
       }
 
-      // required string estado = 6;
-      private java.lang.Object estado_ = "";
+      // required string estadoCuit = 6;
+      private java.lang.Object estadoCuit_ = "";
       /**
-       * <code>required string estado = 6;</code>
+       * <code>required string estadoCuit = 6;</code>
        */
       public boolean hasEstadoCuit() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>required string estado = 6;</code>
+       * <code>required string estadoCuit = 6;</code>
        */
       public java.lang.String getEstadoCuit() {
-        java.lang.Object ref = estado_;
+        java.lang.Object ref = estadoCuit_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          estado_ = s;
+          estadoCuit_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>required string estado = 6;</code>
+       * <code>required string estadoCuit = 6;</code>
        */
       public com.google.protobuf.ByteString
           getEstadoCuitBytes() {
-        java.lang.Object ref = estado_;
+        java.lang.Object ref = estadoCuit_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          estado_ = b;
+          estadoCuit_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>required string estado = 6;</code>
+       * <code>required string estadoCuit = 6;</code>
        */
       public Builder setEstadoCuit(
           java.lang.String value) {
@@ -2674,21 +2674,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000020;
-        estado_ = value;
+        estadoCuit_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required string estado = 6;</code>
+       * <code>required string estadoCuit = 6;</code>
        */
       public Builder clearEstadoCuit() {
         bitField0_ = (bitField0_ & ~0x00000020);
-        estado_ = getDefaultInstance().getEstadoCuit();
+        estadoCuit_ = getDefaultInstance().getEstadoCuit();
         onChanged();
         return this;
       }
       /**
-       * <code>required string estado = 6;</code>
+       * <code>required string estadoCuit = 6;</code>
        */
       public Builder setEstadoCuitBytes(
           com.google.protobuf.ByteString value) {
@@ -2696,40 +2696,40 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000020;
-        estado_ = value;
+        estadoCuit_ = value;
         onChanged();
         return this;
       }
 
-      // optional int32 formaJuridica = 7;
-      private int formaJuridica_ ;
+      // optional int32 idFormaJuridica = 7;
+      private int idFormaJuridica_ ;
       /**
-       * <code>optional int32 formaJuridica = 7;</code>
+       * <code>optional int32 idFormaJuridica = 7;</code>
        */
       public boolean hasIdFormaJuridica() {
         return ((bitField0_ & 0x00000040) == 0x00000040);
       }
       /**
-       * <code>optional int32 formaJuridica = 7;</code>
+       * <code>optional int32 idFormaJuridica = 7;</code>
        */
       public int getIdFormaJuridica() {
-        return formaJuridica_;
+        return idFormaJuridica_;
       }
       /**
-       * <code>optional int32 formaJuridica = 7;</code>
+       * <code>optional int32 idFormaJuridica = 7;</code>
        */
       public Builder setIdFormaJuridica(int value) {
         bitField0_ |= 0x00000040;
-        formaJuridica_ = value;
+        idFormaJuridica_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int32 formaJuridica = 7;</code>
+       * <code>optional int32 idFormaJuridica = 7;</code>
        */
       public Builder clearIdFormaJuridica() {
         bitField0_ = (bitField0_ & ~0x00000040);
-        formaJuridica_ = 0;
+        idFormaJuridica_ = 0;
         onChanged();
         return this;
       }
@@ -2767,46 +2767,46 @@ public final class PersonasProto {
         return this;
       }
 
-      // optional string doc = 9;
-      private java.lang.Object doc_ = "";
+      // optional string documento = 9;
+      private java.lang.Object documento_ = "";
       /**
-       * <code>optional string doc = 9;</code>
+       * <code>optional string documento = 9;</code>
        */
       public boolean hasDocumento() {
         return ((bitField0_ & 0x00000100) == 0x00000100);
       }
       /**
-       * <code>optional string doc = 9;</code>
+       * <code>optional string documento = 9;</code>
        */
       public java.lang.String getDocumento() {
-        java.lang.Object ref = doc_;
+        java.lang.Object ref = documento_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          doc_ = s;
+          documento_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string doc = 9;</code>
+       * <code>optional string documento = 9;</code>
        */
       public com.google.protobuf.ByteString
           getDocumentoBytes() {
-        java.lang.Object ref = doc_;
+        java.lang.Object ref = documento_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          doc_ = b;
+          documento_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string doc = 9;</code>
+       * <code>optional string documento = 9;</code>
        */
       public Builder setDocumento(
           java.lang.String value) {
@@ -2814,21 +2814,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000100;
-        doc_ = value;
+        documento_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string doc = 9;</code>
+       * <code>optional string documento = 9;</code>
        */
       public Builder clearDocumento() {
         bitField0_ = (bitField0_ & ~0x00000100);
-        doc_ = getDefaultInstance().getDocumento();
+        documento_ = getDefaultInstance().getDocumento();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string doc = 9;</code>
+       * <code>optional string documento = 9;</code>
        */
       public Builder setDocumentoBytes(
           com.google.protobuf.ByteString value) {
@@ -2836,7 +2836,7 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000100;
-        doc_ = value;
+        documento_ = value;
         onChanged();
         return this;
       }
@@ -2948,46 +2948,46 @@ public final class PersonasProto {
         return this;
       }
 
-      // optional string nacimiento = 12;
-      private java.lang.Object nacimiento_ = "";
+      // optional string fechaNacimiento = 12;
+      private java.lang.Object fechaNacimiento_ = "";
       /**
-       * <code>optional string nacimiento = 12;</code>
+       * <code>optional string fechaNacimiento = 12;</code>
        */
       public boolean hasFechaNacimiento() {
         return ((bitField0_ & 0x00000800) == 0x00000800);
       }
       /**
-       * <code>optional string nacimiento = 12;</code>
+       * <code>optional string fechaNacimiento = 12;</code>
        */
       public java.lang.String getFechaNacimiento() {
-        java.lang.Object ref = nacimiento_;
+        java.lang.Object ref = fechaNacimiento_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          nacimiento_ = s;
+          fechaNacimiento_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string nacimiento = 12;</code>
+       * <code>optional string fechaNacimiento = 12;</code>
        */
       public com.google.protobuf.ByteString
           getFechaNacimientoBytes() {
-        java.lang.Object ref = nacimiento_;
+        java.lang.Object ref = fechaNacimiento_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          nacimiento_ = b;
+          fechaNacimiento_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string nacimiento = 12;</code>
+       * <code>optional string fechaNacimiento = 12;</code>
        */
       public Builder setFechaNacimiento(
           java.lang.String value) {
@@ -2995,21 +2995,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000800;
-        nacimiento_ = value;
+        fechaNacimiento_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string nacimiento = 12;</code>
+       * <code>optional string fechaNacimiento = 12;</code>
        */
       public Builder clearFechaNacimiento() {
         bitField0_ = (bitField0_ & ~0x00000800);
-        nacimiento_ = getDefaultInstance().getFechaNacimiento();
+        fechaNacimiento_ = getDefaultInstance().getFechaNacimiento();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string nacimiento = 12;</code>
+       * <code>optional string fechaNacimiento = 12;</code>
        */
       public Builder setFechaNacimientoBytes(
           com.google.protobuf.ByteString value) {
@@ -3017,51 +3017,51 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000800;
-        nacimiento_ = value;
+        fechaNacimiento_ = value;
         onChanged();
         return this;
       }
 
-      // optional string fallecimiento = 13;
-      private java.lang.Object fallecimiento_ = "";
+      // optional string fechaFallecimiento = 13;
+      private java.lang.Object fechaFallecimiento_ = "";
       /**
-       * <code>optional string fallecimiento = 13;</code>
+       * <code>optional string fechaFallecimiento = 13;</code>
        */
       public boolean hasFechaFallecimiento() {
         return ((bitField0_ & 0x00001000) == 0x00001000);
       }
       /**
-       * <code>optional string fallecimiento = 13;</code>
+       * <code>optional string fechaFallecimiento = 13;</code>
        */
       public java.lang.String getFechaFallecimiento() {
-        java.lang.Object ref = fallecimiento_;
+        java.lang.Object ref = fechaFallecimiento_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          fallecimiento_ = s;
+          fechaFallecimiento_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string fallecimiento = 13;</code>
+       * <code>optional string fechaFallecimiento = 13;</code>
        */
       public com.google.protobuf.ByteString
           getFechaFallecimientoBytes() {
-        java.lang.Object ref = fallecimiento_;
+        java.lang.Object ref = fechaFallecimiento_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          fallecimiento_ = b;
+          fechaFallecimiento_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string fallecimiento = 13;</code>
+       * <code>optional string fechaFallecimiento = 13;</code>
        */
       public Builder setFechaFallecimiento(
           java.lang.String value) {
@@ -3069,21 +3069,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00001000;
-        fallecimiento_ = value;
+        fechaFallecimiento_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string fallecimiento = 13;</code>
+       * <code>optional string fechaFallecimiento = 13;</code>
        */
       public Builder clearFechaFallecimiento() {
         bitField0_ = (bitField0_ & ~0x00001000);
-        fallecimiento_ = getDefaultInstance().getFechaFallecimiento();
+        fechaFallecimiento_ = getDefaultInstance().getFechaFallecimiento();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string fallecimiento = 13;</code>
+       * <code>optional string fechaFallecimiento = 13;</code>
        */
       public Builder setFechaFallecimientoBytes(
           com.google.protobuf.ByteString value) {
@@ -3091,51 +3091,51 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00001000;
-        fallecimiento_ = value;
+        fechaFallecimiento_ = value;
         onChanged();
         return this;
       }
 
-      // optional string inscripcion = 14;
-      private java.lang.Object inscripcion_ = "";
+      // optional string fechaInscripcion = 14;
+      private java.lang.Object fechaInscripcion_ = "";
       /**
-       * <code>optional string inscripcion = 14;</code>
+       * <code>optional string fechaInscripcion = 14;</code>
        */
       public boolean hasFechaInscripcion() {
         return ((bitField0_ & 0x00002000) == 0x00002000);
       }
       /**
-       * <code>optional string inscripcion = 14;</code>
+       * <code>optional string fechaInscripcion = 14;</code>
        */
       public java.lang.String getFechaInscripcion() {
-        java.lang.Object ref = inscripcion_;
+        java.lang.Object ref = fechaInscripcion_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          inscripcion_ = s;
+          fechaInscripcion_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string inscripcion = 14;</code>
+       * <code>optional string fechaInscripcion = 14;</code>
        */
       public com.google.protobuf.ByteString
           getFechaInscripcionBytes() {
-        java.lang.Object ref = inscripcion_;
+        java.lang.Object ref = fechaInscripcion_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          inscripcion_ = b;
+          fechaInscripcion_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string inscripcion = 14;</code>
+       * <code>optional string fechaInscripcion = 14;</code>
        */
       public Builder setFechaInscripcion(
           java.lang.String value) {
@@ -3143,21 +3143,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00002000;
-        inscripcion_ = value;
+        fechaInscripcion_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string inscripcion = 14;</code>
+       * <code>optional string fechaInscripcion = 14;</code>
        */
       public Builder clearFechaInscripcion() {
         bitField0_ = (bitField0_ & ~0x00002000);
-        inscripcion_ = getDefaultInstance().getFechaInscripcion();
+        fechaInscripcion_ = getDefaultInstance().getFechaInscripcion();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string inscripcion = 14;</code>
+       * <code>optional string fechaInscripcion = 14;</code>
        */
       public Builder setFechaInscripcionBytes(
           com.google.protobuf.ByteString value) {
@@ -3165,7 +3165,7 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00002000;
-        inscripcion_ = value;
+        fechaInscripcion_ = value;
         onChanged();
         return this;
       }
@@ -3531,13 +3531,13 @@ public final class PersonasProto {
   public interface ImpuestoOrBuilder
       extends com.google.protobuf.MessageOrBuilder {
 
-    // required int32 impuesto = 1;
+    // required int32 idImpuesto = 1;
     /**
-     * <code>required int32 impuesto = 1;</code>
+     * <code>required int32 idImpuesto = 1;</code>
      */
     boolean hasIdImpuesto();
     /**
-     * <code>required int32 impuesto = 1;</code>
+     * <code>required int32 idImpuesto = 1;</code>
      */
     int getIdImpuesto();
 
@@ -3551,17 +3551,17 @@ public final class PersonasProto {
      */
     int getIdOrg();
 
-    // optional string inscripcion = 3;
+    // optional string fechaInscripcion = 3;
     /**
-     * <code>optional string inscripcion = 3;</code>
+     * <code>optional string fechaInscripcion = 3;</code>
      */
     boolean hasFechaInscripcion();
     /**
-     * <code>optional string inscripcion = 3;</code>
+     * <code>optional string fechaInscripcion = 3;</code>
      */
     java.lang.String getFechaInscripcion();
     /**
-     * <code>optional string inscripcion = 3;</code>
+     * <code>optional string fechaInscripcion = 3;</code>
      */
     com.google.protobuf.ByteString
         getFechaInscripcionBytes();
@@ -3654,7 +3654,7 @@ public final class PersonasProto {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              impuesto_ = input.readInt32();
+              idImpuesto_ = input.readInt32();
               break;
             }
             case 16: {
@@ -3664,7 +3664,7 @@ public final class PersonasProto {
             }
             case 26: {
               bitField0_ |= 0x00000004;
-              inscripcion_ = input.readBytes();
+              fechaInscripcion_ = input.readBytes();
               break;
             }
             case 32: {
@@ -3722,20 +3722,20 @@ public final class PersonasProto {
     }
 
     private int bitField0_;
-    // required int32 impuesto = 1;
+    // required int32 idImpuesto = 1;
     public static final int IDIMPUESTO_FIELD_NUMBER = 1;
-    private int impuesto_;
+    private int idImpuesto_;
     /**
-     * <code>required int32 impuesto = 1;</code>
+     * <code>required int32 idImpuesto = 1;</code>
      */
     public boolean hasIdImpuesto() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     /**
-     * <code>required int32 impuesto = 1;</code>
+     * <code>required int32 idImpuesto = 1;</code>
      */
     public int getIdImpuesto() {
-      return impuesto_;
+      return idImpuesto_;
     }
 
     // optional int32 idOrg = 2;
@@ -3754,20 +3754,20 @@ public final class PersonasProto {
       return idOrg_;
     }
 
-    // optional string inscripcion = 3;
+    // optional string fechaInscripcion = 3;
     public static final int FECHAINSCRIPCION_FIELD_NUMBER = 3;
-    private java.lang.Object inscripcion_;
+    private java.lang.Object fechaInscripcion_;
     /**
-     * <code>optional string inscripcion = 3;</code>
+     * <code>optional string fechaInscripcion = 3;</code>
      */
     public boolean hasFechaInscripcion() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>optional string inscripcion = 3;</code>
+     * <code>optional string fechaInscripcion = 3;</code>
      */
     public java.lang.String getFechaInscripcion() {
-      java.lang.Object ref = inscripcion_;
+      java.lang.Object ref = fechaInscripcion_;
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
@@ -3775,22 +3775,22 @@ public final class PersonasProto {
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          inscripcion_ = s;
+          fechaInscripcion_ = s;
         }
         return s;
       }
     }
     /**
-     * <code>optional string inscripcion = 3;</code>
+     * <code>optional string fechaInscripcion = 3;</code>
      */
     public com.google.protobuf.ByteString
         getFechaInscripcionBytes() {
-      java.lang.Object ref = inscripcion_;
+      java.lang.Object ref = fechaInscripcion_;
       if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        inscripcion_ = b;
+        fechaInscripcion_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
@@ -3873,9 +3873,9 @@ public final class PersonasProto {
     }
 
     private void initFields() {
-      impuesto_ = 0;
+      idImpuesto_ = 0;
       idOrg_ = 0;
-      inscripcion_ = "";
+      fechaInscripcion_ = "";
       periodo_ = 0;
       estado_ = "";
       idTxc_ = 0L;
@@ -3897,7 +3897,7 @@ public final class PersonasProto {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, impuesto_);
+        output.writeInt32(1, idImpuesto_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeInt32(2, idOrg_);
@@ -3925,7 +3925,7 @@ public final class PersonasProto {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, impuesto_);
+          .computeInt32Size(1, idImpuesto_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4063,11 +4063,11 @@ public final class PersonasProto {
 
       public Builder clear() {
         super.clear();
-        impuesto_ = 0;
+        idImpuesto_ = 0;
         bitField0_ = (bitField0_ & ~0x00000001);
         idOrg_ = 0;
         bitField0_ = (bitField0_ & ~0x00000002);
-        inscripcion_ = "";
+        fechaInscripcion_ = "";
         bitField0_ = (bitField0_ & ~0x00000004);
         periodo_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
@@ -4106,7 +4106,7 @@ public final class PersonasProto {
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
           to_bitField0_ |= 0x00000001;
         }
-        result.impuesto_ = impuesto_;
+        result.idImpuesto_ = idImpuesto_;
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
@@ -4114,7 +4114,7 @@ public final class PersonasProto {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.inscripcion_ = inscripcion_;
+        result.fechaInscripcion_ = fechaInscripcion_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
@@ -4151,7 +4151,7 @@ public final class PersonasProto {
         }
         if (other.hasFechaInscripcion()) {
           bitField0_ |= 0x00000004;
-          inscripcion_ = other.inscripcion_;
+          fechaInscripcion_ = other.fechaInscripcion_;
           onChanged();
         }
         if (other.hasPeriodo()) {
@@ -4196,35 +4196,35 @@ public final class PersonasProto {
       }
       private int bitField0_;
 
-      // required int32 impuesto = 1;
-      private int impuesto_ ;
+      // required int32 idImpuesto = 1;
+      private int idImpuesto_ ;
       /**
-       * <code>required int32 impuesto = 1;</code>
+       * <code>required int32 idImpuesto = 1;</code>
        */
       public boolean hasIdImpuesto() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>required int32 impuesto = 1;</code>
+       * <code>required int32 idImpuesto = 1;</code>
        */
       public int getIdImpuesto() {
-        return impuesto_;
+        return idImpuesto_;
       }
       /**
-       * <code>required int32 impuesto = 1;</code>
+       * <code>required int32 idImpuesto = 1;</code>
        */
       public Builder setIdImpuesto(int value) {
         bitField0_ |= 0x00000001;
-        impuesto_ = value;
+        idImpuesto_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required int32 impuesto = 1;</code>
+       * <code>required int32 idImpuesto = 1;</code>
        */
       public Builder clearIdImpuesto() {
         bitField0_ = (bitField0_ & ~0x00000001);
-        impuesto_ = 0;
+        idImpuesto_ = 0;
         onChanged();
         return this;
       }
@@ -4262,46 +4262,46 @@ public final class PersonasProto {
         return this;
       }
 
-      // optional string inscripcion = 3;
-      private java.lang.Object inscripcion_ = "";
+      // optional string fechaInscripcion = 3;
+      private java.lang.Object fechaInscripcion_ = "";
       /**
-       * <code>optional string inscripcion = 3;</code>
+       * <code>optional string fechaInscripcion = 3;</code>
        */
       public boolean hasFechaInscripcion() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>optional string inscripcion = 3;</code>
+       * <code>optional string fechaInscripcion = 3;</code>
        */
       public java.lang.String getFechaInscripcion() {
-        java.lang.Object ref = inscripcion_;
+        java.lang.Object ref = fechaInscripcion_;
         if (!(ref instanceof java.lang.String)) {
           java.lang.String s = ((com.google.protobuf.ByteString) ref)
               .toStringUtf8();
-          inscripcion_ = s;
+          fechaInscripcion_ = s;
           return s;
         } else {
           return (java.lang.String) ref;
         }
       }
       /**
-       * <code>optional string inscripcion = 3;</code>
+       * <code>optional string fechaInscripcion = 3;</code>
        */
       public com.google.protobuf.ByteString
           getFechaInscripcionBytes() {
-        java.lang.Object ref = inscripcion_;
+        java.lang.Object ref = fechaInscripcion_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
                   (java.lang.String) ref);
-          inscripcion_ = b;
+          fechaInscripcion_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
       /**
-       * <code>optional string inscripcion = 3;</code>
+       * <code>optional string fechaInscripcion = 3;</code>
        */
       public Builder setFechaInscripcion(
           java.lang.String value) {
@@ -4309,21 +4309,21 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        inscripcion_ = value;
+        fechaInscripcion_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string inscripcion = 3;</code>
+       * <code>optional string fechaInscripcion = 3;</code>
        */
       public Builder clearFechaInscripcion() {
         bitField0_ = (bitField0_ & ~0x00000004);
-        inscripcion_ = getDefaultInstance().getFechaInscripcion();
+        fechaInscripcion_ = getDefaultInstance().getFechaInscripcion();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string inscripcion = 3;</code>
+       * <code>optional string fechaInscripcion = 3;</code>
        */
       public Builder setFechaInscripcionBytes(
           com.google.protobuf.ByteString value) {
@@ -4331,7 +4331,7 @@ public final class PersonasProto {
     throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        inscripcion_ = value;
+        fechaInscripcion_ = value;
         onChanged();
         return this;
       }
@@ -4514,16 +4514,16 @@ public final class PersonasProto {
       "\n\016Personas.proto\022\004main\"+\n\010Personas\022\037\n\010pe" +
       "rsonas\030\001 \003(\0132\r.main.Persona\"\357\002\n\007Persona\022" +
       "\014\n\004cuit\030\001 \002(\004\022\016\n\006nombre\030\002 \001(\t\022\020\n\010apellid" +
-      "o\030\003 \001(\t\022\023\n\013razonSocial\030\004 \001(\t\022\023\n\013pers" +
-      "ona\030\005 \002(\t\022\022\n\nestado\030\006 \002(\t\022\027\n\017forma" +
-      "Juridica\030\007 \001(\005\022\017\n\007tipoDoc\030\010 \001(\005\022\021\n\tdoc" +
-      "\030\t \001(\t\022\014\n\004sexo\030\n \001(\t\022\021\n\tmesCierre\030\013 " +
-      "\001(\005\022\027\n\017nacimiento\030\014 \001(\t\022\032\n\022fal" +
-      "lecimiento\030\r \001(\t\022\030\n\020inscripcion\030\016 \001" +
+      "o\030\003 \001(\t\022\023\n\013razonSocial\030\004 \001(\t\022\023\n\013tipoPers" +
+      "ona\030\005 \002(\t\022\022\n\nestadoCuit\030\006 \002(\t\022\027\n\017idForma" +
+      "Juridica\030\007 \001(\005\022\017\n\007tipoDoc\030\010 \001(\005\022\021\n\tdocum" +
+      "ento\030\t \001(\t\022\014\n\004sexo\030\n \001(\t\022\021\n\tmesCierre\030\013 " +
+      "\001(\005\022\027\n\017fechaNacimiento\030\014 \001(\t\022\032\n\022fechaFal" +
+      "lecimiento\030\r \001(\t\022\030\n\020fechaInscripcion\030\016 \001" +
       "(\t\022\023\n\013fechaCierre\030\017 \001(\t\022\021\n\tnuevaCuit\030\020 \001",
       "(\004\022!\n\timpuestos\030\021 \003(\0132\016.main.Impuesto\"w\n" +
-      "\010Impuesto\022\022\n\nimpuesto\030\001 \002(\005\022\r\n\005idOrg\030\002" +
-      " \001(\005\022\030\n\020inscripcion\030\003 \001(\t\022\017\n\007period" +
+      "\010Impuesto\022\022\n\nidImpuesto\030\001 \002(\005\022\r\n\005idOrg\030\002" +
+      " \001(\005\022\030\n\020fechaInscripcion\030\003 \001(\t\022\017\n\007period" +
       "o\030\004 \001(\005\022\016\n\006estado\030\005 \001(\t\022\r\n\005idTxc\030\006 \001(\004B&" +
       "\n\025afip.rut.client.modelB\rPersonasProto"
     };

@@ -23,27 +23,27 @@ const (
 
 // Persona asset
 type Persona struct {
-	CUIT               uint64      `protobuf:"varint,1,name=cuit,proto3" json:"cuit"`
-	Nombre             string      `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
-	Apellido           string      `protobuf:"bytes,3,opt,name=apellido,proto3" json:"apellido,omitempty"`
-	RazonSocial        string      `protobuf:"bytes,4,opt,name=razon_social,proto3" json:"razonSocial,omitempty"`
-	TipoPersona        string      `protobuf:"bytes,5,name=persona,proto3" json:"persona,omitempty"`
-	EstadoCUIT         string      `protobuf:"bytes,6,name=estado,proto3" json:"estado,omitempty"`
-	IDFormaJuridica    int32       `protobuf:"varint,7,opt,name=forma_juridica,proto3" json:"formaJuridica,omitempty"`
-	TipoDoc            int32       `protobuf:"varint,8,opt,name=tipo_doc,proto3" json:"tipoDoc,omitempty"`
-	Documento          string      `protobuf:"bytes,9,opt,name=doc,proto3" json:"doc,omitempty"`
-	Sexo               string      `protobuf:"bytes,10,opt,name=sexo,proto3" json:"sexo,omitempty"`
-	MesCierre          int32       `protobuf:"varint,11,opt,name=mes_cierre,proto3" json:"mesCierre,omitempty"`
-	FechaNacimiento    string      `protobuf:"bytes,12,opt,name=nacimiento,proto3" json:"nacimiento,omitempty"`
-	FechaFallecimiento string      `protobuf:"bytes,13,opt,name=fallecimiento,proto3" json:"fallecimiento,omitempty"`
-	FechaInscripcion   string      `protobuf:"bytes,14,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
-	FechaCierre        string      `protobuf:"bytes,15,opt,name=fecha_cierre,proto3" json:"fechaCierre,omitempty"`
-	NuevaCUIT          uint64      `protobuf:"varint,16,opt,name=nueva_cuit,proto3" json:"nuevaCuit,omitempty"`
-	Materno            string      `protobuf:"bytes,17,opt,name=materno,proto3" json:"materno,omitempty"`
-	Pais               string      `protobuf:"bytes,18,opt,name=pais,proto3" json:"pais,omitempty"`
-	CH                 string      `protobuf:"bytes,19,opt,name=ch,proto3" json:"ch,omitempty"`
-	DS                 string      `protobuf:"bytes,20,opt,name=ds,proto3" json:"ds,omitempty"`
-	Impuestos          []*Impuesto `protobuf:"group,21,rep,name=impuestos,proto3" json:"impuestos,omitempty"`
+	CUIT          uint64      `protobuf:"varint,1,name=cuit,proto3" json:"cuit"`
+	Nombre        string      `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
+	Apellido      string      `protobuf:"bytes,3,opt,name=apellido,proto3" json:"apellido,omitempty"`
+	RazonSocial   string      `protobuf:"bytes,4,opt,name=razon_social,proto3" json:"razonSocial,omitempty"`
+	Tipo          string      `protobuf:"bytes,5,name=tipo,proto3" json:"tipo,omitempty"`
+	Estado        string      `protobuf:"bytes,6,name=estado,proto3" json:"estado,omitempty"`
+	FormaJuridica int32       `protobuf:"varint,7,opt,name=forma_juridica,proto3" json:"formaJuridica,omitempty"`
+	TipoDoc       int32       `protobuf:"varint,8,opt,name=tipo_doc,proto3" json:"tipoDoc,omitempty"`
+	Doc           string      `protobuf:"bytes,9,opt,name=doc,proto3" json:"doc,omitempty"`
+	Sexo          string      `protobuf:"bytes,10,opt,name=sexo,proto3" json:"sexo,omitempty"`
+	MesCierre     int32       `protobuf:"varint,11,opt,name=mes_cierre,proto3" json:"mesCierre,omitempty"`
+	Nacimiento    string      `protobuf:"bytes,12,opt,name=nacimiento,proto3" json:"nacimiento,omitempty"`
+	Fallecimiento string      `protobuf:"bytes,13,opt,name=fallecimiento,proto3" json:"fallecimiento,omitempty"`
+	Inscripcion   string      `protobuf:"bytes,14,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
+	FechaCierre   string      `protobuf:"bytes,15,opt,name=fecha_cierre,proto3" json:"fechaCierre,omitempty"`
+	NuevaCUIT     uint64      `protobuf:"varint,16,opt,name=nueva_cuit,proto3" json:"nuevaCuit,omitempty"`
+	Materno       string      `protobuf:"bytes,17,opt,name=materno,proto3" json:"materno,omitempty"`
+	Pais          string      `protobuf:"bytes,18,opt,name=pais,proto3" json:"pais,omitempty"`
+	CH            string      `protobuf:"bytes,19,opt,name=ch,proto3" json:"ch,omitempty"`
+	DS            string      `protobuf:"bytes,20,opt,name=ds,proto3" json:"ds,omitempty"`
+	Impuestos     []*Impuesto `protobuf:"group,21,rep,name=impuestos,proto3" json:"impuestos,omitempty"`
 }
 
 func (m *Persona) Reset()         { *m = Persona{} }
@@ -58,15 +58,15 @@ func (m *Persona) GetImpuestos() []*Impuesto {
 
 // Impuesto asset
 type Impuesto struct {
-	IDImpuesto       int32  `protobuf:"varint,1,name=impuesto,proto3" json:"impuesto"`
-	IDOrganismo      int32  `protobuf:"varint,2,opt,name=id_org,proto3" json:"idOrg,omitempty"`
-	FechaInscripcion string `protobuf:"bytes,3,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
-	Periodo          int32  `protobuf:"varint,4,opt,name=periodo,proto3" json:"periodo,omitempty"`
-	Estado           string `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
-	IDTxc            uint64 `protobuf:"varint,6,opt,name=id_txc,proto3" json:"idTxc,omitempty"`
-	DS               string `protobuf:"bytes,7,opt,name=ds,proto3" json:"ds,omitempty"`
-	Motivo           string `protobuf:"bytes,8,opt,name=motivo,proto3" json:"motivo,omitempty"`
-	Dia              int32  `protobuf:"varint,9,opt,name=dia,proto3" json:"dia,omitempty"`
+	Impuesto    int32  `protobuf:"varint,1,name=impuesto,proto3" json:"impuesto"`
+	IDOrganismo int32  `protobuf:"varint,2,opt,name=id_org,proto3" json:"idOrg,omitempty"`
+	Inscripcion string `protobuf:"bytes,3,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
+	Periodo     int32  `protobuf:"varint,4,opt,name=periodo,proto3" json:"periodo,omitempty"`
+	Estado      string `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
+	IDTxc       uint64 `protobuf:"varint,6,opt,name=id_txc,proto3" json:"idTxc,omitempty"`
+	DS          string `protobuf:"bytes,7,opt,name=ds,proto3" json:"ds,omitempty"`
+	Motivo      string `protobuf:"bytes,8,opt,name=motivo,proto3" json:"motivo,omitempty"`
+	Dia         int32  `protobuf:"varint,9,opt,name=dia,proto3" json:"dia,omitempty"`
 }
 
 func (m *Impuesto) Reset()         { *m = Impuesto{} }
@@ -94,7 +94,7 @@ type Impuestos struct {
 
 // ParamImpuesto asset
 type ParamImpuesto struct {
-	IDImpuesto  int32  `json:"impuesto"`
+	Impuesto    int32  `json:"impuesto"`
 	IDOrganismo int32  `json:"idOrg"`
 	TipoRegimen string `json:"tipoRegimen"`
 	Nombre      string `json:"nombre"`

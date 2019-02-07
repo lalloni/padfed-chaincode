@@ -26,13 +26,13 @@ func (s *SmartContract) putParamImpuestos(APIstub shim.ChaincodeStubInterface, a
 			return clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrganismo))+"] debe ser un entero igual a 1:AFIP o entre 900 y 999", count)
 		}
 
-		if err := validateIdImpuesto(imp.IDImpuesto); err.isError() {
+		if err := validateIdImpuesto(imp.Impuesto); err.isError() {
 			err.WrongItem = count
 			return err
 		}
 
 		impuestoAsBytes, _ := json.Marshal(imp)
-		var key = getParamImpuestoKey(imp.IDImpuesto)
+		var key = getParamImpuestoKey(imp.Impuesto)
 		if err := APIstub.PutState(key, impuestoAsBytes); err != nil {
 			return systemErrorResponse("Error putting key ["+key+"] - "+err.Error(), count)
 		}

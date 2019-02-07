@@ -79,7 +79,7 @@ func (s *SmartContract) responseTxConfirmable(APIstub shim.ChaincodeStubInterfac
 		return systemErrorResponse("Error unmarshal de txc.assetValue")
 	}
 
-	asset_pi, _, errAsset := findImpuesto(APIstub, txc.CUIT, txc_pi.IDImpuesto)
+	asset_pi, _, errAsset := findImpuesto(APIstub, txc.CUIT, txc_pi.Impuesto)
 	existAsset := errAsset == nil
 	if existAsset {
 		if asset_pi.IDTxc != txc.IDTxc {
@@ -92,8 +92,8 @@ func (s *SmartContract) responseTxConfirmable(APIstub shim.ChaincodeStubInterfac
 			asset_pi.Periodo = txc_pi.Periodo
 			asset_piAsBytes, _ := json.Marshal(asset_pi)
 			log.Println("Guardando " + string(asset_piAsBytes))
-			if err = APIstub.PutState(getImpuestoKeyByCuitId(txc.CUIT, asset_pi.IDImpuesto), asset_piAsBytes); err != nil {
-				return systemErrorResponse("Error al guardar Impuesto - " + getImpuestoKeyByCuitId(txc.CUIT, asset_pi.IDImpuesto) + ", error " + err.Error())
+			if err = APIstub.PutState(getImpuestoKeyByCuitId(txc.CUIT, asset_pi.Impuesto), asset_piAsBytes); err != nil {
+				return systemErrorResponse("Error al guardar Impuesto - " + getImpuestoKeyByCuitId(txc.CUIT, asset_pi.Impuesto) + ", error " + err.Error())
 			}
 
 		}
@@ -103,8 +103,8 @@ func (s *SmartContract) responseTxConfirmable(APIstub shim.ChaincodeStubInterfac
 			return clientErrorResponse("El asset [v_key_pi] que debe ser actualizado por la TXC [v_key_txc] no existe")
 		}
 		txc_piAsBytes, _ := json.Marshal(txc_pi)
-		if err = APIstub.PutState(getImpuestoKeyByCuitId(txc.CUIT, txc_pi.IDImpuesto), txc_piAsBytes); err != nil {
-			return systemErrorResponse("Error al guardar Impuesto - " + getImpuestoKeyByCuitId(txc.CUIT, txc_pi.IDImpuesto) + ", error " + err.Error())
+		if err = APIstub.PutState(getImpuestoKeyByCuitId(txc.CUIT, txc_pi.Impuesto), txc_piAsBytes); err != nil {
+			return systemErrorResponse("Error al guardar Impuesto - " + getImpuestoKeyByCuitId(txc.CUIT, txc_pi.Impuesto) + ", error " + err.Error())
 		}
 	}
 	txcAsBytes, _ := json.Marshal(txc)

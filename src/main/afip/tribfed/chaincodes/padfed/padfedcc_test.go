@@ -14,7 +14,7 @@ import (
 )
 
 func getPesonaJSON(cuit uint64) string {
-	var persona = "F"
+	var tipo = "F"
 	var razonSocial = ""
 	var nombreApellido = `"nombre": "Pepe", "apellido": "Sanchez",`
 	var formaJuridica = "0"
@@ -22,7 +22,7 @@ func getPesonaJSON(cuit uint64) string {
 	var tipoDoc = "1"
 	var nacimiento = `"nacimiento":"1928-11-17",`
 	if cuit >= 30000000000 {
-		persona = "J"
+		tipo = "J"
 		razonSocial = `"razonSocial":"THE BIRTH OF MARIA CONCETTA",`
 		formaJuridica = "1"
 		nombreApellido = ""
@@ -31,7 +31,7 @@ func getPesonaJSON(cuit uint64) string {
 		nacimiento = ""
 	}
 	var personaJSON = `{
-	"cuit":$cuit,"persona":"$persona","estado":"A",$razonSocial $nombreApellido
+	"cuit":$cuit,"tipo":"$tipo","estado":"A",$razonSocial $nombreApellido
 	"formaJuridica":$formaJuridica, "tipoDoc": $tipoDoc, $doc "inscripcion":"1992-10-20","mesCierre":12, $nacimiento
 	"impuestos":[
 		{"impuesto":30,"estado":"AC","periodo":199912},
@@ -53,7 +53,7 @@ func getPesonaJSON(cuit uint64) string {
 
 	cuitStr := strconv.FormatUint(cuit, 10)
 	personaJSON = strings.Replace(personaJSON, "$cuit", cuitStr, -1)
-	personaJSON = strings.Replace(personaJSON, "$persona", persona, -1)
+	personaJSON = strings.Replace(personaJSON, "$tipo", tipo, -1)
 	personaJSON = strings.Replace(personaJSON, "$razonSocial", razonSocial, -1)
 	personaJSON = strings.Replace(personaJSON, "$nombreApellido", nombreApellido, -1)
 	personaJSON = strings.Replace(personaJSON, "$formaJuridica", formaJuridica, -1)
@@ -101,11 +101,11 @@ func TestValimpuestosJSON(t *testing.T) {
 	if len(impuestos.Impuestos) != 4 {
 		t.Error("Persona debe tener 4 impuestos y tiene " + strconv.Itoa(len(impuestos.Impuestos)))
 	}
-	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[0].IDImpuesto) != "PER_30679638943_IMP_30" {
-		t.Error("1-Impuesto.Key no valido " + getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[0].IDImpuesto))
+	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[0].Impuesto) != "PER_30679638943_IMP_30" {
+		t.Error("1-Impuesto.Key no valido " + getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[0].Impuesto))
 	}
-	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].IDImpuesto) != "PER_30679638943_IMP_103" {
-		t.Error("3-Impuesto.Key no valido " + getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].IDImpuesto))
+	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].Impuesto) != "PER_30679638943_IMP_103" {
+		t.Error("3-Impuesto.Key no valido " + getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].Impuesto))
 	}
 }
 
@@ -203,7 +203,7 @@ func TestPutPersonaProto(t *testing.T) {
 func TestPutPersonas(t *testing.T) {
 	stub := setInitTests(t)
 
-	var pJSON = `{"personas":[{"cuit":20066675573,"apellido":"GES","nombre":"THOMAS MICHAEL","persona":"F","estado":"A","tipoDoc":1,"doc":"6667557","sexo":"M","nacimiento":"1928-11-17","impuestos":[{"impuesto":11,"estado":"BD","periodo":199901},{"impuesto":20,"estado":"BD","periodo":200907},{"impuesto":21,"estado":"BD","periodo":200907},{"impuesto":180,"estado":"AC","periodo":199807}],"categorias":[{"idCategoria":"11","estado":"BD","impuesto":20,"periodo":200907},{"idCategoria":"11","estado":"BD","impuesto":21,"periodo":200907}],"actividades":[{"codNomenclador":883,"idActividad":692000,"orden":1,"estado":"AC","periodo":201311}],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":2,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"HIPOLITO IRIGOYEN","numero":"57"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":9,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"SAN MARTIN ESQ IRIGO","numero":"8"}]},{"cuit":20066758193,"apellido":"RACCONTARE","nombre":"GUSTAVO FABIAN","persona":"F","estado":"A","tipoDoc":1,"doc":"6675819","sexo":"M","nacimiento":"1933-01-22","impuestos":[{"impuesto":11,"estado":"AC","periodo":190101},{"impuesto":30,"estado":"AC","periodo":200408},{"impuesto":32,"estado":"BD","periodo":200408},{"impuesto":180,"estado":"AC","periodo":199105},{"impuesto":301,"estado":"AC","periodo":199407},{"impuesto":308,"estado":"AC","periodo":196501}],"categorias":[{"idCategoria":"501","estado":"AC","impuesto":308,"periodo":200703}],"actividadList":[],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":6,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"RIVADAVIA","numero":"572"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":1,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"URUGUAY","numero":"287"}]}]}`
+	var pJSON = `{"personas":[{"cuit":20066675573,"apellido":"GES","nombre":"THOMAS MICHAEL","tipo":"F","estado":"A","tipoDoc":1,"doc":"6667557","sexo":"M","nacimiento":"1928-11-17","impuestos":[{"impuesto":11,"estado":"BD","periodo":199901},{"impuesto":20,"estado":"BD","periodo":200907},{"impuesto":21,"estado":"BD","periodo":200907},{"impuesto":180,"estado":"AC","periodo":199807}],"categorias":[{"idCategoria":"11","estado":"BD","impuesto":20,"periodo":200907},{"idCategoria":"11","estado":"BD","impuesto":21,"periodo":200907}],"actividades":[{"codNomenclador":883,"idActividad":692000,"orden":1,"estado":"AC","periodo":201311}],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":2,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"HIPOLITO IRIGOYEN","numero":"57"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":9,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"SAN MARTIN ESQ IRIGO","numero":"8"}]},{"cuit":20066758193,"apellido":"RACCONTARE","nombre":"GUSTAVO FABIAN","tipo":"F","estado":"A","tipoDoc":1,"doc":"6675819","sexo":"M","nacimiento":"1933-01-22","impuestos":[{"impuesto":11,"estado":"AC","periodo":190101},{"impuesto":30,"estado":"AC","periodo":200408},{"impuesto":32,"estado":"BD","periodo":200408},{"impuesto":180,"estado":"AC","periodo":199105},{"impuesto":301,"estado":"AC","periodo":199407},{"impuesto":308,"estado":"AC","periodo":196501}],"categorias":[{"idCategoria":"501","estado":"AC","impuesto":308,"periodo":200703}],"actividadList":[],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":6,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"RIVADAVIA","numero":"572"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":1,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"URUGUAY","numero":"287"}]}]}`
 	res := stub.MockInvoke("1", [][]byte{[]byte("putPersonas"), []byte(pJSON)})
 	if res.Status != shim.OK {
 		fmt.Println("putPersonas", string(res.Message))

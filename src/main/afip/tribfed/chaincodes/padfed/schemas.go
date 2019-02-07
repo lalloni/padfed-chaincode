@@ -120,7 +120,7 @@ const PersonaSchema = `{
         "razonSocial": {
             "type": "string"
         },
-        "persona": {
+        "tipo": {
             "type": "string"
         },
         "estado": {

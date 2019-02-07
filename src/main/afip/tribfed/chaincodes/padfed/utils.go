@@ -108,17 +108,17 @@ func validatePersona(persona *Persona) Response {
 	if !cuitVerifier.IsValid(persona.CUIT) {
 		return clientErrorResponse("cuit [" + cuitStr + "] invalida")
 	}
-	if err := validateDate(persona.FechaNacimiento); err != nil {
-		return clientErrorResponse("nacimiento [" + persona.FechaNacimiento + "] invalida: " + err.Error())
+	if err := validateDate(persona.Nacimiento); err != nil {
+		return clientErrorResponse("nacimiento [" + persona.Nacimiento + "] invalida: " + err.Error())
 	}
-	if err := validateDate(persona.FechaInscripcion); err != nil {
-		return clientErrorResponse("inscripcion [" + persona.FechaInscripcion + "] invalida: " + err.Error())
+	if err := validateDate(persona.Inscripcion); err != nil {
+		return clientErrorResponse("inscripcion [" + persona.Inscripcion + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.FechaCierre); err != nil {
 		return clientErrorResponse("fechaCierre [" + persona.FechaCierre + "] invalida: " + err.Error())
 	}
-	if err := validateDate(persona.FechaFallecimiento); err != nil {
-		return clientErrorResponse("fallecimiento [" + persona.FechaFallecimiento + "] invalida: " + err.Error())
+	if err := validateDate(persona.Fallecimiento); err != nil {
+		return clientErrorResponse("fallecimiento [" + persona.Fallecimiento + "] invalida: " + err.Error())
 	}
 	return err
 }
@@ -133,10 +133,10 @@ return
 func hasDuplicatedImpuestos(impuestos []*Impuesto) (bool, *Impuesto) {
 	var index = make(map[int]*Impuesto)
 	for _, imp := range impuestos {
-		if _, exist := index[int(imp.IDImpuesto)]; exist {
+		if _, exist := index[int(imp.Impuesto)]; exist {
 			return exist, imp
 		} else {
-			index[int(imp.IDImpuesto)] = imp
+			index[int(imp.Impuesto)] = imp
 		}
 	}
 	return false, &Impuesto{}

@@ -15,7 +15,7 @@ message Persona{
 	optional string nombre = 2;
 	optional string      apellido=3;
 	optional string      razonSocial=4;
-	required string      persona=5;
+	required string      tipo=5;
 	required string      estado=6;
 	optional int32       formaJuridica=7;
 	optional int32       tipoDoc=8;
