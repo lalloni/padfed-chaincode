@@ -14,7 +14,7 @@ import (
 )
 
 func getPesonaJSON(cuit uint64) string {
-	var tipo = "F"
+	var tipoPer = "F"
 	var razonSocial = ""
 	var nombreApellido = `"nombre": "Pepe", "apellido": "Sanchez",`
 	var formaJuridica = "0"
@@ -22,7 +22,7 @@ func getPesonaJSON(cuit uint64) string {
 	var tipoDoc = "1"
 	var nacimiento = `"nacimiento":"1928-11-17",`
 	if cuit >= 30000000000 {
-		tipo = "J"
+		tipoPer = "J"
 		razonSocial = `"razonSocial":"THE BIRTH OF MARIA CONCETTA",`
 		formaJuridica = "1"
 		nombreApellido = ""
@@ -31,8 +31,8 @@ func getPesonaJSON(cuit uint64) string {
 		nacimiento = ""
 	}
 	var personaJSON = `{
-	"cuit":$cuit,"tipo":"$tipo","estado":"A",$razonSocial $nombreApellido
-	"formaJuridica":$formaJuridica, "tipoDoc": $tipoDoc, $doc "inscripcion":"1992-10-20","mesCierre":12, $nacimiento
+	"cuit":$cuit,"tipo":"$tipoPer","estado":"A",$razonSocial $nombreApellido
+	"formaJuridica":$formaJuridica, "tipoDoc":$tipoDoc, $doc "inscripcion":"1992-10-20","mesCierre":12, $nacimiento
 	"impuestos":[
 		{"impuesto":30,"estado":"AC","periodo":199912},
 		{"impuesto":217,"estado":"AC","periodo":199605},
@@ -53,7 +53,7 @@ func getPesonaJSON(cuit uint64) string {
 
 	cuitStr := strconv.FormatUint(cuit, 10)
 	personaJSON = strings.Replace(personaJSON, "$cuit", cuitStr, -1)
-	personaJSON = strings.Replace(personaJSON, "$tipo", tipo, -1)
+	personaJSON = strings.Replace(personaJSON, "$tipoPer", tipoPer, -1)
 	personaJSON = strings.Replace(personaJSON, "$razonSocial", razonSocial, -1)
 	personaJSON = strings.Replace(personaJSON, "$nombreApellido", nombreApellido, -1)
 	personaJSON = strings.Replace(personaJSON, "$formaJuridica", formaJuridica, -1)
