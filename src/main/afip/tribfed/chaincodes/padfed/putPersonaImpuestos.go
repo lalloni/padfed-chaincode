@@ -66,12 +66,18 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 			return 0, clientErrorResponse("impuesto ["+strconv.Itoa(int(imp.Impuesto))+"] no definido en ParamImpuesto", count)
 		}
 		if err := validateDate(imp.Inscripcion); err != nil {
-			return 0, clientErrorResponse("inscripcion [" + imp.Inscripcion + "]: " + err.Error())
+			return 0, clientErrorResponse("inscripcion ["+imp.Inscripcion+"]: "+err.Error(), count)
+		}
+		if err := validateDate(imp.DS); err != nil {
+			return 0, clientErrorResponse("ds ["+imp.DS+"]: "+err.Error(), count)
 		}
 		periodoString := strconv.FormatInt(int64(imp.Periodo), 10)
 		res := CHECK_PERIODO_FISCAL_REGEXP.FindStringSubmatch(periodoString)
 		if len(res) != 3 {
 			return 0, clientErrorResponse("periodo ["+strconv.Itoa(int(imp.Periodo))+"] debe tener formato YYYY00 o YYYYMM con YYYY entre 1900 y 2030", count)
+		}
+		if (imp.Dia < 0) || (imp.Dia > 31) {
+			return 0, clientErrorResponse("dia ["+strconv.Itoa(int(imp.Dia))+"] debe ser un entero entre 1 y 31 o nulo", count)
 		}
 		key := "PER_" + cuit + "_IMP_" + strconv.Itoa(int(imp.Impuesto))
 		if err := APIstub.PutState(key, impuestoAsBytes); err != nil {

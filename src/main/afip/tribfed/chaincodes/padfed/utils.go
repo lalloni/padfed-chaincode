@@ -109,7 +109,7 @@ func validatePersona(persona *Persona) Response {
 		return clientErrorResponse("cuit [" + cuitStr + "] invalida")
 	}
 	if err := validateDate(persona.Nacimiento); err != nil {
-		return clientErrorResponse("nacimiento [" + persona.Nacimiento + "] invalida: " + err.Error())
+		return clientErrorResponse("nacimiento [" + persona.Nacimiento + "] invalido: " + err.Error())
 	}
 	if err := validateDate(persona.Inscripcion); err != nil {
 		return clientErrorResponse("inscripcion [" + persona.Inscripcion + "] invalida: " + err.Error())
@@ -118,7 +118,10 @@ func validatePersona(persona *Persona) Response {
 		return clientErrorResponse("fechaCierre [" + persona.FechaCierre + "] invalida: " + err.Error())
 	}
 	if err := validateDate(persona.Fallecimiento); err != nil {
-		return clientErrorResponse("fallecimiento [" + persona.Fallecimiento + "] invalida: " + err.Error())
+		return clientErrorResponse("fallecimiento [" + persona.Fallecimiento + "] invalido: " + err.Error())
+	}
+	if err := validateDate(persona.DS); err != nil {
+		return clientErrorResponse("ds [" + persona.DS + "] invalido: " + err.Error())
 	}
 	return err
 }

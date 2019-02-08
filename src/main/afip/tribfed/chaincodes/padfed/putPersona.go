@@ -97,6 +97,12 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		if len(newPersona.Apellido) > 0 {
 			return clientErrorResponse("persona juridica con apellido [" + newPersona.Apellido + "], solo debe tener RazonSocial")
 		}
+		if len(newPersona.Materno) > 0 {
+			return clientErrorResponse("persona juridica con materno [" + newPersona.Materno + "], solo debe tener RazonSocial")
+		}
+		if len(newPersona.Sexo) > 0 {
+			return clientErrorResponse("persona juridica con sexo [" + newPersona.Sexo + "], solo debe tener RazonSocial")
+		}
 		if !(newPersona.FormaJuridica >= 1 && newPersona.FormaJuridica <= 999) {
 			return clientErrorResponse("formaJuridica [" + strconv.Itoa(int(newPersona.FormaJuridica)) + "] invalida")
 		}
@@ -126,6 +132,9 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		if len(newPersona.Apellido) > 0 {
 			return clientErrorResponse("apellido debe ser nulo cuando tipo es nulo")
 		}
+		if len(newPersona.Materno) > 0 {
+			return clientErrorResponse("materno debe ser nulo cuando tipo es nulo")
+		}
 		if newPersona.FormaJuridica != 0 {
 			return clientErrorResponse("formaJuridica debe ser nulo cuando tipo es nulo")
 		}
@@ -137,6 +146,9 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		}
 		if len(newPersona.Sexo) > 0 {
 			return clientErrorResponse("sexo debe ser nulo cuando tipo es nulo")
+		}
+		if len(newPersona.Pais) > 0 {
+			return clientErrorResponse("pais debe ser nulo cuando tipo es nulo")
 		}
 		if newPersona.MesCierre != 0 {
 			return clientErrorResponse("mesCierre debe ser nulo cuando tipo es nulo")
@@ -157,7 +169,7 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 			return clientErrorResponse("nuevaCuit debe ser nulo cuando tipo es nulo")
 		}
 		if newPersona.Impuestos == nil || len(newPersona.Impuestos) == 0 {
-			return clientErrorResponse("cuando tipoPerona es nulo debe informarse por lo menos un item en alguno de los arrarys (impuestos, actividades, domicilios, ...)")
+			return clientErrorResponse("cuando tipo es nulo debe informarse por lo menos un item en alguno de los arrarys (impuestos, actividades, domicilios, ...)")
 		}
 	default:
 		return clientErrorResponse("tipo [" + newPersona.Tipo + "] invalido, debe ser F (Humana), J (Juridica) o nulo (para indicar que no se aplican cambios sobre el asset topo Persona) ")
