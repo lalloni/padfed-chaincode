@@ -2,7 +2,7 @@ package main
 
 const ImpuestoSchema = `{
     "type": "object",
-    "required": ["impuesto"],
+    "required": ["impuesto", "periodo", "estado"],
     "properties": {
         "impuesto": {
             "type": "number"

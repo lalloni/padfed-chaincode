@@ -61,8 +61,8 @@ type Impuesto struct {
 	Impuesto    int32  `protobuf:"varint,1,name=impuesto,proto3" json:"impuesto"`
 	IDOrganismo int32  `protobuf:"varint,2,opt,name=id_org,proto3" json:"idOrg,omitempty"`
 	Inscripcion string `protobuf:"bytes,3,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
-	Periodo     int32  `protobuf:"varint,4,opt,name=periodo,proto3" json:"periodo,omitempty"`
-	Estado      string `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado,omitempty"`
+	Periodo     int32  `protobuf:"varint,4,opt,name=periodo,proto3" json:"periodo"`
+	Estado      string `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado"`
 	IDTxc       uint64 `protobuf:"varint,6,opt,name=id_txc,proto3" json:"idTxc,omitempty"`
 	DS          string `protobuf:"bytes,7,opt,name=ds,proto3" json:"ds,omitempty"`
 	Motivo      string `protobuf:"bytes,8,opt,name=motivo,proto3" json:"motivo,omitempty"`
