@@ -84,13 +84,7 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 			return 0, systemErrorResponse("Error putting key ["+key+"]: "+err.Error(), count)
 		}
 		switch imp.Estado {
-		case "AC":
-		case "AT":
-		case "BP":
-		case "BD":
-		case "EX":
-		case "ET":
-		case "NA":
+		case "AC", "AT", "BP", "BD", "EX", "ET", "NA":
 		default:
 			return 0, clientErrorResponse("estado ["+imp.Estado+"] invalido, debe ser AC (Activo), AT (Activo en tramite), BP (Baja provisoria), BD (Baja definitiva), EX (Exento), ET (Exento en tramite), NA (No aportante)", count)
 		}

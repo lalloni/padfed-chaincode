@@ -176,8 +176,7 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 	}
 	if !tipoNull {
 		switch newPersona.Estado {
-		case "A":
-		case "I":
+		case "A", "I":
 		default:
 			return clientErrorResponse("estado [" + newPersona.Estado + "] invalido, debe ser A (Activa) o I (Inactiva)")
 		}

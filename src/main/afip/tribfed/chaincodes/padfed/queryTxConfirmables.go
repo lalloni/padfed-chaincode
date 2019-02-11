@@ -24,37 +24,26 @@ func (s *SmartContract) queryTxConfirmables(APIstub shim.ChaincodeStubInterface,
 	idTxc := ""
 	cuit := ""
 	isPendiente := "SIN_DEFINIR"
+	// se esta usando fallthrough, importante no cambiar el orden de los case's
 	switch len(args) {
+	case 4:
+		isPendiente = args[3]
+		fallthrough
+	case 3:
+		err = checkParam(args[2])
+		if err != nil {
+			return clientErrorResponse("CUIT [" + args[2] + "] invalido. " + err.Error())
+		}
+		cuit = args[2]
+		fallthrough
 	case 2:
 		err = checkParam(args[1])
 		if err != nil {
 			return clientErrorResponse("ID_TXC [" + args[1] + "] invalido. " + err.Error())
 		}
 		idTxc = args[1]
-	case 3:
-		err = checkParam(args[1])
-		if err != nil {
-			return clientErrorResponse("ID_TXC [" + args[1] + "] invalido. " + err.Error())
-		}
-		err = checkParam(args[2])
-		if err != nil {
-			return clientErrorResponse("CUIT [" + args[2] + "] invalido. " + err.Error())
-		}
-		idTxc = args[1]
-		cuit = args[2]
-	case 4:
-		err = checkParam(args[1])
-		if err != nil {
-			return clientErrorResponse("ID_TXC [" + args[1] + "] invalido. " + err.Error())
-		}
-		err = checkParam(args[2])
-		if err != nil {
-			return clientErrorResponse("CUIT [" + args[2] + "] invalido. " + err.Error())
-		}
-		isPendiente = args[3]
-		idTxc = args[1]
-		cuit = args[2]
 	}
+
 	startKey := "ORG_" + args[0] + "_TXC_"
 	if idTxc != "" {
 		startKey += idTxc
