@@ -135,7 +135,7 @@ type SmartContract struct {
 }
 
 var logger = shim.NewLogger("rut-afipcc")
-var FIND_VERBOSE_REGEXP = *regexp.MustCompile(`^(.*)(\?v)$`)
+var FIND_VERBOSE_REGEXP = *regexp.MustCompile(`^(.*)(\?verbose=true)$`)
 
 func (s *SmartContract) Init(APIstub shim.ChaincodeStubInterface) peer.Response {
 	log.SetPrefix("LOG: ")
