@@ -6,7 +6,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
@@ -63,10 +62,9 @@ type Impuesto struct {
 	Inscripcion string `protobuf:"bytes,3,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
 	Periodo     int32  `protobuf:"varint,4,opt,name=periodo,proto3" json:"periodo"`
 	Estado      string `protobuf:"bytes,5,opt,name=estado,proto3" json:"estado"`
-	IDTxc       uint64 `protobuf:"varint,6,opt,name=id_txc,proto3" json:"idTxc,omitempty"`
-	DS          string `protobuf:"bytes,7,opt,name=ds,proto3" json:"ds,omitempty"`
-	Motivo      string `protobuf:"bytes,8,opt,name=motivo,proto3" json:"motivo,omitempty"`
-	Dia         int32  `protobuf:"varint,9,opt,name=dia,proto3" json:"dia,omitempty"`
+	DS          string `protobuf:"bytes,6,opt,name=ds,proto3" json:"ds,omitempty"`
+	Motivo      string `protobuf:"bytes,7,opt,name=motivo,proto3" json:"motivo,omitempty"`
+	Dia         int32  `protobuf:"varint,8,opt,name=dia,proto3" json:"dia,omitempty"`
 }
 
 func (m *Impuesto) Reset()         { *m = Impuesto{} }
@@ -100,20 +98,6 @@ type ParamImpuesto struct {
 	Nombre      string `json:"nombre"`
 	FechaDesde  string `json:"fechaDesde"`
 	FechaHasta  string `json:"fechaHasta"`
-}
-
-// TXConfirmable asset
-type TXConfirmable struct {
-	IDTxc              uint64    `json:"idTxc"`
-	TipoTxc            int       `json:"tipoTxc"`
-	NombreTxc          int       `json:"nombreTxc"`
-	IDOrganismo        int       `json:"idOrg"`
-	CUIT               uint64    `json:"cuit"`
-	AssetType          string    `json:"assetType"`
-	AssetValue         string    `json:"assetValue"`
-	FechaHoraTxc       time.Time `json:"fechahoraTxc"`
-	FechaHoraRespuesta time.Time `json:"fechahoraRespuesta"`
-	TipoRespuesta      int       `json:"tipoRespuesta"`
 }
 
 // Context
@@ -186,10 +170,6 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Respons
 		r = s.putPersonas(APIstub, ctx.args, PROTOBUF)
 	case "putParamImpuestos":
 		r = s.putParamImpuestos(APIstub, ctx.args)
-	case "createTxConfirmable":
-		r = s.createTxConfirmable(APIstub, ctx.args)
-	case "responseTxConfirmable":
-		r = s.responseTxConfirmable(APIstub, ctx.args)
 	case "delPersona":
 		r = s.delPersona(APIstub, ctx.args)
 	case "delPersonasByRange":
@@ -216,8 +196,6 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Respons
 		r = s.queryByKeyRange(APIstub, ctx.args)
 	case "queryParamImpuestos":
 		r = s.queryParamImpuestos(APIstub)
-	case "queryTxConfirmables":
-		r = s.queryTxConfirmables(APIstub, ctx.args)
 	case "queryHistory":
 		r = s.queryHistory(APIstub, ctx.args)
 	default:

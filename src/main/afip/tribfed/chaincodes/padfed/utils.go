@@ -190,20 +190,6 @@ func findImpuesto(APIstub shim.ChaincodeStubInterface, cuit uint64, idImpuesto i
 	return impuesto, impuestoAsBytes, nil
 }
 
-func findTXConfirmable(APIstub shim.ChaincodeStubInterface, idOrganismo int, idTxc uint64) (TXConfirmable, []byte, error) {
-	var id = strconv.FormatUint(idTxc, 10)
-	var idOrganismoStr = strconv.Itoa(idOrganismo)
-	txConfirmableAsBytes, err := APIstub.GetState(getTxConfirmableKey(idOrganismo, idTxc))
-	var txc TXConfirmable
-	if err != nil {
-		return txc, txConfirmableAsBytes, errors.New("Error al buscar la TXConfirmable id:" + id + ", idOrganismo:" + idOrganismoStr)
-	} else if txConfirmableAsBytes == nil {
-		return txc, txConfirmableAsBytes, errors.New("No existe TXConfirmable para ")
-	}
-	err = json.Unmarshal(txConfirmableAsBytes, &txc)
-	return txc, txConfirmableAsBytes, nil
-}
-
 func validateDate(dateStr string) error {
 	if dateStr != "" {
 		res := CHECK_DATE_REGEXP.FindStringSubmatch(dateStr)

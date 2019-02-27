@@ -35,9 +35,9 @@ func getPesonaJSON(cuit uint64) string {
 	"formaJuridica":$formaJuridica, "tipoDoc":$tipoDoc, $doc "inscripcion":"1992-10-20","mesCierre":12, $nacimiento
 	"impuestos":[
 		{"impuesto":30,"estado":"AC","periodo":199912},
-		{"impuesto":217,"estado":"AC","periodo":199605},
+		{"impuesto":308,"estado":"AC","periodo":199605},
 		{"impuesto":301,"estado":"AC","periodo":199407},
-		{"impuesto":103,"estado":"AC","periodo":201112}
+		{"impuesto":34,"estado":"AC","periodo":201112}
 	],
 	"actividades":[
 		{"codNomenclador":883,"idActividad":941100,"orden":1,"estado":"AC","periodo":201311}
@@ -104,7 +104,7 @@ func TestValimpuestosJSON(t *testing.T) {
 	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[0].Impuesto) != "PER_30679638943_IMP_30" {
 		t.Error("1-Impuesto.Key no valido " + getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[0].Impuesto))
 	}
-	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].Impuesto) != "PER_30679638943_IMP_103" {
+	if getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].Impuesto) != "PER_30679638943_IMP_34" {
 		t.Error("3-Impuesto.Key no valido " + getImpuestoKeyByCuitId(cuit, impuestos.Impuestos[3].Impuesto))
 	}
 }
@@ -203,7 +203,7 @@ func TestPutPersonaProto(t *testing.T) {
 func TestPutPersonas(t *testing.T) {
 	stub := setInitTests(t)
 
-	var pJSON = `{"personas":[{"cuit":20066675573,"apellido":"GES","nombre":"THOMAS MICHAEL","tipo":"F","estado":"A","tipoDoc":1,"doc":"6667557","sexo":"M","nacimiento":"1928-11-17","impuestos":[{"impuesto":11,"estado":"BD","periodo":199901},{"impuesto":20,"estado":"BD","periodo":200907},{"impuesto":21,"estado":"BD","periodo":200907},{"impuesto":180,"estado":"AC","periodo":199807}],"categorias":[{"idCategoria":"11","estado":"BD","impuesto":20,"periodo":200907},{"idCategoria":"11","estado":"BD","impuesto":21,"periodo":200907}],"actividades":[{"codNomenclador":883,"idActividad":692000,"orden":1,"estado":"AC","periodo":201311}],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":2,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"HIPOLITO IRIGOYEN","numero":"57"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":9,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"SAN MARTIN ESQ IRIGO","numero":"8"}]},{"cuit":20066758193,"apellido":"RACCONTARE","nombre":"GUSTAVO FABIAN","tipo":"F","estado":"A","tipoDoc":1,"doc":"6675819","sexo":"M","nacimiento":"1933-01-22","impuestos":[{"impuesto":11,"estado":"AC","periodo":190101},{"impuesto":30,"estado":"AC","periodo":200408},{"impuesto":32,"estado":"BD","periodo":200408},{"impuesto":180,"estado":"AC","periodo":199105},{"impuesto":301,"estado":"AC","periodo":199407},{"impuesto":308,"estado":"AC","periodo":196501}],"categorias":[{"idCategoria":"501","estado":"AC","impuesto":308,"periodo":200703}],"actividadList":[],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":6,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"RIVADAVIA","numero":"572"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":1,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"URUGUAY","numero":"287"}]}]}`
+	var pJSON = `{"personas":[{"cuit":20066675573,"apellido":"GES","nombre":"THOMAS MICHAEL","tipo":"F","estado":"A","tipoDoc":1,"doc":"6667557","sexo":"M","nacimiento":"1928-11-17","impuestos":[{"impuesto":20,"estado":"BD","periodo":199901},{"impuesto":5243,"estado":"BD","periodo":200907},{"impuesto":21,"estado":"BD","periodo":200907},{"impuesto":5244,"estado":"AC","periodo":199807}],"categorias":[{"idCategoria":"11","estado":"BD","impuesto":20,"periodo":200907},{"idCategoria":"11","estado":"BD","impuesto":23,"periodo":200907}],"actividades":[{"codNomenclador":883,"idActividad":692000,"orden":1,"estado":"AC","periodo":201311}],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":2,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"HIPOLITO IRIGOYEN","numero":"57"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":9,"idNomenclador":"3541","codPostal":"5891","idProvincia":"3","localidad":"VILLA CURA BROCHERO","calle":"SAN MARTIN ESQ IRIGO","numero":"8"}]},{"cuit":20066758193,"apellido":"RACCONTARE","nombre":"GUSTAVO FABIAN","tipo":"F","estado":"A","tipoDoc":1,"doc":"6675819","sexo":"M","nacimiento":"1933-01-22","impuestos":[{"impuesto":20,"estado":"AC","periodo":190101},{"impuesto":30,"estado":"AC","periodo":200408},{"impuesto":32,"estado":"BD","periodo":200408},{"impuesto":5244,"estado":"AC","periodo":199105},{"impuesto":301,"estado":"AC","periodo":199407},{"impuesto":308,"estado":"AC","periodo":196501}],"categorias":[{"idCategoria":"501","estado":"AC","impuesto":308,"periodo":200703}],"actividadList":[],"domicilios":[{"idTipoDomicilio":1,"orden":1,"idEstadoDomicilio":6,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"RIVADAVIA","numero":"572"},{"idTipoDomicilio":2,"orden":1,"idEstadoDomicilio":1,"idNomenclador":"6024","codPostal":"3315","idProvincia":"19","localidad":"LEANDRO N. ALEM","calle":"URUGUAY","numero":"287"}]}]}`
 	res := stub.MockInvoke("1", [][]byte{[]byte("putPersonas"), []byte(pJSON)})
 	if res.Status != shim.OK {
 		fmt.Println("putPersonas", string(res.Message))
@@ -265,86 +265,11 @@ func TestPutPersonaImpuestos(t *testing.T) {
 		t.FailNow()
 	}
 
-	impuestosJSON := `{"impuestos":[{"impuesto":30,"estado":"AC","periodo":199912},{"impuesto":31,"idOrg":901,"estado":"AC","periodo":199912}]}`
+	impuestosJSON := `{"impuestos":[{"impuesto":30,"estado":"AC","periodo":199912},{"impuesto":32,"idOrg":901,"estado":"AC","periodo":199912}]}`
 
 	res = stub.MockInvoke("1", [][]byte{[]byte("putPersonaImpuestos"), []byte("30679638943"), []byte(impuestosJSON)})
 	if res.Status != shim.OK {
 		fmt.Println("putPersonaImpuestos error", string(res.Message))
-		t.FailNow()
-	}
-}
-
-func TestCreateTxConfirmable(t *testing.T) {
-	stub := setInitTests(t)
-
-	res := putPersona(t, stub, 20255438795)
-	if res.Status != shim.OK {
-		fmt.Println("putPersona", "cuit", "failed", string(res.Message))
-		t.FailNow()
-	}
-
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("createTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("2"),
-		[]byte("1"),
-		[]byte("Impuesto"),
-		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
-	if res.Status != shim.OK {
-		fmt.Println("createTxConfirmable error", string(res.Message))
-		t.FailNow()
-	}
-
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("createTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("2"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("2"),
-		[]byte("1"),
-		[]byte("Impuesto"),
-		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
-	if res.Status != shim.OK {
-		fmt.Println("createTxConfirmable error", string(res.Message))
-		t.FailNow()
-	}
-}
-
-func TestResponseTxConfirmable(t *testing.T) {
-	stub := setInitTests(t)
-
-	res := putPersona(t, stub, 20255438795)
-	if res.Status != shim.OK {
-		fmt.Println("putPersona", "cuit", "failed", string(res.Message))
-		t.FailNow()
-	}
-	// createTxConfirmable
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("createTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("2"),
-		[]byte("1"),
-		[]byte("Impuesto"),
-		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
-	if res.Status != shim.OK {
-		fmt.Println("createTxConfirmable error", string(res.Message))
-		t.FailNow()
-	}
-	// responseTxConfirmable -> confirma cambio
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("responseTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2"),
-		[]byte("1"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("1")})
-	if res.Status != shim.OK {
-		fmt.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()
 	}
 }
@@ -366,7 +291,7 @@ func TestResponseTxConfirmable(t *testing.T) {
 		[]byte("2"),
 		[]byte("1"),
 		[]byte("Impuesto"),
-		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
+		[]byte(`{"impuesto":308,"estado":"B","periodo":199605}`)})
 	if res.Status != shim.OK {
 		fmt.Println("createTxConfirmable error", string(res.Message))
 		t.FailNow()
@@ -388,57 +313,13 @@ func TestResponseTxConfirmable(t *testing.T) {
 	// responseTxConfirmable -> confirma cambio
 	res = stub.MockInvoke("1", [][]byte{
 		[]byte("queryHistory"),
-		[]byte("PER_20255438795_IMP_217"),
+		[]byte("PER_20255438795_IMP_308"),
 	})
 	if res.Status != shim.OK {
 		fmt.Println("queryHistory error", string(res.Message))
 		t.FailNow()
 	}
 }*/
-
-func TestQueryTxConfirmables(t *testing.T) {
-	stub := setInitTests(t)
-
-	res := putPersona(t, stub, 20255438795)
-	if res.Status != shim.OK {
-		fmt.Println("putPersona", "cuit", "failed", string(res.Message))
-		t.FailNow()
-	}
-	// createTxConfirmable
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("createTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("2"),
-		[]byte("900"),
-		[]byte("Impuesto"),
-		[]byte(`{"impuesto":217,"estado":"B","periodo":199605}`)})
-	if res.Status != shim.OK {
-		log.Println("createTxConfirmable error", string(res.Message))
-		t.FailNow()
-	}
-	// responseTxConfirmable -> confirma cambio
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("responseTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2"),
-		[]byte("900"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("1")})
-	// query ->
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("queryTxConfirmables"),
-		[]byte("900"),
-		[]byte("1"),
-		[]byte("")})
-
-	if res.Status != shim.OK {
-		log.Println("queryTxConfirmables error" + string(res.Message))
-		t.FailNow()
-	}
-}
 
 func TestDelPersonasByRange(t *testing.T) {
 	stub := setInitTests(t)
