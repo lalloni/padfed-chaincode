@@ -52,9 +52,6 @@ func (s *SmartContract) commitPersonaImpuestos(APIstub shim.ChaincodeStubInterfa
 	for _, imp := range impuestos {
 		impuestoAsBytes, _ := json.Marshal(imp)
 
-		if !(imp.IDOrganismo == 0 || imp.IDOrganismo == 1 || (imp.IDOrganismo >= 900 && imp.IDOrganismo <= 999)) {
-			return 0, clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrganismo))+"] must be an integer 1:AFIP or between 900 and 999", count)
-		}
 		if err := validateIdImpuesto(imp.Impuesto); err.isError() {
 			err.WrongItem = count
 			return 0, err

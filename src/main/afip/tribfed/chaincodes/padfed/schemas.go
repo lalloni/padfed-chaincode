@@ -7,9 +7,6 @@ const ImpuestoSchema = `{
         "impuesto": {
             "type": "number"
         },
-        "idOrg": {
-            "type": "number"
-        },
         "inscripcion": {
             "type": "string"
         },

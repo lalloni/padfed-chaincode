@@ -265,7 +265,7 @@ func TestPutPersonaImpuestos(t *testing.T) {
 		t.FailNow()
 	}
 
-	impuestosJSON := `{"impuestos":[{"impuesto":30,"estado":"AC","periodo":199912},{"impuesto":32,"idOrg":901,"estado":"AC","periodo":199912}]}`
+	impuestosJSON := `{"impuestos":[{"impuesto":30,"estado":"AC","periodo":199912},{"impuesto":32,"estado":"AC","periodo":199912}]}`
 
 	res = stub.MockInvoke("1", [][]byte{[]byte("putPersonaImpuestos"), []byte("30679638943"), []byte(impuestosJSON)})
 	if res.Status != shim.OK {
@@ -273,53 +273,6 @@ func TestPutPersonaImpuestos(t *testing.T) {
 		t.FailNow()
 	}
 }
-
-/*func TestQueryHistory(t *testing.T) {
-	stub := setInitTests(t)
-
-	res := putPersona(t, stub, 20255438795)
-	if res.Status != shim.OK {
-		fmt.Println("putPersona", "cuit", "failed", string(res.Message))
-		t.FailNow()
-	}
-	// createTxConfirmable
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("createTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("2"),
-		[]byte("1"),
-		[]byte("Impuesto"),
-		[]byte(`{"impuesto":308,"estado":"B","periodo":199605}`)})
-	if res.Status != shim.OK {
-		fmt.Println("createTxConfirmable error", string(res.Message))
-		t.FailNow()
-	}
-	// responseTxConfirmable -> confirma cambio
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("responseTxConfirmable"),
-		[]byte("20255438795"),
-		[]byte("1"),
-		[]byte("2"),
-		[]byte("1"),
-		[]byte("2002-10-02T15:00:00.05Z"),
-		[]byte("1")})
-	if res.Status != shim.OK {
-		fmt.Println("createTxConfirmable error", string(res.Message))
-		t.FailNow()
-	}
-
-	// responseTxConfirmable -> confirma cambio
-	res = stub.MockInvoke("1", [][]byte{
-		[]byte("queryHistory"),
-		[]byte("PER_20255438795_IMP_308"),
-	})
-	if res.Status != shim.OK {
-		fmt.Println("queryHistory error", string(res.Message))
-		t.FailNow()
-	}
-}*/
 
 func TestDelPersonasByRange(t *testing.T) {
 	stub := setInitTests(t)
