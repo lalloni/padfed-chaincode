@@ -92,7 +92,7 @@ type Impuestos struct {
 // ParamImpuesto asset
 type ParamImpuesto struct {
 	Impuesto    int32  `json:"impuesto"`
-	IDOrganismo int32  `json:"idOrg"`
+	IDOrg       int32  `json:"idOrg"`
 	TipoRegimen string `json:"tipoRegimen"`
 	Nombre      string `json:"nombre"`
 	FechaDesde  string `json:"fechaDesde"`

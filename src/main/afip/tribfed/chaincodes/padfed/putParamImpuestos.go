@@ -22,8 +22,8 @@ func (s *SmartContract) putParamImpuestos(APIstub shim.ChaincodeStubInterface, a
 	}
 	count := 0
 	for _, imp := range impuestos {
-		if !(imp.IDOrganismo == 1 || (imp.IDOrganismo >= 900 && imp.IDOrganismo <= 999)) {
-			return clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrganismo))+"] debe ser un entero igual a 1:AFIP o entre 900 y 999", count)
+		if !(imp.IDOrg == 1 || (imp.IDOrg >= 900 && imp.IDOrg <= 999)) {
+			return clientErrorResponse("idOrg ["+strconv.Itoa(int(imp.IDOrg))+"] debe ser un entero igual a 1:AFIP o entre 900 y 999", count)
 		}
 
 		if err := validateIdImpuesto(imp.Impuesto); err.isError() {
