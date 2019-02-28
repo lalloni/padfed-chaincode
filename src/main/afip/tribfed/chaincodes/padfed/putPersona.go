@@ -76,8 +76,8 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		if !(newPersona.TipoDoc >= 1 && newPersona.TipoDoc <= 99) {
 			return clientErrorResponse("tipoDoc [" + strconv.Itoa(int(newPersona.TipoDoc)) + "] invalido, debe ser un entero entre 1 y 99")
 		}
-		if !(newPersona.MesCierre >= 0 && newPersona.MesCierre <= 12) {
-			return clientErrorResponse("mesCierre [" + strconv.Itoa(int(newPersona.MesCierre)) + "] invalido")
+		if !(newPersona.MesCierre == 0 || newPersona.MesCierre == 12) {
+			return clientErrorResponse("mesCierre [" + strconv.Itoa(int(newPersona.MesCierre)) + "] invalido. Para una persona fisica debe ser 12.")
 		}
 		newPersona.Doc = strings.ToUpper(strings.Trim(newPersona.Doc, " "))
 		if len(newPersona.Doc) == 0 {
@@ -110,7 +110,7 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 			return clientErrorResponse("formaJuridica [" + strconv.Itoa(int(newPersona.FormaJuridica)) + "] invalida")
 		}
 		if !(newPersona.MesCierre >= 1 && newPersona.MesCierre <= 12) {
-			return clientErrorResponse("mesCierre [" + strconv.Itoa(int(newPersona.MesCierre)) + "] invalido")
+			return clientErrorResponse("mesCierre [" + strconv.Itoa(int(newPersona.MesCierre)) + "] invalido. Para una persona juridica debe ser un entero entre 1 y 12.")
 		}
 		if newPersona.TipoDoc != 0 {
 			return clientErrorResponse("persona juridica con tipoDoc")

@@ -19,8 +19,8 @@ var impuestosPrecarga = `[
     {"impuesto":301,"idOrg":1,"nombre":"EMPLEADOR-APORTES SEG. SOCIAL"},
     {"impuesto":5100,"idOrg":901,"nombre":"IIBB - CABA"},                                                                                 
     {"impuesto":5200,"idOrg":904,"nombre":"IIBB - CORDOBA"},    
-    {"impuesto":5243,"idOrg":904,"nombre":"INGRESOS BRUTOS CORDOBA"},                                                                                 
-    {"impuesto":5244,"idOrg":904,"nombre":"CONTRIBUCION MUNICIPAL"},
+    {"impuesto":5243,"idOrg":904,"nombre":"IIBB REGIMEN SIMPLIFICADO - CORDOBA"},
+    {"impuesto":5244,"idOrg":904,"nombre":"CONTRIBUCION MUNICIPAL - CORDOBA"},
     {"impuesto":5300,"idOrg":903,"nombre":"IIBB - CATAMARCA"},                                                                                 
     {"impuesto":5800,"idOrg":900,"nombre":"CONVENIO MULTILATERAL"}                                                                             
     ]`
