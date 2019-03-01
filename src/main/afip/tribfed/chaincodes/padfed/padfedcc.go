@@ -7,81 +7,51 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	peer "github.com/hyperledger/fabric/protos/peer"
-)
-
-type formatType int
-
-const (
-	JSON     formatType = 1
-	PROTOBUF formatType = 2
+	"github.com/hyperledger/fabric/protos/peer"
 )
 
 // Persona asset
 type Persona struct {
-	CUIT          uint64      `protobuf:"varint,1,name=cuit,proto3" json:"cuit"`
-	Nombre        string      `protobuf:"bytes,2,opt,name=nombre,proto3" json:"nombre,omitempty"`
-	Apellido      string      `protobuf:"bytes,3,opt,name=apellido,proto3" json:"apellido,omitempty"`
-	RazonSocial   string      `protobuf:"bytes,4,opt,name=razon_social,proto3" json:"razonSocial,omitempty"`
-	Tipo          string      `protobuf:"bytes,5,name=tipo,proto3" json:"tipo,omitempty"`
-	Estado        string      `protobuf:"bytes,6,name=estado,proto3" json:"estado,omitempty"`
-	FormaJuridica int32       `protobuf:"varint,7,opt,name=forma_juridica,proto3" json:"formaJuridica,omitempty"`
-	TipoDoc       int32       `protobuf:"varint,8,opt,name=tipo_doc,proto3" json:"tipoDoc,omitempty"`
-	Doc           string      `protobuf:"bytes,9,opt,name=doc,proto3" json:"doc,omitempty"`
-	Sexo          string      `protobuf:"bytes,10,opt,name=sexo,proto3" json:"sexo,omitempty"`
-	MesCierre     int32       `protobuf:"varint,11,opt,name=mes_cierre,proto3" json:"mesCierre,omitempty"`
-	Nacimiento    string      `protobuf:"bytes,12,opt,name=nacimiento,proto3" json:"nacimiento,omitempty"`
-	Fallecimiento string      `protobuf:"bytes,13,opt,name=fallecimiento,proto3" json:"fallecimiento,omitempty"`
-	Inscripcion   string      `protobuf:"bytes,14,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
-	FechaCierre   string      `protobuf:"bytes,15,opt,name=fecha_cierre,proto3" json:"fechaCierre,omitempty"`
-	NuevaCUIT     uint64      `protobuf:"varint,16,opt,name=nueva_cuit,proto3" json:"nuevaCuit,omitempty"`
-	Materno       string      `protobuf:"bytes,17,opt,name=materno,proto3" json:"materno,omitempty"`
-	Pais          string      `protobuf:"bytes,18,opt,name=pais,proto3" json:"pais,omitempty"`
-	CH            string      `protobuf:"bytes,19,opt,name=ch,proto3" json:"ch,omitempty"`
-	DS            string      `protobuf:"bytes,20,opt,name=ds,proto3" json:"ds,omitempty"`
-	Impuestos     []*Impuesto `protobuf:"group,21,rep,name=impuestos,proto3" json:"impuestos,omitempty"`
-}
-
-func (m *Persona) Reset()         { *m = Persona{} }
-func (m *Persona) String() string { return proto.CompactTextString(m) }
-func (*Persona) ProtoMessage()    {}
-func (m *Persona) GetImpuestos() []*Impuesto {
-	if m != nil {
-		return m.Impuestos
-	}
-	return nil
+	CUIT          uint64      `json:"cuit"`
+	Nombre        string      `json:"nombre,omitempty"`
+	Apellido      string      `json:"apellido,omitempty"`
+	RazonSocial   string      `json:"razonSocial,omitempty"`
+	Tipo          string      `json:"tipo,omitempty"`
+	Estado        string      `json:"estado,omitempty"`
+	FormaJuridica int32       `json:"formaJuridica,omitempty"`
+	TipoDoc       int32       `json:"tipoDoc,omitempty"`
+	Doc           string      `json:"doc,omitempty"`
+	Sexo          string      `json:"sexo,omitempty"`
+	MesCierre     int32       `json:"mesCierre,omitempty"`
+	Nacimiento    string      `json:"nacimiento,omitempty"`
+	Fallecimiento string      `json:"fallecimiento,omitempty"`
+	Inscripcion   string      `json:"inscripcion,omitempty"`
+	FechaCierre   string      `json:"fechaCierre,omitempty"`
+	NuevaCUIT     uint64      `json:"nuevaCuit,omitempty"`
+	Materno       string      `json:"materno,omitempty"`
+	Pais          string      `json:"pais,omitempty"`
+	CH            string      `json:"ch,omitempty"`
+	DS            string      `json:"ds,omitempty"`
+	Impuestos     []*Impuesto `json:"impuestos,omitempty"`
 }
 
 // Impuesto asset
 type Impuesto struct {
-	Impuesto    int32  `protobuf:"varint,1,name=impuesto,proto3" json:"impuesto"`
-	Inscripcion string `protobuf:"bytes,2,opt,name=inscripcion,proto3" json:"inscripcion,omitempty"`
-	Periodo     int32  `protobuf:"varint,3,opt,name=periodo,proto3" json:"periodo"`
-	Estado      string `protobuf:"bytes,4,opt,name=estado,proto3" json:"estado"`
-	DS          string `protobuf:"bytes,5,opt,name=ds,proto3" json:"ds,omitempty"`
-	Motivo      string `protobuf:"bytes,6,opt,name=motivo,proto3" json:"motivo,omitempty"`
-	Dia         int32  `protobuf:"varint,7,opt,name=dia,proto3" json:"dia,omitempty"`
+	Impuesto    int32  `json:"impuesto"`
+	IDOrganismo int32  `json:"idOrg,omitempty"`
+	Inscripcion string `json:"inscripcion,omitempty"`
+	Periodo     int32  `json:"periodo"`
+	Estado      string `json:"estado"`
+	IDTxc       uint64 `json:"idTxc,omitempty"`
+	DS          string `json:"ds,omitempty"`
+	Motivo      string `json:"motivo,omitempty"`
+	Dia         int32  `json:"dia,omitempty"`
 }
-
-func (m *Impuesto) Reset()         { *m = Impuesto{} }
-func (m *Impuesto) String() string { return proto.CompactTextString(m) }
-func (*Impuesto) ProtoMessage()    {}
 
 type Personas struct {
-	Personas []*Persona `protobuf:"group,1,rep,name=personas,proto3" json:"personas"`
-}
-
-func (m *Personas) Reset()         { *m = Personas{} }
-func (m *Personas) String() string { return proto.CompactTextString(m) }
-func (*Personas) ProtoMessage()    {}
-func (m *Personas) GetPersonas() []*Persona {
-	if m != nil {
-		return m.Personas
-	}
-	return nil
+	Personas []*Persona `json:"personas"`
 }
 
 // Impuestos es una estructura solo usada para poder extraer un array de impuestos.
@@ -150,23 +120,18 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Respons
 
 	if !s.isModeTest {
 		switch ctx.function {
-		case "putPersona",
-			"putPersonaProto",
-			"putPersonas":
+		case "putPersona", "putPersonas":
 			if err := checkClientID(ctx); err.isError() {
 				return err.peerResponse(ctx)
 			}
 		}
 	}
+
 	switch ctx.function {
 	case "putPersona":
-		r = s.putPersona(APIstub, ctx.args, JSON)
-	case "putPersonaProto":
-		r = s.putPersona(APIstub, ctx.args, PROTOBUF)
+		r = s.putPersona(APIstub, ctx.args)
 	case "putPersonas":
-		r = s.putPersonas(APIstub, ctx.args, JSON)
-	case "putPersonasProto":
-		r = s.putPersonas(APIstub, ctx.args, PROTOBUF)
+		r = s.putPersonas(APIstub, ctx.args)
 	case "putParamImpuestos":
 		r = s.putParamImpuestos(APIstub, ctx.args)
 	case "delPersona":
