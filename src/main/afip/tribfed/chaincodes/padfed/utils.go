@@ -3,16 +3,15 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"regexp"
 	"strconv"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	cuitVerifier "github.com/lalloni/afip/cuit"
+	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -37,63 +36,46 @@ func getCUITArgs(args []string) (uint64, error) {
 	return uint64(cuit), nil
 }
 
-func argToPersona(personaAsBytes []byte, persona *Persona, fType formatType) Response {
-	//fmt.Println(PersonaSchema)
-	switch fType {
-	case JSON:
-		documentLoader := gojsonschema.NewStringLoader(string(personaAsBytes))
-		result, err := gojsonschema.Validate(personaSchemaLoader, documentLoader)
-		if err != nil {
-			return clientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personaAsBytes))
-		}
+func argToPersona(personaAsBytes []byte, persona *Persona) Response {
+	documentLoader := gojsonschema.NewStringLoader(string(personaAsBytes))
+	result, err := gojsonschema.Validate(personaSchemaLoader, documentLoader)
+	if err != nil {
+		return clientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personaAsBytes))
+	}
 
-		if !result.Valid() {
-			var errosStr string
-			for _, desc := range result.Errors() {
-				errosStr += desc.Description() + ". "
-			}
-			return clientErrorResponse("JSON no cumple con el esquema: " + errosStr)
+	if !result.Valid() {
+		var errosStr string
+		for _, desc := range result.Errors() {
+			errosStr += desc.Description() + ". "
 		}
-		err = json.Unmarshal(personaAsBytes, persona)
-		if err != nil {
-			return systemErrorResponse("JSON invalido: " + err.Error())
-		}
-	case PROTOBUF:
-		err := proto.Unmarshal(personaAsBytes, persona)
-		if err != nil {
-			log.Fatal("PROTOBUF invalido: ", err)
-		}
+		return clientErrorResponse("JSON no cumple con el esquema: " + errosStr)
+	}
+	err = json.Unmarshal(personaAsBytes, persona)
+	if err != nil {
+		return systemErrorResponse("JSON invalido: " + err.Error())
 	}
 	return validatePersona(persona)
 }
 
-func argToPersonas(personasAsBytes []byte, personas *Personas, fType formatType) Response {
-	switch fType {
-	case JSON:
-		documentLoader := gojsonschema.NewStringLoader(string(personasAsBytes))
-		result, err := gojsonschema.Validate(personasSchemaLoader, documentLoader)
-		if err != nil {
-			return clientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personasAsBytes))
+func argToPersonas(personasAsBytes []byte, personas *Personas) Response {
+	documentLoader := gojsonschema.NewStringLoader(string(personasAsBytes))
+	result, err := gojsonschema.Validate(personasSchemaLoader, documentLoader)
+	if err != nil {
+		return clientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personasAsBytes))
+	}
+	if !result.Valid() {
+		var errosStr string
+		for _, desc := range result.Errors() {
+			errosStr += desc.Description() + ". "
 		}
-		if !result.Valid() {
-			var errosStr string
-			for _, desc := range result.Errors() {
-				errosStr += desc.Description() + ". "
-			}
-			return clientErrorResponse("JSON no cumple con el esquema: " + errosStr)
-		}
-		err = json.Unmarshal(personasAsBytes, &personas)
-		if err != nil {
-			return systemErrorResponse("JSON invalido: " + err.Error())
-		}
-	case PROTOBUF:
-		err := proto.Unmarshal(personasAsBytes, personas)
-		if err != nil {
-			log.Fatal("PROTOBUF invalido: ", err)
-		}
+		return clientErrorResponse("JSON no cumple con el esquema: " + errosStr)
+	}
+	err = json.Unmarshal(personasAsBytes, &personas)
+	if err != nil {
+		return systemErrorResponse("JSON invalido: " + err.Error())
 	}
 
-	for _, p := range personas.GetPersonas() {
+	for _, p := range personas.Personas {
 		err := validatePersona(p)
 		if err.isError() {
 			return err

@@ -3,12 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	pb "github.com/hyperledger/fabric/protos/peer"
 )
@@ -63,16 +61,16 @@ func getPesonaJSON(cuit uint64) string {
 	return personaJSON
 }
 
-func TestValidPersonaJSON(t *testing.T) {
+func TestValidPersona(t *testing.T) {
 	var persona Persona
 	var personaJSON = getPesonaJSON(30679638943)
-	if err := argToPersona([]byte(personaJSON), &persona, JSON); err.isError() {
+	if err := argToPersona([]byte(personaJSON), &persona); err.isError() {
 		t.Error(err.Msg)
 	}
 	if getPersonaKey(&persona) != "PER_30679638943" {
 		t.Error("Persona.Key no valida " + getPersonaKey(&persona))
 	}
-	if err := argToPersona([]byte("{error-dummy"), &persona, JSON); err.isOk() {
+	if err := argToPersona([]byte("{error-dummy"), &persona); err.isOk() {
 		t.Error("JSON invalido, debe dar error " + err.Msg)
 	}
 }
@@ -135,20 +133,6 @@ func putPersona(t *testing.T, stub *shim.MockStub, cuit uint64) pb.Response {
 	return stub.MockInvoke("1", [][]byte{[]byte("putPersona"), []byte(cuitStr), []byte(personaJSON)})
 }
 
-func putPersonaProto(t *testing.T, stub *shim.MockStub, cuit uint64) pb.Response {
-	var personaJSON = getPesonaJSON(cuit)
-	var persona Persona
-
-	argToPersona([]byte(personaJSON), &persona, JSON)
-
-	personaPROTO, err := proto.Marshal(&persona)
-	if err != nil {
-		log.Fatal("marshaling to PROTOBUF error: ", err)
-	}
-	cuitStr := strconv.FormatUint(cuit, 10)
-	return stub.MockInvoke("1", [][]byte{[]byte("putPersonaProto"), []byte(cuitStr), []byte(personaPROTO)})
-}
-
 func queryPersona(t *testing.T, stub *shim.MockStub, cuit uint64) pb.Response {
 	cuitStr := strconv.FormatUint(cuit, 10)
 	return stub.MockInvoke("1", [][]byte{[]byte("queryPersona"), []byte(cuitStr)})
@@ -188,18 +172,6 @@ func TestPutPersona(t *testing.T) {
 	}
 }
 
-func TestPutPersonaProto(t *testing.T) {
-	stub := setInitTests(t)
-	// Valid
-	res := putPersonaProto(t, stub, 30679638943)
-	if res.Status != shim.OK {
-		fmt.Println("putPersonaProto", "cuit", "failed", string(res.Message))
-		t.FailNow()
-	} else {
-		fmt.Println("putPersonaProto Ok!!!!")
-	}
-}
-
 func TestPutPersonas(t *testing.T) {
 	stub := setInitTests(t)
 
@@ -214,32 +186,6 @@ func TestPutPersonas(t *testing.T) {
 
 }
 
-func TestPutPersonasProto(t *testing.T) {
-	stub := setInitTests(t)
-
-	cuils := []uint64{20066042333, 20066675573, 20066806163, 20068854785, 20176058650}
-	personas := Personas{}
-	var p []*Persona
-
-	for _, cuit := range cuils {
-		var persona Persona
-		json.Unmarshal([]byte(getPesonaJSON(cuit)), &persona)
-		p = append(p, &persona)
-	}
-	personas.Personas = p
-
-	personasPROTO, err := proto.Marshal(&personas)
-	if err != nil {
-		log.Fatal("marshaling error: ", err)
-	}
-	res := stub.MockInvoke("1", [][]byte{[]byte("putPersonasProto"), []byte(personasPROTO)})
-	if res.Status != shim.OK {
-		fmt.Println("putPersonaProto", "cuit", "failed", string(res.Message))
-		t.FailNow()
-	} else {
-		fmt.Println("putPersonasProto Ok!!!!")
-	}
-}
 func TestQueryPersona(t *testing.T) {
 	stub := setInitTests(t)
 	res := putPersona(t, stub, 30679638943)

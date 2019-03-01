@@ -9,9 +9,9 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
-func (s *SmartContract) putPersona(APIstub shim.ChaincodeStubInterface, args []string, fType formatType) Response {
+func (s *SmartContract) putPersona(APIstub shim.ChaincodeStubInterface, args []string) Response {
 	if len(args) != 2 {
-		return clientErrorResponse("Numero incorrecto de parametros. Se esperan 2 parametros {CUIT, JSON/PROTOBUF}")
+		return clientErrorResponse("Número incorrecto de argumentos. Se esperan 2 (CUIT, PERSONA)")
 	}
 	var cuit uint64
 	var err error
@@ -22,18 +22,18 @@ func (s *SmartContract) putPersona(APIstub shim.ChaincodeStubInterface, args []s
 		return clientErrorResponse("CUIT [" + cuitStr + "] invalido")
 	}
 	var newPersona Persona
-	if err_R = argToPersona([]byte(args[1]), &newPersona, fType); err_R.isError() {
+	if err_R = argToPersona([]byte(args[1]), &newPersona); err_R.isError() {
 		return err_R
 	}
 	return s.savePersona(APIstub, cuit, &newPersona)
 }
 
-func (s *SmartContract) putPersonas(APIstub shim.ChaincodeStubInterface, args []string, fType formatType) Response {
+func (s *SmartContract) putPersonas(APIstub shim.ChaincodeStubInterface, args []string) Response {
 	if len(args) != 1 {
-		return clientErrorResponse("Numero incorrecto de parametros. Se esperan 1 parametros {JSON/PROTOBUF}")
+		return clientErrorResponse("Número incorrecto de argumentos. Se espera 1 (PERSONAS)")
 	}
 	var newPersonas Personas
-	if err := argToPersonas([]byte(args[0]), &newPersonas, fType); err.isError() {
+	if err := argToPersonas([]byte(args[0]), &newPersonas); err.isError() {
 		return err
 	}
 
