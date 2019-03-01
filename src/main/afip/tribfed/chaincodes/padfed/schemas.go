@@ -16,9 +16,6 @@ const ImpuestoSchema = `{
         "estado": {
             "type": "string"
         },
-        "idTxc": {
-            "type": "number"
-        },
         "ds": {
             "type": "string"
         },
@@ -33,12 +30,12 @@ const ImpuestoSchema = `{
 
 const ActividadSchema = `{
     "type": "object",
-    "required": ["idActividad"],
+    "required": ["id"],
     "properties": {
-        "codNomenclador": {
+        "id": {
             "type": "number"
         },
-        "idActividad": {
+        "codNomenclador": {
             "type": "number"
         },
         "orden": {
