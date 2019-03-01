@@ -30,7 +30,6 @@ const ImpuestoSchema = `{
 
 const ActividadSchema = `{
     "type": "object",
-    "required": ["id"],
     "properties": {
         "id": {
             "type": "number"
@@ -52,7 +51,7 @@ const ActividadSchema = `{
 
 const DomicilioSchema = `{
     "type": "object",
-    "required": ["idTipoDomicilio"],
+    "required": ["orden", "idTipoDomicilio"],
     "properties": {
         "idTipoDomicilio": {
             "type": "number"
