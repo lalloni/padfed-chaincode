@@ -5,25 +5,27 @@ const ImpuestoSchema = `{
     "required": ["impuesto", "periodo", "estado"],
     "properties": {
         "impuesto": {
-            "type": "number"
+            "type": "integer"
         },
         "inscripcion": {
             "type": "string"
         },
         "periodo": {
-            "type": "number"
+            "type": "integer"
         },
         "estado": {
-            "type": "string"
-        },
-        "ds": {
             "type": "string"
         },
         "motivo": {
             "type": "string"
         },
         "dia": {
-            "type": "number"
+            "type": "integer"
+        },
+        "ds": {
+            "type": "string",
+            "minLength":10,
+            "maxLength":10
         }
     }
 }`
@@ -32,44 +34,53 @@ const ActividadSchema = `{
     "type": "object",
     "properties": {
         "id": {
-            "type": "number"
+            "type": "integer"
         },
-        "codNomenclador": {
-            "type": "number"
+        "nomenclador": {
+            "type": "integer"
         },
         "orden": {
-            "type": "number"
+            "type": "integer"
         },
         "estado": {
             "type": "string"
+            "minLength":2,
+            "maxLength":2
         },
         "periodo": {
-            "type": "number"
+            "type": "integer"
+        },
+        "ds": {
+            "type": "string",
+            "minLength":10,
+            "maxLength":10
         }
     }
 }`
 
 const DomicilioSchema = `{
     "type": "object",
-    "required": ["orden", "idTipoDomicilio"],
+    "required": ["orden"],
     "properties": {
-        "idTipoDomicilio": {
-            "type": "number"
+        "tipo": {
+            "type": "integer"
         },
         "orden": {
-            "type": "number"
+            "type": "integer"
         },
         "estado": {
-            "type": "string"
+            "type": "integer"
         },
-        "idNomenclador": {
-            "type": "string"
+        "nomenclador": {
+            "type": "integer"
         },
         "codPostal": {
             "type": "string"
         },
-        "idProvincia": {
-            "type": "string"
+        "provincia": {
+            "type": "integer",
+            "minimum":0,
+            "maximum":24
         },
         "localidad": {
             "type": "string"
@@ -79,6 +90,17 @@ const DomicilioSchema = `{
         },
         "numero": {
             "type": "string"
+        },
+        "piso": {
+            "type": "string"
+        },
+        "oficina": {
+            "type": "string"
+        },
+        "ds": {
+            "type": "string",
+            "minLength":10,
+            "maxLength":10
         }
     }
 }`
@@ -92,22 +114,30 @@ const TelefonoSchema = `{
         },
         "idEstadoTelefono": {
             "type": "string"
+        },
+        "ds": {
+            "type": "string",
+            "minLength":10,
+            "maxLength":10
         }
     }
 }`
 
 const PersonaSchema = `{
-    "description": "A representation of a person, company, organization, or place",
+    "description": "A representation of a person",
     "type": "object",
     "required": ["cuit"],
     "properties": {
         "cuit": {
-            "type": "number"
+            "type": "integer"
         },
         "nombre": {
             "type": "string"
         },
         "apellido": {
+            "type": "string"
+        },
+        "materno": {
             "type": "string"
         },
         "razonSocial": {
@@ -120,10 +150,10 @@ const PersonaSchema = `{
             "type": "string"
         },
         "formaJuridica": {
-            "type": "number"
+            "type": "integer"
         },
         "tipoDoc": {
-            "type": "number"
+            "type": "integer"
         },
         "doc": {
             "type": "string"
@@ -132,7 +162,7 @@ const PersonaSchema = `{
             "type": "string"
         },
         "mesCierre": {
-            "type": "number"
+            "type": "integer"
         },
         "nacimiento": {
             "type": "string"
@@ -143,20 +173,22 @@ const PersonaSchema = `{
         "inscripcion": {
             "type": "string"
         },
-        "fechaCierre": {
-            "type": "string"
-        },
-        "nuevaCuit": {
-            "type": "number"
-        },
-        "materno": {
-            "type": "string"
-        },
         "pais": {
             "type": "string"
         },
+        "nuevaCuit": {
+            "type": "integer"
+        },
         "ch": {
-            "type": "string"
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "nombre", "apellido", "materno", "razonSocial", "tipo", "estado",
+                    "formaJuridica", "tipoDoc", "doc", "sexo", "mesCierre", "nacimiento",
+                    "fallecimiento", "inscripcion", "pais", "nuevaCuit"
+                ]
+            }
         },
         "ds": {
             "type": "string"
@@ -177,7 +209,7 @@ const PersonaSchema = `{
 }`
 
 const PersonasSchema = `{
-    "description": "A representation of a person, company, organization, or place",
+    "description": "A representation of a person",
     "type": "object",
     "properties": {
         "personas": {

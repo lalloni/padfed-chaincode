@@ -32,7 +32,7 @@ type Persona struct {
 	NuevaCUIT     uint64      `json:"nuevaCuit,omitempty"`
 	Materno       string      `json:"materno,omitempty"`
 	Pais          string      `json:"pais,omitempty"`
-	CH            string      `json:"ch,omitempty"`
+	CH            []string    `json:"ch,omitempty"`
 	DS            string      `json:"ds,omitempty"`
 	Impuestos     []*Impuesto `json:"impuestos,omitempty"`
 }
