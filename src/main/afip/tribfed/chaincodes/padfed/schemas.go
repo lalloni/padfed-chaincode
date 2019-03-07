@@ -43,7 +43,7 @@ const ActividadSchema = `{
             "type": "integer"
         },
         "estado": {
-            "type": "string"
+            "type": "string",
             "minLength":2,
             "maxLength":2
         },
