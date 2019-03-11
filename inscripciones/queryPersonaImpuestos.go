@@ -11,7 +11,7 @@ func QueryPersonaImpuestos(stub shim.ChaincodeStubInterface, args []string) *fab
 	if len(args) != 1 {
 		return fabric.ClientErrorResponse("Numero incorrecto de parametros. Se espera {CUIT}")
 	}
-	if _, err := helpers.GetCUITArgs(args); err != nil {
+	if _, err := helpers.GetCUIT(args[0]); err != nil {
 		return fabric.ClientErrorResponse("CUIT [" + args[0] + "] invalido. " + err.Error())
 	}
 	return fabric.QueryByKeyRange(stub, "PER_"+args[0]+"_IMP_", "PER_"+args[0]+"_IMP_z")

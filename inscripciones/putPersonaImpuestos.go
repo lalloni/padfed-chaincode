@@ -24,7 +24,7 @@ func PutPersonaImpuestos(stub shim.ChaincodeStubInterface, args []string) *fabri
 	cuitStr := args[0]
 
 	log.Print("args[0] [" + cuitStr + "]")
-	if _, err := helpers.GetCUITArgs(args); err != nil {
+	if _, err := helpers.GetCUIT(args[0]); err != nil {
 		return fabric.ClientErrorResponse("CUIT [" + cuitStr + "] invalida")
 	}
 	if exists, err := fabric.KeyExists(stub, cuitStr); !err.IsOK() {

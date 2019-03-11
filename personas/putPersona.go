@@ -23,7 +23,7 @@ func PutPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Respons
 	var res *fabric.Response
 	cuitStr := args[0]
 	log.Print("cuit recibido [" + cuitStr + "]")
-	if cuit, err = helpers.GetCUITArgs(args); err != nil {
+	if cuit, err = helpers.GetCUIT(cuitStr); err != nil {
 		return fabric.ClientErrorResponse("CUIT [" + cuitStr + "] invalido")
 	}
 	newPersona := &model.Persona{}

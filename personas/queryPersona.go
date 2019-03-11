@@ -11,7 +11,7 @@ import (
 
 func QueryPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
 	var err error
-	if _, err = helpers.GetCUITArgs(args); err != nil {
+	if _, err = helpers.GetCUIT(args[0]); err != nil {
 		return fabric.ClientErrorResponse("CUIT [" + args[0] + "] invalido. " + err.Error())
 	}
 	full := false

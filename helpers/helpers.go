@@ -7,23 +7,21 @@ import (
 	"strconv"
 	"time"
 
-	cuitVerifier "github.com/lalloni/afip/cuit"
+	"github.com/lalloni/afip/cuit"
 	"github.com/pkg/errors"
 )
 
 var dateRegexp = *regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
 
-func GetCUITArgs(args []string) (uint64, error) {
-	var cuit int64
-	var err error
-	if cuit, err = strconv.ParseInt(args[0], 10, 64); err != nil {
-		return 0, errors.New("CUIT debe ser un número " + args[0])
+func GetCUIT(s string) (uint64, error) {
+	c, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, errors.Errorf("CUIT debe ser un número %q", s)
 	}
-
-	if !cuitVerifier.IsValid(uint64(cuit)) {
-		return 0, errors.New("CUIT invalido " + args[0])
+	if !cuit.IsValid(uint64(c)) {
+		return 0, errors.Errorf("CUIT inválido %q", s)
 	}
-	return uint64(cuit), nil
+	return uint64(c), nil
 }
 
 /*

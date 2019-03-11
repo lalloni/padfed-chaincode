@@ -4,13 +4,12 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/impuestos"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
-
 	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
+
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/impuestos"
 )
 
 type Ctx struct {

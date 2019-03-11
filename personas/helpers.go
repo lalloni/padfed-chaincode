@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/helpers"
-
 	"github.com/lalloni/afip/cuit"
 	"github.com/xeipuuv/gojsonschema"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/helpers"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
 )
 

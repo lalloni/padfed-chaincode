@@ -5,11 +5,10 @@ import (
 	"log"
 	"strings"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/helpers"
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/helpers"
 )
 
 func QueryPersonasByRangeFormated(stub shim.ChaincodeStubInterface, cuitInicio string, cuitFin string, full bool, composed bool) *fabric.Response {
