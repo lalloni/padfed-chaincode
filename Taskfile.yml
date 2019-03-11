@@ -146,7 +146,7 @@ tasks:
 
       Ejemplo
         task release version=X.Y.Z credentials=/path/a/archivo.netrc
-    deps: [ tools ]
+    deps: [ tools, check, test ]
     vars:
       package: '{{ .target }}/{{ .application }}-{{ .version }}.{{ .format }}'
     cmds:
