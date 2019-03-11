@@ -144,6 +144,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) peer.Respons
 		r = s.deleteByKeyRange(APIstub, ctx.args)
 	case "delParamImpuestosAll":
 		r = s.delParamImpuestosAll(APIstub)
+	case "delPersonaAssets":
+		r = s.delPersonaAssets(APIstub, ctx.args)
 	case "putPersonaImpuestos":
 		r = s.putPersonaImpuestos(APIstub, ctx.args)
 	case "queryPersona":

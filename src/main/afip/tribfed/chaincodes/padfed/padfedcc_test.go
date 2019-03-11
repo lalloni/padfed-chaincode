@@ -246,3 +246,21 @@ func TestDelPersonasByRange(t *testing.T) {
 		t.FailNow()
 	}
 }
+
+func TestDelPersonaAssets(t *testing.T) {
+	stub := setInitTests(t)
+
+	res := putPersona(t, stub, 30679638943)
+	if res.Status != shim.OK {
+		fmt.Println("putPersona", "cuit", "failed", string(res.Message))
+		t.FailNow()
+	}
+
+	impuestosToDel := `["PER_30679638943_IMP_30","PER_30679638943_IMP_124"]`
+
+	res = stub.MockInvoke("1", [][]byte{[]byte("delPersonaAssets"), []byte("30679638943"), []byte(impuestosToDel)})
+	if res.Status != shim.OK {
+		fmt.Println("delPersonaAssets error", string(res.Message))
+		t.FailNow()
+	}
+}
