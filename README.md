@@ -7,17 +7,82 @@
 
 ## Objetivo
 
-Este proyecto mantiene el codigo fuente del chaincode (SmartContract) **padfedcc** escrito en GOLANG
+Este proyecto mantiene el código fuente del chaincode (SmartContract) **padfed-chaincode** escrito en Go.
 
-## Maven
+## Desarrollo
 
-El pom.xml incluye las siguientes funcionalidades:
+### Entorno
 
-- Replicación de código fuente a directorio $GO_HOME o $HOME/GO segun entorno configurado
+#### Prerrequisitos
 
-- Empaquetado de fuentes y vendor deps en un jar para ser publicado en Nexus
+- Go 1.11 o posterior
+- Git
 
-Ejecución | Acción
---- | ---
-mvn package | Genera un jar y copia los fuentes .go y vendor en $HOME/go o $GO_HOME. En el directorio de destino generá un directorio versionado según la version indicada en el pom.xml.
+#### Task
 
+Instalar o actualizar ejecutando:
+
+```sh
+go get -u github.com/go-task/task/cmd/task
+```
+
+### Tareas
+
+El Taskfile incluye definiciones de tareas para:
+
+#### Ejecutar tests
+
+```sh
+task test
+```
+
+#### Informar tests code coverage
+
+Genera un reporte de cobertura de tests y abre un web browser para visualizarlo.
+
+```sh
+task cover
+```
+
+#### Construir el binario final
+
+```sh
+task compile
+```
+
+#### Empaquetar fuentes
+
+```sh
+task package
+```
+
+El paquete generado se versionará según último tag en Git.
+
+#### Publicar versión snapshot
+
+Publicará una versión de trabajo del paquete de fuentes del CC.
+
+Realizará:
+
+- Ejecución de tests y análisis estático de código
+- Empaquetamiento
+- Upload a Nexus
+
+El paquete publicado se versionará según último tag en Git.
+
+```sh
+task publish
+```
+
+#### Generar y publicar versión release de paquete de fuentes del CC
+
+Realizará:
+
+- Ejecución de tests y análisis estático de código
+- Tag en Git
+- Empaquetamiento
+- Upload a Nexus
+
+```sh
+task release version=1.2.3
+```
