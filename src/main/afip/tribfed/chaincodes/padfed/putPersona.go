@@ -106,7 +106,8 @@ func (s *SmartContract) savePersona(APIstub shim.ChaincodeStubInterface, cuit ui
 		if len(newPersona.Sexo) > 0 {
 			return clientErrorResponse("persona juridica con sexo [" + newPersona.Sexo + "], solo debe tener RazonSocial")
 		}
-		if !(newPersona.FormaJuridica >= 1 && newPersona.FormaJuridica <= 999) {
+		//if !(newPersona.FormaJuridica >= 1 && newPersona.FormaJuridica <= 999) {
+		if !(newPersona.FormaJuridica >= 0 && newPersona.FormaJuridica <= 999) {
 			return clientErrorResponse("formaJuridica [" + strconv.Itoa(int(newPersona.FormaJuridica)) + "] invalida")
 		}
 		if !(newPersona.MesCierre >= 1 && newPersona.MesCierre <= 12) {
