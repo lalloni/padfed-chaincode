@@ -36,7 +36,7 @@ tasks:
       - command -v go > /dev/null
       - command -v md5sum > /dev/null
       - command -v awk > /dev/null
-      - command -v golangci-lint > /dev/null || env GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@1.15.0
+      - command -v golangci-lint > /dev/null || sh -c 'curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.15.0'
 
   pre:
     desc: 'Prepara directorio de trabajo'
