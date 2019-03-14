@@ -15,15 +15,23 @@ Este proyecto mantiene el código fuente del chaincode (SmartContract) **padfed-
 
 #### Prerrequisitos
 
-- Go 1.11 o posterior
+- Go 1.11 o posterior (ver sección siguiente para instalar o actualizar)
 - Git
+
+#### Go
+
+Si no se cuenta con una versión adecuada de Go se puede instalar o actualizar ejecutando:
+
+```sh
+sudo sh -c 'curl -sSL# https://dl.google.com/go/go1.12.linux-amd64.tar.gz -o /tmp/g.tar.gz && rm -rf /usr/local/go && tar -C /usr/local -xaf /tmp/g.tar.gz'
+```
 
 #### Task
 
 Instalar o actualizar ejecutando:
 
 ```sh
-go get -u github.com/go-task/task/cmd/task
+sh -c 'curl -sL https://taskfile.dev/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.4.0'
 ```
 
 ### Tareas
