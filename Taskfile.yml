@@ -119,7 +119,7 @@ tasks:
       - task: package
         vars:
           package: '{{ .package }}'
-      - md5sum -b '{{ .package }}' | awk '{printf $1}' > '{{ .package}}.md5'
+      - md5sum -b '{{ .package }}' | awk '{printf $1}' > '{{ .package }}.md5'
       - task: _upload
         vars:
           file: '{{ .package }}.md5'
@@ -150,23 +150,23 @@ tasks:
     vars:
       package: '{{ .target }}/{{ .application }}-{{ .version }}.{{ .format }}'
     cmds:
-      - cmd: test "{{ .version }}" != "<no value>" || (echo 'Falta especificar la versión a generar (ver salida de "task --summary release")' ; exit 1)
+      - cmd: test '{{ .version }}' != '<no value>' || (echo 'Falta especificar la versión a generar (ver salida de "task --summary release")' ; exit 1)
         silent: true
-      - cmd: test -f "{{ .credentials }}" || (echo 'No existe archivo de credenciales (ver salida de "task --summary publish")' ; exit 1)
+      - cmd: test -f '{{ .credentials }}' || (echo 'No existe archivo de credenciales (ver salida de "task --summary publish")' ; exit 1)
         silent: true
-      - git tag -s "v{{ .version }}" -m "Release {{ .version }}"
-      - task: publish
-        vars:
-          package: '{{ .package }}'
-          publishversion: '{{ .version }}'
-          credentials: '{{ .credentials }}'
+      - git tag -s 'v{{ .version }}' -m 'Release {{ .version }}'
+      - cmd: rm -rf {{ .target }}/release
+        ignore_error: true
+      - git clone . '{{ .target }}/release'
+      - git --work-tree '{{ .target }}/release' checkout 'v{{ .version }}'
+      - task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
 
   coverreport:
     desc: 'Genera reporte de cobertura de tests'
     deps: [ pre ]
     cmds:
-      - go test -cover -coverprofile="{{ .target }}/cover.dat" ./...
-      - touch "{{ .target }}/cover.witness"
+      - go test -cover -coverprofile='{{ .target }}/cover.dat" ./...
+      - touch '{{ .target }}/cover.witness'
     sources:
       - '**/*.go'
     generates:
@@ -176,4 +176,4 @@ tasks:
     desc: 'Muestra reporte de cobertura de tests'
     deps: [ coverreport ]
     cmds:
-      - go tool cover -html "{{ .target }}/cover.dat"
+      - go tool cover -html '{{ .target }}/cover.dat'
