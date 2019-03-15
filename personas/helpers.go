@@ -2,7 +2,9 @@ package personas
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/lalloni/afip/cuit"
 	"github.com/xeipuuv/gojsonschema"
@@ -12,79 +14,79 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
 )
 
-// TODO refactorizar en funcionalidades de al menos 2 capas: unmarshalling de personas y respuesta de servicio
-func ArgToPersona(personaAsBytes []byte, persona *model.Persona) *fabric.Response {
-	documentLoader := gojsonschema.NewStringLoader(string(personaAsBytes))
-	result, err := gojsonschema.Validate(personaSchemaLoader, documentLoader)
+func applySchema(bs []byte, schemaLoader gojsonschema.JSONLoader) *fabric.Response {
+	documentLoader := gojsonschema.NewBytesLoader(bs)
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
-		return fabric.ClientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personaAsBytes))
+		return fabric.ClientErrorResponse(fmt.Sprintf("JSON mal formado: %s", err))
 	}
-
 	if !result.Valid() {
-		var errosStr string
-		for _, desc := range result.Errors() {
-			errosStr += desc.Description() + ". "
+		report := &strings.Builder{}
+		for _, err := range result.Errors() {
+			report.WriteString(err.String())
+			report.WriteString("\n")
 		}
-		return fabric.ClientErrorResponse("JSON no cumple con el esquema: " + errosStr)
+		return fabric.ClientErrorResponse(fmt.Sprintf("JSON no cumple con el esquema: %s", report.String()))
 	}
-	err = json.Unmarshal(personaAsBytes, persona)
-	if err != nil {
-		return fabric.SystemErrorResponse("JSON invalido: " + err.Error())
+	return nil
+}
+
+// TODO refactorizar en funcionalidades de al menos 2 capas: unmarshalling de personas y respuesta de servicio
+func ArgToPersona(bs []byte, persona *model.Persona) *fabric.Response {
+	if res := applySchema(bs, personaSchemaLoader); res != nil {
+		return res
+	}
+	if err := json.Unmarshal(bs, persona); err != nil {
+		return fabric.SystemErrorResponse(fmt.Sprintf("Unmarshaling Persona: %s", err))
 	}
 	return ValidatePersona(persona)
 }
 
 // TODO refactorizar en funcionalidades de al menos 2 capas: unmarshalling de personas y respuesta de servicio
-func ArgToPersonas(personasAsBytes []byte, personas *model.Personas) *fabric.Response {
-	documentLoader := gojsonschema.NewStringLoader(string(personasAsBytes))
-	result, err := gojsonschema.Validate(personasSchemaLoader, documentLoader)
-	if err != nil {
-		return fabric.ClientErrorResponse("JSON schema invalido: " + err.Error() + " - " + string(personasAsBytes))
+func ArgToPersonas(bs []byte, personas *model.Personas) *fabric.Response {
+	if res := applySchema(bs, personasSchemaLoader); res != nil {
+		return res
 	}
-	if !result.Valid() {
-		var errosStr string
-		for _, desc := range result.Errors() {
-			errosStr += desc.Description() + ". "
-		}
-		return fabric.ClientErrorResponse("JSON no cumple con el esquema: " + errosStr)
+	if err := json.Unmarshal(bs, &personas); err != nil {
+		return fabric.SystemErrorResponse("Unmarshalling Personas: " + err.Error())
 	}
-	err = json.Unmarshal(personasAsBytes, &personas)
-	if err != nil {
-		return fabric.SystemErrorResponse("JSON invalido: " + err.Error())
-	}
-
 	for _, p := range personas.Personas {
-		err := ValidatePersona(p)
-		if !err.IsOK() {
+		if err := ValidatePersona(p); !err.IsOK() {
 			return err
 		}
 	}
 	return &fabric.Response{}
 }
 
+func fmtInvalidField(f string, v, err interface{}) string {
+	s := fmt.Sprintf("atributo '%s' con valor [%v] inválido", f, v)
+	if err != nil {
+		s = fmt.Sprintf("%s: %v", s, err)
+	}
+	return s
+}
+
 // TODO refactorizar en funcionalidades de al menos 2 capas: negocio de validación y respuesta de servicio
 func ValidatePersona(persona *model.Persona) *fabric.Response {
-	var err fabric.Response
-	cuitStr := strconv.FormatUint(persona.CUIT, 10)
 	if !cuit.IsValid(persona.CUIT) {
-		return fabric.ClientErrorResponse("cuit [" + cuitStr + "] invalida")
+		return fabric.ClientErrorResponse(fmtInvalidField("cuit", persona.CUIT, nil))
 	}
 	if err := helpers.ValidateDate(persona.Nacimiento); err != nil {
-		return fabric.ClientErrorResponse("nacimiento [" + persona.Nacimiento + "] invalido: " + err.Error())
+		return fabric.ClientErrorResponse(fmtInvalidField("nacimiento", persona.Nacimiento, err))
 	}
 	if err := helpers.ValidateDate(persona.Inscripcion); err != nil {
-		return fabric.ClientErrorResponse("inscripcion [" + persona.Inscripcion + "] invalida: " + err.Error())
+		return fabric.ClientErrorResponse(fmtInvalidField("inscripcion", persona.Inscripcion, err))
 	}
 	if err := helpers.ValidateDate(persona.FechaCierre); err != nil {
-		return fabric.ClientErrorResponse("fechaCierre [" + persona.FechaCierre + "] invalida: " + err.Error())
+		return fabric.ClientErrorResponse(fmtInvalidField("fechaCierre", persona.FechaCierre, err))
 	}
 	if err := helpers.ValidateDate(persona.Fallecimiento); err != nil {
-		return fabric.ClientErrorResponse("fallecimiento [" + persona.Fallecimiento + "] invalido: " + err.Error())
+		return fabric.ClientErrorResponse(fmtInvalidField("fallecimiento", persona.Fallecimiento, err))
 	}
 	if err := helpers.ValidateDate(persona.DS); err != nil {
-		return fabric.ClientErrorResponse("ds [" + persona.DS + "] invalido: " + err.Error())
+		return fabric.ClientErrorResponse(fmtInvalidField("ds", persona.DS, err))
 	}
-	return &err
+	return &fabric.Response{}
 }
 
 func GetPersonaKey(persona *model.Persona) string {
