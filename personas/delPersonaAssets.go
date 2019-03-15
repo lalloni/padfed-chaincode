@@ -28,12 +28,12 @@ func DelPersonaAssets(stub shim.ChaincodeStubInterface, args []string) *fabric.R
 	if errResponse := checkDuplicated(keys, cuit); errResponse != nil {
 		return errResponse
 	}
-	if exists, err := fabric.KeyExists(stub, "PER_"+cuit); !err.IsOK() {
+	exists, err := fabric.KeyExists(stub, "PER_"+cuit)
+	if !err.IsOK() {
 		return err
-	} else {
-		if !exists {
-			return fabric.ClientErrorResponse("Debe existir como un asset la persona: " + cuit)
-		}
+	}
+	if !exists {
+		return fabric.ClientErrorResponse("Debe existir como un asset la persona: " + cuit)
 	}
 	count := 0
 	for _, key := range keys {
