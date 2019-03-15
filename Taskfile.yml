@@ -186,7 +186,7 @@ tasks:
     deps: [ pre ]
     silent: true
     cmds:
-      - go test -cover -coverprofile='{{ .target }}/cover.dat" ./...
+      - go test -cover -coverprofile='{{ .target }}/cover.dat' ./...
       - touch '{{ .target }}/cover.witness'
     sources:
       - '**/*.go'
