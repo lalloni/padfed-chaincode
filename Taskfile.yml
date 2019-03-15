@@ -178,7 +178,7 @@ tasks:
       - cmd: rm -rf '{{ .target }}/release'
         ignore_error: true
       - cmd: git clone . '{{ .target }}/release'
-      - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout 'v{{ .version }}'
+      - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout --quiet 'v{{ .version }}'
       - cmd: task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
 
   coverreport:
