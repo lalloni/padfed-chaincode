@@ -2,6 +2,8 @@ version: '2'
 
 expansions: 10
 
+output: prefixed
+
 vars:
 
   # Para deploy a Nexus
@@ -36,6 +38,8 @@ tasks:
       - command -v go > /dev/null
       - command -v md5sum > /dev/null
       - command -v awk > /dev/null
+      - command -v wc > /dev/null
+      - command -v pwd > /dev/null
       - command -v golangci-lint > /dev/null || sh -c 'curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.15.0'
 
   pre:
@@ -49,12 +53,14 @@ tasks:
   clean:
     desc: 'Limpia directorio de trabajo'
     deps: [ tools ]
+    silent: true
     cmds:
       - rm -rf "{{ .target }}"
 
   check:
     desc: 'Realiza análisis estático de código fuente'
     deps: [ pre ]
+    silent: true
     cmds:
       - golangci-lint run
       - touch "{{ .target }}/check.witness"
@@ -66,6 +72,7 @@ tasks:
   test:
     desc: 'Ejecuta tests'
     deps: [ pre ]
+    silent: true
     cmds:
       - go test ./...
       - touch "{{ .target }}/test.witness"
@@ -79,6 +86,7 @@ tasks:
     deps: [ pre ]
     vars:
       binary: '{{ .target }}/chaincode'
+    silent: true
     cmds:
       - go build -o "{{ .binary }}" main.go
     sources:
@@ -89,6 +97,7 @@ tasks:
   package:
     desc: 'Empaqueta fuentes para instalar en Fabric'
     deps: [ check, test, compile ]
+    silent: true
     cmds:
       - tar -caf "{{ .package }}" --exclude="{{ .target }}/*" --exclude-vcs --exclude-vcs-ignore *
     sources:
@@ -96,9 +105,11 @@ tasks:
     generates:
       - '{{ .package }}'
 
-  _upload:
+  upload:
     deps: [ tools ]
+    silent: true
     cmds:
+      - echo 'Uploading {{ .file }} to https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/'
       - curl --progress-bar --fail --noproxy "*" --netrc-file "{{ .credentials }}" --upload-file "{{ .file }}" "https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/"
 
   publish:
@@ -113,19 +124,19 @@ tasks:
       Ejemplo
         task publish credentials=/path/a/archivo.netrc
     deps: [ tools ]
+    silent: true
     cmds:
       - cmd: test -f "{{ .credentials }}" || (echo 'No existe archivo de credenciales (ver salida de "task --summary publish")' ; exit 1)
-        silent: true
       - task: package
         vars:
           package: '{{ .package }}'
-      - md5sum -b '{{ .package }}' | awk '{printf $1}' > '{{ .package }}.md5'
-      - task: _upload
+      - cmd: md5sum -b '{{ .package }}' | awk '{printf $1}' > '{{ .package }}.md5'
+      - task: upload
         vars:
           file: '{{ .package }}.md5'
           version: '{{ .publishversion }}'
           credentials: '{{ .credentials }}'
-      - task: _upload
+      - task: upload
         vars:
           file: '{{ .package }}'
           version: '{{ .publishversion }}'
@@ -136,34 +147,44 @@ tasks:
     summary: |
       Genera y publica una nueva release.
 
-      Utilizar el parámetro 'version' (requerido) para especificar la versión a generar.
-      Debe ser una versión semántica.
+      Utilizar el parámetro 'version' (requerido) para especificar la versión a
+      generar. Debe ser una versión semántica (i.e. MAJOR.MINOR.PATCH).
+      Ver detalles sobre versionado semántico en https://semver.org/.
 
-      Uitilizar el parámetro 'credentials' para referirse al archivo netrc que
+      Utilizar el parámetro 'credentials' para referirse al archivo netrc que
       contiene las  credenciales a presentar a Nexus para publicar la versión.
       Si no se suministra se utilizará $HOME/.netrc.
       Ver detalles acerca del formato en https://goo.gl/GdA6u5.
 
+      Esta tarea requiere que todos los archivos del directorio de trabajo
+      pertenezcan a un commit de git. Esto significa que no debe haber archivos
+      nuevos, archivos modificados ni cambios en el stage de git.
+      En otras palabras, la salida de "git status -s" debe ser nula.
+
       Ejemplo
         task release version=X.Y.Z credentials=/path/a/archivo.netrc
-    deps: [ tools, check, test ]
+    deps: [ tools ]
     vars:
       package: '{{ .target }}/{{ .application }}-{{ .version }}.{{ .format }}'
+    silent: true
     cmds:
       - cmd: test '{{ .version }}' != '<no value>' || (echo 'Falta especificar la versión a generar (ver salida de "task --summary release")' ; exit 1)
-        silent: true
+      - cmd: echo '{{ .version }}' | grep -qE '^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9a-z-]+(\.[0-9a-z-]+)*)?(\+[0-9a-z-]+(\.[0-9a-z-]+)*)?$' || (echo 'El identificador de version "{{ .version }}" no cumple con SemVer (ver salida de "task --summary release")' ; exit 1)
+      - cmd: test $(git status -s | wc -l) -eq 0 || (echo 'Hay archivos modificados o nuevos o hay cambios el index de git' ; exit 1)
       - cmd: test -f '{{ .credentials }}' || (echo 'No existe archivo de credenciales (ver salida de "task --summary publish")' ; exit 1)
-        silent: true
-      - git tag -s 'v{{ .version }}' -m 'Release {{ .version }}'
-      - cmd: rm -rf {{ .target }}/release
+      - task: check
+      - task: test
+      - cmd: git tag -s 'v{{ .version }}' -m 'Release {{ .version }}'
+      - cmd: rm -rf '{{ .target }}/release'
         ignore_error: true
-      - git clone . '{{ .target }}/release'
-      - git --work-tree '{{ .target }}/release' checkout 'v{{ .version }}'
-      - task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
+      - cmd: git clone . '{{ .target }}/release'
+      - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout 'v{{ .version }}'
+      - cmd: task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
 
   coverreport:
     desc: 'Genera reporte de cobertura de tests'
     deps: [ pre ]
+    silent: true
     cmds:
       - go test -cover -coverprofile='{{ .target }}/cover.dat" ./...
       - touch '{{ .target }}/cover.witness'
@@ -175,5 +196,6 @@ tasks:
   cover:
     desc: 'Muestra reporte de cobertura de tests'
     deps: [ coverreport ]
+    silent: true
     cmds:
       - go tool cover -html '{{ .target }}/cover.dat'
