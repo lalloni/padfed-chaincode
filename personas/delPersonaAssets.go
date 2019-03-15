@@ -10,7 +10,7 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
 )
 
-func DelPersonaAssets(APIstub shim.ChaincodeStubInterface, args []string) *fabric.Response {
+func DelPersonaAssets(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
 	if len(args) != 2 {
 		return fabric.ClientErrorResponse("Numero incorrecto de parametros. Se esperaba 2 parametros con {CUIL, []KEYS}")
 	}
@@ -28,7 +28,7 @@ func DelPersonaAssets(APIstub shim.ChaincodeStubInterface, args []string) *fabri
 	if errResponse := checkDuplicated(keys, cuit); errResponse != nil {
 		return errResponse
 	}
-	if exists, err := fabric.KeyExists(APIstub, "PER_"+cuit); !err.IsOK() {
+	if exists, err := fabric.KeyExists(stub, "PER_"+cuit); !err.IsOK() {
 		return err
 	} else {
 		if !exists {
@@ -38,7 +38,7 @@ func DelPersonaAssets(APIstub shim.ChaincodeStubInterface, args []string) *fabri
 	count := 0
 	for _, key := range keys {
 		fabric.Log.Infof("key to delete [%s]", key)
-		if err := APIstub.DelState(key); err != nil {
+		if err := stub.DelState(key); err != nil {
 			return fabric.SystemErrorResponse("Error al eliminar: [" + key + "] " + err.Error())
 		}
 		count++
