@@ -22,6 +22,9 @@ vars:
   publishversion: '{{ print .gitversion | trimAll "v" }}{{ .gitdirty }}'
   package: '{{ .target }}/{{ .application }}-{{ .publishversion }}.{{ .format }}'
 
+env:
+  GO111MODULE: on
+
 tasks:
 
   tools:
@@ -58,6 +61,15 @@ tasks:
     cmds:
       - rm -rf "{{ .target }}"
 
+  vendor:
+    deps: [ tools ]
+    cmds:
+      - go mod vendor
+    sources:
+      - go.mod
+    generates:
+      - vendor/modules.txt
+
   check:
     desc: 'Realiza análisis estático de código fuente'
     deps: [ pre ]
@@ -72,10 +84,10 @@ tasks:
 
   test:
     desc: 'Ejecuta tests'
-    deps: [ pre ]
+    deps: [ pre, vendor ]
     silent: true
     cmds:
-      - go test ./...
+      - go test -mod=vendor ./...
       - touch "{{ .target }}/test.witness"
     sources:
       - '**/*.go'
@@ -84,12 +96,13 @@ tasks:
 
   compile:
     desc: 'Compila binario ejecutable'
-    deps: [ pre ]
+    deps: [ pre, vendor ]
     vars:
       binary: '{{ .target }}/chaincode'
     silent: true
     cmds:
-      - go build -o "{{ .binary }}" main.go
+      - go build -mod=vendor -o "{{ .binary }}" main.go
+
     sources:
       - '**/*.go'
     generates:
@@ -184,10 +197,10 @@ tasks:
 
   coverreport:
     desc: 'Genera reporte de cobertura de tests'
-    deps: [ pre ]
+    deps: [ pre, vendor ]
     silent: true
     cmds:
-      - go test -cover -coverprofile='{{ .target }}/cover.dat' ./...
+      - go test -mod=vendor -cover -coverprofile='{{ .target }}/cover.dat' ./...
       - touch '{{ .target }}/cover.witness'
     sources:
       - '**/*.go'
