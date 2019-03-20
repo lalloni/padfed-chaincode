@@ -24,6 +24,8 @@ vars:
     sh: test -z "$(git status --short)" || echo -dirty
   publishversion: '{{ print .gitversion | trimAll "v" }}{{ .gitdirty }}'
   package: '{{ .target }}/{{ .application }}-{{ .publishversion }}.{{ .format }}'
+  buildtime:
+    sh: date +%s
 
 env:
   GO111MODULE: on
@@ -34,20 +36,27 @@ tasks:
     desc: 'Verifica la disponibilidad de herramientas'
     silent: true
     cmds:
-      - command -v rm > /dev/null
-      - command -v mkdir > /dev/null
-      - command -v tar > /dev/null
+      - command -v awk > /dev/null
       - command -v curl > /dev/null
-      - command -v test > /dev/null
-      - command -v touch > /dev/null
       - command -v git > /dev/null
       - command -v go > /dev/null
-      - eval $(go version | sed -Ee 's/^.* go([^ ]+) .*$/\1/' | sed -Ee 's/[^0-9]*([0-9]*)[.]([0-9]*)[.]([0-9]*)([0-9A-Za-z-]*)/MAJOR="\1";MINOR="\2";PATCH="\3";EXTRA="\4"/') && test $MAJOR -eq 1 -a $MINOR -gt 10 || (echo "La version de Go debe ser 1.11 o superior" ; exit 1)
       - command -v md5sum > /dev/null
-      - command -v awk > /dev/null
-      - command -v wc > /dev/null
+      - command -v mkdir > /dev/null
       - command -v pwd > /dev/null
+      - command -v rm > /dev/null
+      - command -v sed > /dev/null
+      - command -v sh > /dev/null
+      - command -v tar > /dev/null
+      - command -v test > /dev/null
+      - command -v touch > /dev/null
+      - command -v wc > /dev/null
+      - eval $(go version | sed -Ee 's/^.* go([^ ]+) .*$/\1/' | sed -Ee 's/[^0-9]*([0-9]*)[.]([0-9]*)[.]([0-9]*)([0-9A-Za-z-]*)/MAJOR="\1";MINOR="\2";PATCH="\3";EXTRA="\4"/') && test $MAJOR -eq 1 -a $MINOR -gt 10 || (echo "La version de Go debe ser 1.11 o superior" ; exit 1)
       - command -v golangci-lint > /dev/null || sh -c 'curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.15.0'
+      - mkdir '{{ .target }}' > /dev/null 2>&1 ; touch '{{ .target }}/tools.{{ .buildtime }}.witness'
+    sources:
+      - '{{ .target }}/tools.{{ .buildtime }}.witness'
+    generates:
+      - '{{ .target }}/tools.{{ .buildtime }}.witness'
 
   pre:
     desc: 'Prepara directorio de trabajo'
@@ -105,7 +114,6 @@ tasks:
     silent: true
     cmds:
       - go build -mod=vendor -o "{{ .binary }}" main.go
-
     sources:
       - '**/*.go'
     generates:
