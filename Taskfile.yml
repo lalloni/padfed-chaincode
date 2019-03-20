@@ -7,7 +7,7 @@ output: prefixed
 vars:
 
   # Para deploy a Nexus
-  repository: 'sandbox-raw'
+  repository: 'padfed-bc-raw'
   system: 'padfed'
   application: 'padfed-chaincode'
   format: 'tar.xz'
