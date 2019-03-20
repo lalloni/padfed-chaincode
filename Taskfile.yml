@@ -135,7 +135,7 @@ tasks:
     silent: true
     cmds:
       - echo 'Uploading {{ .file }} to https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/'
-      - curl --progress-bar --fail --noproxy "*" --netrc-file "{{ .credentials }}" --upload-file "{{ .file }}" "https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/"
+      - curl --progress-bar --fail --noproxy "*" --cacert ca.crt --netrc-file "{{ .credentials }}" --upload-file "{{ .file }}" "https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/"
 
   publish:
     desc: Publica el archivo de fuentes empaquetados a Nexus (ver salida de "task --summary publish" para mayores detalles)
