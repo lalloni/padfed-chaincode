@@ -13,6 +13,9 @@ vars:
   format: 'tar.xz'
   credentials: '{{ .HOME }}/.netrc'
 
+  # Para publicación de tags
+  remote: origin
+
   # Configuración interna
   target: 'target'
   gitversion:
@@ -194,7 +197,7 @@ tasks:
       - cmd: git clone . '{{ .target }}/release'
       - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout --quiet 'v{{ .version }}'
       - cmd: task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
-      - cmd: git push 'v{{ .version }}'
+      - cmd: git push '{{ .remote }}' tag 'v{{ .version }}'
 
   coverreport:
     desc: 'Genera reporte de cobertura de tests'
