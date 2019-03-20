@@ -199,7 +199,7 @@ tasks:
       - cmd: test -f '{{ .credentials }}' || (echo 'No existe archivo de credenciales (ver salida de "task --summary publish")' ; exit 1)
       - task: check
       - task: test
-      - cmd: git tag -a 'v{{ .version }}' -m 'Release {{ .version }}'
+      - cmd: git tag -s 'v{{ .version }}' -m 'Release {{ .version }}'
       - cmd: rm -rf '{{ .target }}/release'
         ignore_error: true
       - cmd: git clone . '{{ .target }}/release'
