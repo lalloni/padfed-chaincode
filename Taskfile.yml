@@ -36,6 +36,7 @@ tasks:
       - command -v touch > /dev/null
       - command -v git > /dev/null
       - command -v go > /dev/null
+      - eval $(go version | sed -Ee 's/^.* go([^ ]+) .*$/\1/' | sed -Ee 's/[^0-9]*([0-9]*)[.]([0-9]*)[.]([0-9]*)([0-9A-Za-z-]*)/MAJOR="\1";MINOR="\2";PATCH="\3";EXTRA="\4"/') && test $MAJOR -eq 1 -a $MINOR -gt 10 || (echo "La version de Go debe ser 1.11 o superior" ; exit 1)
       - command -v md5sum > /dev/null
       - command -v awk > /dev/null
       - command -v wc > /dev/null
