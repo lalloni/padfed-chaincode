@@ -194,6 +194,7 @@ tasks:
       - cmd: git clone . '{{ .target }}/release'
       - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout --quiet 'v{{ .version }}'
       - cmd: task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
+      - cmd: git push 'v{{ .version }}'
 
   coverreport:
     desc: 'Genera reporte de cobertura de tests'
