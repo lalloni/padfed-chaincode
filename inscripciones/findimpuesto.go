@@ -10,7 +10,7 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
 )
 
-func FindImpuesto(stub shim.ChaincodeStubInterface, cuit uint64, idImpuesto int32) (model.Impuesto, []byte, error) {
+func FindImpuesto(stub shim.ChaincodeStubInterface, cuit uint64, idImpuesto uint) (model.Impuesto, []byte, error) {
 	var cuitStr = strconv.FormatUint(cuit, 10)
 	var impuestoStr = strconv.Itoa(int(idImpuesto))
 

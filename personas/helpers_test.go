@@ -14,7 +14,7 @@ import (
 func TestValidPersona(t *testing.T) {
 	var persona model.Persona
 	var personaJSON = test.GetPersonaJSON(30679638943)
-	if err := personas.ArgToPersona([]byte(personaJSON), &persona); !err.IsOK() {
+	if err := personas.ArgToPersona(personaJSON, &persona); !err.IsOK() {
 		t.Error(err.Msg)
 	}
 	if personas.GetPersonaKey(&persona) != "PER_30679638943" {
@@ -27,21 +27,18 @@ func TestValidPersona(t *testing.T) {
 
 func TestValimpuestosJSON(t *testing.T) {
 	const cuit = 30679638943
-	var impuestos model.Impuestos
-	var personaJSON = test.GetPersonaJSON(cuit)
-	err := json.Unmarshal([]byte(personaJSON), &impuestos)
-
+	var per model.Persona
+	err := json.Unmarshal(test.GetPersonaJSON(cuit), &per)
 	if err != nil {
 		t.Error("Error Failed to decode JSON of Impuestos")
 	}
-
-	if len(impuestos.Impuestos) != 4 {
-		t.Error("Persona debe tener 4 impuestos y tiene " + strconv.Itoa(len(impuestos.Impuestos)))
+	if len(per.Impuestos) != 4 {
+		t.Errorf("Persona debe tener 4 impuestos y tiene %d", len(per.Impuestos))
 	}
-	if inscripciones.GetImpuestoKeyByCuitID(cuit, impuestos.Impuestos[0].Impuesto) != "PER_30679638943_IMP_30" {
-		t.Error("1-Impuesto.Key no valido " + inscripciones.GetImpuestoKeyByCuitID(cuit, impuestos.Impuestos[0].Impuesto))
-	}
-	if inscripciones.GetImpuestoKeyByCuitID(cuit, impuestos.Impuestos[3].Impuesto) != "PER_30679638943_IMP_34" {
-		t.Error("3-Impuesto.Key no valido " + inscripciones.GetImpuestoKeyByCuitID(cuit, impuestos.Impuestos[3].Impuesto))
+	for _, imp := range per.Impuestos {
+		v := inscripciones.GetImpuestoKeyByCuitID(cuit, imp.Impuesto)
+		if v != "PER_"+strconv.FormatUint(cuit, 10)+"_IMP_"+strconv.FormatUint(uint64(imp.Impuesto), 10) {
+			t.Errorf("1-Impuesto.Key no valido: %v", v)
+		}
 	}
 }

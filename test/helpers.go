@@ -34,7 +34,7 @@ func CheckState(t *testing.T, stub *shim.MockStub, name string, value string) {
 func PutPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response {
 	var personaJSON = GetPersonaJSON(cuit)
 	cuitStr := strconv.FormatUint(cuit, 10)
-	return stub.MockInvoke("1", [][]byte{[]byte("putPersona"), []byte(cuitStr), []byte(personaJSON)})
+	return stub.MockInvoke("1", [][]byte{[]byte("putPersona"), []byte(cuitStr), personaJSON})
 }
 
 func QueryPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response {
@@ -47,4 +47,11 @@ func SetInitTests(t *testing.T) *shim.MockStub {
 	stub := shim.NewMockStub("padfed", scc)
 	CheckInit(t, stub, [][]byte{})
 	return stub
+}
+
+func GetPersonaJSON(cuit uint64) []byte {
+	if cuit >= 30000000000 {
+		return GetPersonaJurídica(cuit)
+	}
+	return GetPersonaFísica(cuit)
 }

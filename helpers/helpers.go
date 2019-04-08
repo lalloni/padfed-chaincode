@@ -16,12 +16,16 @@ var dateRegexp = *regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`)
 func GetCUIT(s string) (uint64, error) {
 	c, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
-		return 0, errors.Errorf("CUIT debe ser un número %q", s)
+		return 0, errors.Errorf("CUIT debe ser un número %q: %v", s, err)
 	}
 	if !cuit.IsValid(uint64(c)) {
 		return 0, errors.Errorf("CUIT inválido %q", s)
 	}
 	return uint64(c), nil
+}
+
+func FormatCUIT(v uint64) string {
+	return cuit.Format(v)
 }
 
 /*

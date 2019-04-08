@@ -13,6 +13,6 @@ func TestGetCUIT(t *testing.T) {
 	}
 	_, err = helpers.GetCUIT("20066675573")
 	if err != nil {
-		t.Error("No debe pinchar, el valor cuit es valido.")
+		t.Errorf("No debe pinchar, el valor cuit es valido: %v", err)
 	}
 }

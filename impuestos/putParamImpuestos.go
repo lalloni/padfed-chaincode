@@ -46,7 +46,7 @@ func PutParamImpuestos(stub shim.ChaincodeStubInterface, args []string) *fabric.
 }
 
 // ValidateIDImpuesto valida el codigo de impuesto sin acceder al State
-func ValidateIDImpuesto(impuesto int32) *fabric.Response {
+func ValidateIDImpuesto(impuesto uint) *fabric.Response {
 	if !(impuesto >= 1 && impuesto <= 9999) {
 		return fabric.ClientErrorResponse("impuesto [" + strconv.Itoa(int(impuesto)) + "] debe ser un entero entre 1 y 9999")
 	}
@@ -54,7 +54,7 @@ func ValidateIDImpuesto(impuesto int32) *fabric.Response {
 }
 
 // ExistsIDImpuesto verifica que exista un asset "IMP_<idImpuesot>"
-func ExistsIDImpuesto(stub shim.ChaincodeStubInterface, impuesto int32) (bool, *fabric.Response) {
+func ExistsIDImpuesto(stub shim.ChaincodeStubInterface, impuesto uint) (bool, *fabric.Response) {
 	exists, response := fabric.KeyExists(stub, GetParamImpuestoKey(impuesto))
 	if !response.IsOK() {
 		return false, response
@@ -62,6 +62,6 @@ func ExistsIDImpuesto(stub shim.ChaincodeStubInterface, impuesto int32) (bool, *
 	return exists, &fabric.Response{}
 }
 
-func GetParamImpuestoKey(impuesto int32) string {
+func GetParamImpuestoKey(impuesto uint) string {
 	return "IMP_" + strconv.Itoa(int(impuesto))
 }
