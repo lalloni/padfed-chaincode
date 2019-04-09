@@ -129,7 +129,7 @@ func checkClientID(ctx *Ctx) *fabric.Response {
 }
 
 func peerResponse(ctx *Ctx, response *fabric.Response) peer.Response {
-	if response.IsOK() && response.Buffer.Len() > 0 {
+	if response.IsOK() && response.Buffer != nil {
 		return shim.Success(response.Buffer.Bytes())
 	}
 	response.Txid = ctx.txid

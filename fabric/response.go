@@ -16,16 +16,16 @@ const (
 )
 
 type Response struct {
-	Status      responseCode `json:"status"`
-	Buffer      bytes.Buffer `json:"-"`
-	Msg         string       `json:"msg,omitempty"`
-	Txid        string       `json:"txid"`
-	Function    string       `json:"function,omitempty"`
-	Mspid       string       `json:"mspid,omitempty"`
-	CertIssuer  string       `json:"certIssuer,omitempty"`
-	CertSubject string       `json:"certSubject,omitempty"`
-	Assets      int          `json:"assets,omitempty"`
-	WrongItem   int          `json:"wrongItem,omitempty"`
+	Status      responseCode  `json:"status"`
+	Buffer      *bytes.Buffer `json:"-"`
+	Msg         string        `json:"msg,omitempty"`
+	Txid        string        `json:"txid"`
+	Function    string        `json:"function,omitempty"`
+	Mspid       string        `json:"mspid,omitempty"`
+	CertIssuer  string        `json:"certIssuer,omitempty"`
+	CertSubject string        `json:"certSubject,omitempty"`
+	Assets      int           `json:"assets,omitempty"`
+	WrongItem   int           `json:"wrongItem,omitempty"`
 }
 
 func (r *Response) IsOK() bool {
@@ -69,6 +69,6 @@ func SuccessResponse(msg string, assets int) *Response {
 func SuccessResponseWithBuffer(buffer *bytes.Buffer) *Response {
 	var response Response
 	response.Status = OK
-	response.Buffer = *buffer
+	response.Buffer = buffer
 	return &response
 }

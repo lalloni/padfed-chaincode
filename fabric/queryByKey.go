@@ -24,8 +24,7 @@ func QueryByKey(stub shim.ChaincodeStubInterface, key string) *Response {
 		return r
 	}
 	r.Buffer.WriteString("[")
-	helpers.WriteInBuffer(&r.Buffer, registerAsBytes, key, false)
+	helpers.WriteInBuffer(r.Buffer, registerAsBytes, key, false)
 	r.Buffer.WriteString("]")
-	//	log.Println("queryByKey: [" + r.Buffer.String() + "]")
 	return r
 }
