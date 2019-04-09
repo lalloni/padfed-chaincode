@@ -6,7 +6,7 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/test"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/test"
 )
 
 func TestQueryPersona(t *testing.T) {

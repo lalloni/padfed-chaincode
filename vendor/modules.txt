@@ -213,10 +213,10 @@ github.com/xeipuuv/gojsonpointer
 github.com/xeipuuv/gojsonreference
 # gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.6.0
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git
-gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/convert
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/build
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/jsoncheck
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/schemas
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/convert
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/formats
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/packrd
 # go.uber.org/atomic v1.3.2

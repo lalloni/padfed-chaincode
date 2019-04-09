@@ -8,7 +8,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/chaincode"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/chaincode"
 )
 
 func CheckInit(t *testing.T, stub *shim.MockStub, args [][]byte) {

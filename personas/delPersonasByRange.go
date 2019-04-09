@@ -3,7 +3,7 @@ package personas
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 )
 
 func DelPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {

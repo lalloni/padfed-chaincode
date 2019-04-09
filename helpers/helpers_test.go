@@ -3,7 +3,7 @@ package helpers_test
 import (
 	"testing"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/helpers"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/helpers"
 )
 
 func TestGetCUIT(t *testing.T) {

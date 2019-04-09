@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/convert"
 )
 

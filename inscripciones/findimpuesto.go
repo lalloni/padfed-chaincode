@@ -7,7 +7,7 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 )
 
 func FindImpuesto(stub shim.ChaincodeStubInterface, cuit uint64, idImpuesto uint) (model.Impuesto, []byte, error) {

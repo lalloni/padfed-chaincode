@@ -5,7 +5,7 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/chaincode"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/chaincode"
 )
 
 // main function starts up the chaincode in the container during instantiate

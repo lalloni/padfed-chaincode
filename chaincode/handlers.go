@@ -3,10 +3,10 @@ package chaincode
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/impuestos"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/inscripciones"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/personas"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/impuestos"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/inscripciones"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/personas"
 )
 
 type Handler func(shim.ChaincodeStubInterface, []string) *fabric.Response

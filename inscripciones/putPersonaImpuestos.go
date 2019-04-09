@@ -8,9 +8,9 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/impuestos"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/impuestos"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 )
 
 func PutPersonaImpuestos(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {

@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"testing"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/inscripciones"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/personas"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/test"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/inscripciones"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/personas"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/test"
 )
 
 func TestValidPersona(t *testing.T) {

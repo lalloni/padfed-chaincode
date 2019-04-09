@@ -3,7 +3,7 @@ package inscripciones
 import (
 	"strconv"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 )
 
 func GetImpuestoKeyByCuitID(cuit uint64, impuesto uint) string {

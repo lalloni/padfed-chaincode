@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 )
 
 func QueryPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {

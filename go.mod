@@ -1,4 +1,4 @@
-module gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode
+module gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git
 
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible // indirect
