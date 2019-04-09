@@ -23,7 +23,6 @@ func BuildHandlers() Handlers {
 	h["delPersona"] = personas.DelPersona
 	h["delPersonasByRange"] = personas.DelPersonasByRange
 	h["queryPersona"] = personas.QueryPersona
-	h["queryPersonasByRange"] = personas.QueryPersonasByRange
 	h["queryAllPersona"] = personas.QueryAllPersona
 
 	// impuestos
