@@ -1,9 +1,9 @@
 package formats
 
 import (
+	"fmt"
 	"math/big"
 	"math/bits"
-	"fmt"
 
 	"github.com/lalloni/afip/periodo"
 )

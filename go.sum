@@ -206,8 +206,8 @@ github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f/go.mod h1:N2
 github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 h1:EzJWgHovont7NscjpAxXsDA8S8BMYve8Y5+7cuRE7R0=
 github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415/go.mod h1:GwrjFmJcFw6At/Gs6z4yjiIwzuJ1/+UwLxMQDVQXShQ=
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
-gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.6.0 h1:nn8BlczPzc860Er8eay4BMcbvQY0TRUdOzoTqtyn38g=
-gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.6.0/go.mod h1:CJ6zKaRKYySoHI0jnql7WjkWLMucLxPjYrfh0V1ImOA=
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.7.0 h1:mquzlLAK6ihflPdqMZDawFATRw0Q3gM2XVE2urN8Qpo=
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.7.0/go.mod h1:CJ6zKaRKYySoHI0jnql7WjkWLMucLxPjYrfh0V1ImOA=
 go.uber.org/atomic v1.3.2 h1:2Oa65PReHzfn29GpvgsYwloV9AVFHPDk8tYxt2c2tr4=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/multierr v1.1.0 h1:HoEmRHQPVSqub6w2z2d2EOVs2fjyFRGyofhKuyDq0QI=
