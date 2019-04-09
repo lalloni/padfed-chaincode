@@ -18,7 +18,8 @@ require (
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/spf13/viper v1.3.2 // indirect
-	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.4.0
+	github.com/stretchr/testify v1.3.0
+	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.6.0
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1 // indirect
