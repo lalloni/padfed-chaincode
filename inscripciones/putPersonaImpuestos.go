@@ -37,34 +37,77 @@ func PutPersonaImpuestos(stub shim.ChaincodeStubInterface, args []string) *fabri
 	return fabric.SuccessResponse("Ok", rows)
 }
 
-func CommitPersonaImpuestos(stub shim.ChaincodeStubInterface, cuit uint64, kimps map[string]model.PersonaImpuesto) (int, *fabric.Response) {
+func CommitPersonaImpuestos(stub shim.ChaincodeStubInterface, cuit uint64, kimps map[string]*model.PersonaImpuesto) (int, *fabric.Response) {
 
-	imps := []*model.PersonaImpuesto{}
-	for _, imp := range kimps {
-		imp := imp
-		imps = append(imps, &imp)
-	}
-
-	if hid, impuestoDuplicado := HasDuplicatedImpuestos(imps); hid {
-		return 0, fabric.ClientErrorResponse("Array con impuesto [" + strconv.Itoa(int(impuestoDuplicado.Impuesto)) + "] duplicado")
-	}
 	count := 0
-	for _, imp := range imps {
-		if exists, err := impuestos.ExistsIDImpuesto(stub, imp.Impuesto); !err.IsOK() {
-			err.WrongItem = count
-			return 0, err
-		} else if !exists {
-			return 0, fabric.ClientErrorResponse("impuesto ["+strconv.Itoa(int(imp.Impuesto))+"] no definido en ParamImpuesto", count)
+	set := map[uint]struct{}{}
+	for _, v := range kimps {
+		if v == nil {
+			continue
 		}
-		impuestoAsBytes, err := json.Marshal(imp)
-		if err != nil {
-			return 0, fabric.SystemErrorResponse("Error marshalling impuesto ["+strconv.Itoa(int(imp.Impuesto))+"]: "+err.Error(), count)
-		}
-		key := GetImpuestoKeyByCuitID(cuit, imp.Impuesto)
-		if err := stub.PutState(key, impuestoAsBytes); err != nil {
-			return 0, fabric.SystemErrorResponse("Error putting key ["+key+"]: "+err.Error(), count)
+		if _, ok := set[v.Impuesto]; ok {
+			return 0, fabric.ClientErrorResponse(fmt.Sprintf("Impuesto %d duplicado", v.Impuesto), count)
 		}
 		count++
 	}
-	return len(imps), &fabric.Response{}
+
+	count = 0
+	for key, imp := range kimps {
+		if imp == nil {
+			// del
+			impuesto, err := strconv.ParseUint(key, 10, strconv.IntSize)
+			if err != nil {
+				return count, fabric.ClientErrorResponse(fmt.Sprintf("Código de impuesto inválido: %q", key), count)
+			}
+			res := DeletePersonaImpuesto(stub, cuit, uint(impuesto))
+			if !res.IsOK() {
+				res.WrongItem = count
+				return count, res
+			}
+		} else {
+			// put
+			res := PutPersonaImpuesto(stub, cuit, imp)
+			if !res.IsOK() {
+				res.WrongItem = count
+				return count, res
+			}
+		}
+		count++
+	}
+
+	return count, &fabric.Response{}
+}
+
+func DeletePersonaImpuesto(stub shim.ChaincodeStubInterface, cuit uint64, impuesto uint) *fabric.Response {
+	exist, errr := impuestos.ExistsIDImpuesto(stub, impuesto)
+	if !errr.IsOK() {
+		return errr
+	}
+	if !exist {
+		return fabric.ClientErrorResponse(fmt.Sprintf("No existe el impuesto %d en la persona %d", impuesto, cuit))
+	}
+	err := stub.DelState(GetImpuestoKeyByCuitID(cuit, impuesto))
+	if err != nil {
+		return fabric.SystemErrorResponse(fmt.Sprintf("Eliminando impuesto de persona: %v", err))
+	}
+	return &fabric.Response{}
+}
+
+func PutPersonaImpuesto(stub shim.ChaincodeStubInterface, cuit uint64, imp *model.PersonaImpuesto) *fabric.Response {
+	exists, res := impuestos.ExistsIDImpuesto(stub, imp.Impuesto)
+	if !res.IsOK() {
+		return res
+	}
+	if !exists {
+		return fabric.ClientErrorResponse("Impuesto [" + strconv.Itoa(int(imp.Impuesto)) + "] inexistente")
+	}
+	bs, err := json.Marshal(imp)
+	if err != nil {
+		return fabric.SystemErrorResponse("Error marshalling impuesto [" + strconv.Itoa(int(imp.Impuesto)) + "]: " + err.Error())
+	}
+	key := GetImpuestoKeyByCuitID(cuit, imp.Impuesto)
+	if err := stub.PutState(key, bs); err != nil {
+		return fabric.SystemErrorResponse("Error putting key [" + key + "]: " + err.Error())
+	}
+	return &fabric.Response{}
 }
