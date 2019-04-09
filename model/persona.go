@@ -9,17 +9,17 @@ type Persona struct {
 	Persona *PersonaBasica `json:"persona,omitempty"`
 
 	// colecciones
-	Actividades    map[string]PersonaActividad    `json:"actividades,omitempty"`
-	Impuestos      map[string]PersonaImpuesto     `json:"impuestos,omitempty"`
-	Domicilios     map[string]PersonaDomicilio    `json:"domicilios,omitempty"`
-	Telefonos      map[string]PersonaTelefono     `json:"telefonos,omitempty"`
-	Jurisdicciones map[string]PersonaJurisdiccion `json:"jurisdicciones,omitempty"`
-	Emails         map[string]PersonaEmail        `json:"emails,omitempty"`
-	Archivos       map[string]PersonaArchivo      `json:"archivos,omitempty"`
-	Categorias     map[string]PersonaCategoria    `json:"categorias,omitempty"`
-	Etiquetas      map[string]PersonaEtiqueta     `json:"etiquetas,omitempty"`
-	Contribuciones map[string]PersonaContribucion `json:"contribmunis,omitempty"`
-	Relaciones     map[string]PersonaRelacion     `json:"relaciones,omitempty"`
+	Actividades    map[string]*PersonaActividad    `json:"actividades,omitempty"`
+	Impuestos      map[string]*PersonaImpuesto     `json:"impuestos,omitempty"`
+	Domicilios     map[string]*PersonaDomicilio    `json:"domicilios,omitempty"`
+	Telefonos      map[string]*PersonaTelefono     `json:"telefonos,omitempty"`
+	Jurisdicciones map[string]*PersonaJurisdiccion `json:"jurisdicciones,omitempty"`
+	Emails         map[string]*PersonaEmail        `json:"emails,omitempty"`
+	Archivos       map[string]*PersonaArchivo      `json:"archivos,omitempty"`
+	Categorias     map[string]*PersonaCategoria    `json:"categorias,omitempty"`
+	Etiquetas      map[string]*PersonaEtiqueta     `json:"etiquetas,omitempty"`
+	Contribuciones map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
+	Relaciones     map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
 }
 
 type PersonaBasica struct {
