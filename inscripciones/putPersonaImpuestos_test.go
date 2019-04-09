@@ -20,6 +20,7 @@ func TestPutPersonaImpuestos(t *testing.T) {
 
 	impuestosJSON := `
 {
+	"id": 30679638943,
     "impuestos": {
         "30": {
             "impuesto": 30,
@@ -35,7 +36,7 @@ func TestPutPersonaImpuestos(t *testing.T) {
 }
 `
 
-	res = stub.MockInvoke("1", [][]byte{[]byte("putPersonaImpuestos"), []byte("30679638943"), []byte(impuestosJSON)})
+	res = stub.MockInvoke("1", [][]byte{[]byte("putPersonaImpuestos"), []byte(impuestosJSON)})
 	if res.Status != shim.OK {
 		fmt.Println("putPersonaImpuestos error", res.Message)
 		t.FailNow()

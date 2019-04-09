@@ -2,42 +2,34 @@ package personas
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/helpers"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/inscripciones"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode/model"
 )
 
 func PutPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
-	if len(args) != 2 {
-		return fabric.ClientErrorResponse("Número incorrecto de argumentos. Se esperan 2 (ID, PERSONA)")
-	}
-	var cuit uint64
-	var err error
-	var res *fabric.Response
-	cuitStr := args[0]
-	log.Print("cuit recibido [" + cuitStr + "]")
-	if cuit, err = helpers.GetCUIT(cuitStr); err != nil {
-		return fabric.ClientErrorResponse("ID [" + cuitStr + "] invalido")
+	if len(args) != 1 {
+		return fabric.ClientErrorResponse("Número incorrecto de argumentos. Se espera 1 (PERSONA).")
 	}
 	newPersona := &model.Persona{}
-	if res = ArgToPersona([]byte(args[1]), newPersona); !res.IsOK() {
+	if res := model.ArgToPersona([]byte(args[0]), newPersona); !res.IsOK() {
 		return res
 	}
-	return SavePersona(stub, cuit, newPersona)
+	return SavePersona(stub, newPersona)
 }
 
 func PutPersonas(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
 	if len(args) != 1 {
 		return fabric.ClientErrorResponse("Número incorrecto de argumentos. Se espera 1 (PERSONAS)")
 	}
-	newPersonas := &model.Personas{}
-	if err := ArgToPersonas([]byte(args[0]), newPersonas); !err.IsOK() {
+	newPersonas := &model.PersonaList{}
+	if err := model.ArgToPersonas([]byte(args[0]), newPersonas); !err.IsOK() {
 		return err
 	}
 
@@ -45,7 +37,7 @@ func PutPersonas(stub shim.ChaincodeStubInterface, args []string) *fabric.Respon
 	for _, p := range newPersonas.Personas {
 		p := p
 		log.Printf("Grabando persona %d", p.ID)
-		res := SavePersona(stub, p.ID, &p)
+		res := SavePersona(stub, &p)
 		if res.Status != shim.OK {
 			res.WrongItem = rows
 			return res
@@ -56,12 +48,13 @@ func PutPersonas(stub shim.ChaincodeStubInterface, args []string) *fabric.Respon
 	return fabric.SuccessResponse("Ok", rows)
 }
 
-func SavePersona(stub shim.ChaincodeStubInterface, cuit uint64, p *model.Persona) *fabric.Response {
+func SavePersona(stub shim.ChaincodeStubInterface, p *model.Persona) *fabric.Response {
 
-	cuits := strconv.FormatUint(cuit, 10)
-	if cuit != p.ID {
-		return fabric.ClientErrorResponse("El parametro cuit [" + cuits + "] y la cuit [" + helpers.FormatCUIT(p.ID) + "] en la Persona deben ser iguales")
+	if p.ID != p.Persona.ID {
+		return fabric.ClientErrorResponse(fmt.Sprintf("El root.id [%d] y root.persona.id [%d] deben ser iguales", p.ID, p.Persona.ID))
 	}
+
+	cuits := strconv.Itoa(int(p.ID))
 
 	key := GetPersonaKey(p)
 
@@ -71,35 +64,33 @@ func SavePersona(stub shim.ChaincodeStubInterface, cuit uint64, p *model.Persona
 	}
 
 	if !exist {
-		if p.Tipo == "" {
-			return fabric.ClientErrorResponse("No existe un asset [" + cuits + "] - Debe informarse los datos identificarios de la Persona")
-		}
 		log.Println("Putting [" + cuits + "]...")
 		if err := stub.PutState(cuits, []byte("{}")); err != nil {
 			return fabric.SystemErrorResponse("Error putting cuitStr [" + cuits + "]: " + err.Error())
 		}
 	}
 
-	impuestos := p.Impuestos
-	p.Impuestos = nil
+	rows := 0
 
-	personaAsBytes, _ := json.Marshal(p)
-
-	log.Println("Putting [" + key + "]...")
-	if err := stub.PutState(key, personaAsBytes); err != nil {
-		return fabric.SystemErrorResponse("Error putting key [" + key + "]: " + err.Error())
-	}
-
-	rows, err := inscripciones.CommitPersonaImpuestos(stub, cuits, impuestos)
-	if !err.IsOK() {
-		return err
-	}
-
-	if p.Tipo != "" {
+	if p.Persona != nil {
+		bs, err := json.Marshal(p.Persona)
+		if err != nil {
+			return fabric.SystemErrorResponse("Error marshaling persona [" + key + "]: " + err.Error())
+		}
+		log.Println("Putting [" + key + "]...")
+		if err := stub.PutState(key, bs); err != nil {
+			return fabric.SystemErrorResponse("Error putting key [" + key + "]: " + err.Error())
+		}
 		rows++
 	}
 
-	log.Print("Ok")
+	if p.Impuestos != nil {
+		r, err := inscripciones.CommitPersonaImpuestos(stub, p.ID, p.Impuestos)
+		if !err.IsOK() {
+			return err
+		}
+		rows += r
+	}
 
 	return fabric.SuccessResponse("Ok", rows)
 }

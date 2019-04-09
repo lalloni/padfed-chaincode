@@ -17,16 +17,20 @@ func GetPersonaJurídica(cuit uint64) []byte {
 var jurt = template.Must(template.New("personajuridica").Parse(`
 {
     "id": {{ .CUIT }},
-    "tipoid": "C",
-    "tipo": "J",
-    "estado": "A",
-    "razonsocial": "THE BIRTH OF MARIA CONCETTA",
-    "formajuridica": 1,
-    "inscripcion": {
-        "registro": 10,
-        "numero": 10
+    "persona": {
+        "id": {{ .CUIT }},
+        "tipoid": "C",
+        "tipo": "J",
+        "estado": "A",
+        "razonsocial": "THE BIRTH OF MARIA CONCETTA",
+        "formajuridica": 1,
+        "inscripcion": {
+            "registro": 10,
+            "numero": 10
+        },
+        "mescierre": 12,
+        "ds": "2019-01-01"
     },
-    "mescierre": 12,
     "impuestos": {
         "30": {
             "impuesto": 30,

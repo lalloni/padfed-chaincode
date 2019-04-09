@@ -18,16 +18,20 @@ func GetPersonaFísica(cuit uint64) []byte {
 var fist = template.Must(template.New("personafisica").Parse(`
 {
     "id": {{ .CUIT }},
-    "tipoid": "C",
-    "tipo": "F",
-    "estado": "A",
-    "nombre": "Pepe",
-    "apellido": "Sanchez",
-    "documento": {
-        "tipo": 1,
-        "numero":  "{{ .CUIT }}"
+    "persona": {
+        "id": {{ .CUIT }},
+        "tipoid": "C",
+        "tipo": "F",
+        "estado": "A",
+        "nombre": "Pepe",
+        "apellido": "Sanchez",
+        "documento": {
+            "tipo": 1,
+            "numero":  "{{ .CUIT }}"
+        },
+        "nacimiento": "1928-11-17",
+        "ds": "2019-01-01"
     },
-    "nacimiento": "1928-11-17",
     "impuestos": {
         "30": {
             "impuesto": 30,

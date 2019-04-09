@@ -22,7 +22,6 @@ func BuildHandlers() Handlers {
 	h["putPersonas"] = personas.PutPersonas
 	h["delPersona"] = personas.DelPersona
 	h["delPersonasByRange"] = personas.DelPersonasByRange
-	h["delPersonaAssets"] = personas.DelPersonaAssets
 	h["queryPersona"] = personas.QueryPersona
 	h["queryPersonasByRange"] = personas.QueryPersonasByRange
 	h["queryAllPersona"] = personas.QueryAllPersona

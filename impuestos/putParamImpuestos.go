@@ -17,7 +17,7 @@ func PutParamImpuestos(stub shim.ChaincodeStubInterface, args []string) *fabric.
 	}
 	var err error
 
-	var impuestos []model.ParamImpuesto
+	var impuestos []model.Impuesto
 	if err = json.Unmarshal([]byte(args[0]), &impuestos); err != nil {
 		msg := "JSON invalido: " + err.Error()
 		log.Println(msg)
