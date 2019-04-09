@@ -11,6 +11,7 @@ const (
 	OK          responseCode = 200
 	BadRequest  responseCode = 400
 	Forbidden   responseCode = 403
+	NotFound    responseCode = 404
 	ServerError responseCode = 500
 )
 
@@ -31,19 +32,23 @@ func (r *Response) IsOK() bool {
 	return r.Status == OK || r.Status == Unknown
 }
 
+func NotFoundErrorResponse() *Response {
+	return ErrorResponse("", NotFound)
+}
+
 func SystemErrorResponse(msg string, wrongItem ...int) *Response {
-	return ErrorResponse(msg, ServerError, wrongItem)
+	return ErrorResponse(msg, ServerError, wrongItem...)
 }
 
 func ClientErrorResponse(msg string, wrongItem ...int) *Response {
-	return ErrorResponse(msg, BadRequest, wrongItem)
+	return ErrorResponse(msg, BadRequest, wrongItem...)
 }
 
 func ForbiddenErrorResponse(msg string, wrongItem ...int) *Response {
-	return ErrorResponse(msg, Forbidden, wrongItem)
+	return ErrorResponse(msg, Forbidden, wrongItem...)
 }
 
-func ErrorResponse(msg string, status responseCode, wrongItem []int) *Response {
+func ErrorResponse(msg string, status responseCode, wrongItem ...int) *Response {
 	var response Response
 	response.Status = status
 	response.Msg = msg
