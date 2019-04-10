@@ -17,9 +17,12 @@ require (
 	github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505
 	github.com/magefile/mage v1.8.1-0.20190314142316-8dce728c572d
 	github.com/pkg/errors v0.8.1
+	github.com/rjeczalik/notify v0.9.2
+	github.com/sirupsen/logrus v1.4.0
 	github.com/stretchr/testify v1.3.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c // indirect
+	golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 // indirect
 	gopkg.in/yaml.v2 v2.2.2
 )

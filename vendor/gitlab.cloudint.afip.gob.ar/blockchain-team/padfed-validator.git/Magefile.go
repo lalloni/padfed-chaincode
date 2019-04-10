@@ -3,18 +3,25 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/lalloni/go-archiver"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/pkg/errors"
+	"github.com/rjeczalik/notify"
+	log "github.com/sirupsen/logrus"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/build"
 )
+
+func init() {
+	log.SetFormatter(&log.TextFormatter{
+		FullTimestamp: true,
+	})
+}
 
 // Limpia directorio de proyecto de artefactos temporales generados
 func Clean() {
@@ -49,13 +56,13 @@ func Check() error {
 }
 
 // Ejecuta compilación de librería de validación
-func CompileLibrary() error {
+func Compilelibrary() error {
 	mg.Deps(Genall)
 	return sh.Run("go", "build", "./...")
 }
 
 // Ejecuta compilación de herramienta de validación
-func CompileValidatorTool() error {
+func Compilevalidatortool() error {
 	mg.Deps(Genall)
 	base := "target/bin/"
 	for _, goos := range []string{"windows", "linux"} {
@@ -79,15 +86,15 @@ func CompileValidatorTool() error {
 
 // Ejecuta todas las tareas de compilcación
 func Compile() error {
-	mg.Deps(CompileLibrary, CompileValidatorTool)
+	mg.Deps(Compilelibrary, Compilevalidatortool)
 	return nil
 }
 
 // Empaqueta los binarios del proyecto
 func Package() error {
-	mg.Deps(Clean, CompileValidatorTool)
+	mg.Deps(Clean, Compilevalidatortool)
 	p := "target/pkg/validator.zip"
-	log.Printf("packaging binaries into %s", p)
+	log.Infof("packaging binaries into %s", p)
 	os.MkdirAll(filepath.Dir(p), 0777)
 	a, err := archiver.NewZip(p)
 	if err != nil {
@@ -102,7 +109,7 @@ func Package() error {
 		d, f := filepath.Split(n)
 		d = filepath.Base(d)
 		nn := filepath.Join(d, f)
-		log.Printf("adding %s as %s", n, nn)
+		log.Infof("adding %s as %s", n, nn)
 		return nn
 	})
 	if err != nil {
@@ -129,7 +136,7 @@ You must set the version to be released using the environment variable 'version'
 On unix-like shells you could do something like:
     env version=1.2.3 mage release`)
 	}
-	fmt.Printf("Releasing version: %s\n", version)
+	log.Infof("Releasing version: %s", version)
 	mg.SerialDeps(Genall, Check, Compile, Test)
 	return errors.New("still not implemented")
 }
@@ -137,4 +144,33 @@ On unix-like shells you could do something like:
 // Construye un binario estático de este build
 func Buildbuild() error {
 	return sh.RunV("mage", "-compile", "magestatic")
+}
+
+// Ejecuta los tests ante cambios en el proyecto
+func Testwatch() error {
+	c := make(chan notify.EventInfo, 1000)
+	err := notify.Watch("./", c, notify.All)
+	if err != nil {
+		return err
+	}
+	log.Info("Running tests for the first time...")
+	if Test() == nil {
+		log.Info("SUCCESS")
+	} else {
+		log.Error("FAILED")
+	}
+	ignores := regexp.MustCompile(`\/mage_output_file\.go$`)
+	for e := range c {
+		if ignores.MatchString(e.Path()) {
+			log.Infof("Ignoring %v", e)
+			continue
+		}
+		log.Infof("Running tests after receiving %v...", e)
+		if Test() == nil {
+			log.Info("SUCCESS")
+		} else {
+			log.Error("FAILED")
+		}
+	}
+	return nil
 }
