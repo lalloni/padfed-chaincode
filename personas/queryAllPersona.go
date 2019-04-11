@@ -7,5 +7,5 @@ import (
 )
 
 func QueryAllPersona(stub shim.ChaincodeStubInterface, _ []string) *fabric.Response {
-	return QueryPersonasByRangeFormated(stub, "", "", false, false)
+	return QueryPersonasByRangeFormated(stub, "", "", false)
 }
