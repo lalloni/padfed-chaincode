@@ -6,12 +6,15 @@ import (
 	"testing"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/stretchr/testify/assert"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/test"
 )
 
 func TestGetPersona(t *testing.T) {
+	a := assert.New(t)
+
 	stub := test.SetInitTests(t)
 	var cuit uint64 = 30679638943
 	res := test.PutPersona(t, stub, cuit)
@@ -39,11 +42,8 @@ func TestGetPersona(t *testing.T) {
 		t.Errorf("los id son distintos")
 	}
 
-	if personaPut.Persona != personaPut.Persona {
-		t.Errorf("las Personas son distintos")
-	}
+	a.Equal(personaPut.Persona, personaGet.Persona, "personas distintas")
 
-	if len(personaPut.Impuestos) != len(personaPut.Impuestos) {
-		t.Errorf("los Impuestos son distintos ")
-	}
+	a.Equal(personaPut.Impuestos, personaGet.Impuestos, "impuestos distintas")
+
 }
