@@ -1,6 +1,7 @@
 package personas_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -22,6 +23,7 @@ func TestDelPersonasByRange(t *testing.T) {
 		}
 	}
 
+	cuilsRestantes := 2
 	res := stub.MockInvoke("1", [][]byte{[]byte("delPersonasByRange"), []byte("20066600000"), []byte("20068900000")})
 	if res.Status != shim.OK {
 		fmt.Println("delPersonasByRange", "cuit", "failed", res.Message)
@@ -33,5 +35,14 @@ func TestDelPersonasByRange(t *testing.T) {
 	if res.Status != shim.OK {
 		fmt.Println("queryAllPersona", "cuit", "failed", res.Message)
 		t.FailNow()
+	}
+	v := []interface{}{}
+	err := json.Unmarshal(res.Payload, &v)
+	if err != nil {
+		t.Errorf("unmarshalling response message: %v", err)
+	}
+	t.Logf("unmarshalled: %+v", v)
+	if len(v) != cuilsRestantes {
+		t.Errorf("no coincide")
 	}
 }

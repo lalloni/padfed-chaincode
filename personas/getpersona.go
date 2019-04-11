@@ -42,6 +42,7 @@ func GetPersona(stub shim.ChaincodeStubInterface, cuit uint64) (*model.Persona, 
 	if err != nil {
 		return nil, errors.Wrap(err, "getting persona values")
 	}
+	p.ID = cuit
 	defer it.Close()
 
 	if !it.HasNext() {

@@ -36,6 +36,11 @@ func PutPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response {
 	return stub.MockInvoke("1", [][]byte{[]byte("putPersona"), personaJSON})
 }
 
+func GetPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response {
+	cuitStr := strconv.FormatUint(cuit, 10)
+	return stub.MockInvoke("1", [][]byte{[]byte("getPersona"), []byte(cuitStr)})
+}
+
 func QueryPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response {
 	cuitStr := strconv.FormatUint(cuit, 10)
 	return stub.MockInvoke("1", [][]byte{[]byte("queryPersona"), []byte(cuitStr)})

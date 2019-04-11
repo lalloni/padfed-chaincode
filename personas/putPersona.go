@@ -50,7 +50,7 @@ func PutPersonas(stub shim.ChaincodeStubInterface, args []string) *fabric.Respon
 
 func SavePersona(stub shim.ChaincodeStubInterface, p *model.Persona) *fabric.Response {
 
-	if p.ID != p.Persona.ID {
+	if p.Persona != nil && p.ID != p.Persona.ID {
 		return fabric.ClientErrorResponse(fmt.Sprintf("El root.id [%d] y root.persona.id [%d] deben ser iguales", p.ID, p.Persona.ID))
 	}
 
