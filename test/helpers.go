@@ -31,6 +31,10 @@ func CheckState(t *testing.T, stub *shim.MockStub, name string, value string) {
 	}
 }
 
+func QueryByKey(t *testing.T, stub *shim.MockStub, key string) peer.Response {
+	return stub.MockInvoke("1", [][]byte{[]byte("queryByKey"), []byte(key)})
+}
+
 func PutPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response {
 	var personaJSON = GetPersonaJSON(cuit)
 	return stub.MockInvoke("1", [][]byte{[]byte("putPersona"), personaJSON})

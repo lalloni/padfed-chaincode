@@ -1,6 +1,7 @@
 package fabric
 
 import (
+	"bytes"
 	"log"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -17,14 +18,14 @@ func QueryByKey(stub shim.ChaincodeStubInterface, key string) *Response {
 	if err != nil {
 		return SystemErrorResponse(err.Error())
 	}
-	r := &Response{}
+	var b bytes.Buffer
 	if registerAsBytes == nil {
 		log.Println("queryByKey:[]")
-		r.Buffer.WriteString("[]")
-		return r
+		b.WriteString("[]")
+		return SuccessResponseWithBuffer(&b)
 	}
-	r.Buffer.WriteString("[")
-	helpers.WriteInBuffer(r.Buffer, registerAsBytes, key, false)
-	r.Buffer.WriteString("]")
-	return r
+	b.WriteString("[")
+	helpers.WriteInBuffer(&b, registerAsBytes, key, false)
+	b.WriteString("]")
+	return SuccessResponseWithBuffer(&b)
 }
