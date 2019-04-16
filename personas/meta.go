@@ -40,6 +40,7 @@ var Persona = meta.MustPrepare(meta.Composite{
 			Collector:  personaDomicilioCollect,
 			Enumerator: personaDomicilioEnum,
 		},
+		// TODO definir las demás colecciones
 	},
 })
 
