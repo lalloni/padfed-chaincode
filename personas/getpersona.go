@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-	"github.com/pkg/errors"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 )
 
 func GetPersonaAPI(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
@@ -18,62 +18,18 @@ func GetPersonaAPI(stub shim.ChaincodeStubInterface, args []string) *fabric.Resp
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("cuit inválido: %v", args[0]))
 	}
-	p, err := GetPersona(stub, cuit)
+	st := store.New(stub)
+	p, err := st.GetComposite(Persona, Persona.IdentifierKey(cuit))
 	if err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("obteniendo persona: %v", err))
 	}
 	if p == nil {
 		return fabric.NotFoundErrorResponse()
 	}
+	p.(*model.Persona).ID = p.(*model.Persona).Persona.ID
 	bs, err := json.Marshal(p)
 	if err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("generando respuesta: %v", err))
 	}
 	return fabric.SuccessResponseWithBuffer(bytes.NewBuffer(bs))
-}
-
-func GetPersona(stub shim.ChaincodeStubInterface, cuit uint64) (*model.Persona, error) {
-
-	p := &model.Persona{}
-
-	key := GetPersonaKeyCUIT(cuit)
-
-	it, err := stub.GetStateByRange(key, key+"z")
-	if err != nil {
-		return nil, errors.Wrap(err, "getting persona values")
-	}
-	p.ID = cuit
-	defer it.Close()
-
-	if !it.HasNext() {
-		return nil, nil
-	}
-
-	for it.HasNext() {
-		kv, err := it.Next()
-		if err != nil {
-			return nil, errors.Wrap(err, "reading next key-value")
-		}
-		switch {
-		case key == kv.GetKey():
-			b := &model.PersonaBasica{}
-			err := json.Unmarshal(kv.GetValue(), b)
-			if err != nil {
-				return nil, errors.Wrap(err, "unmarshaling persona")
-			}
-			p.Persona = b
-		default: // assume que es impuesto
-			i := &model.PersonaImpuesto{}
-			err := json.Unmarshal(kv.GetValue(), i)
-			if err != nil {
-				return nil, errors.Wrap(err, "unmarshaling persona impuesto")
-			}
-			if p.Impuestos == nil {
-				p.Impuestos = map[string]*model.PersonaImpuesto{}
-			}
-			p.Impuestos[strconv.Itoa(int(i.Impuesto))] = i
-		}
-	}
-
-	return p, nil
 }
