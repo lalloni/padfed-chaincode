@@ -30,37 +30,39 @@ type Item struct {
 	Quantity float64 `json:"quantity,omitempty"`
 }
 
-type CompositeThing struct {
+type Compo struct {
 	Thing *Thing           `json:"thing,omitempty"`
 	Items map[string]*Item `json:"items,omitempty"`
 }
 
 var cc = meta.MustPrepare(meta.Composite{
-	Name:    "compositething",
-	Creator: func() interface{} { return &CompositeThing{Items: map[string]*Item{}} },
-	Identifier: func(v interface{}) interface{} {
-		return v.(*CompositeThing).Thing.ID
+	Name:    "compo",
+	Creator: func() interface{} { return &Compo{Items: map[string]*Item{}} },
+	IdentifierGetter: func(v interface{}) interface{} {
+		return v.(*Compo).Thing.ID
 	},
-	Keyer: func(v interface{}) *key.Key {
-		return key.Based("comp", strconv.FormatUint(v.(uint64), 10))
+	Keyer: func(id interface{}) *key.Key {
+		return key.Based("compo", strconv.FormatUint(id.(uint64), 10))
 	},
 	Singletons: []meta.Singleton{
 		{
 			Tag:     "thing",
 			Creator: func() interface{} { return &Thing{} },
-			Getter:  func(v interface{}) interface{} { return v.(*CompositeThing).Thing },
-			Setter:  func(v interface{}, w interface{}) { v.(*CompositeThing).Thing = w.(*Thing) },
+			Getter:  func(v interface{}) interface{} { return v.(*Compo).Thing },
+			Setter:  func(v interface{}, w interface{}) { v.(*Compo).Thing = w.(*Thing) },
 		},
 	},
 	Collections: []meta.Collection{
 		{
 			Tag:       "item",
 			Creator:   func() interface{} { return &Item{} },
-			Collector: func(v interface{}, i meta.Item) { v.(*CompositeThing).Items[i.Identifier] = i.Value.(*Item) },
-			Enumerator: func(v interface{}, items *[]meta.Item) {
-				for k, v := range v.(*CompositeThing).Items {
-					*items = append(*items, meta.Item{Identifier: k, Value: v})
+			Collector: func(v interface{}, i meta.Item) { v.(*Compo).Items[i.Identifier] = i.Value.(*Item) },
+			Enumerator: func(v interface{}) []meta.Item {
+				items := []meta.Item{}
+				for k, v := range v.(*Compo).Items {
+					items = append(items, meta.Item{Identifier: k, Value: v})
 				}
+				return items
 			},
 		},
 	},
@@ -99,7 +101,7 @@ func TestPutAndGet(t *testing.T) {
 	stub := shim.NewMockStub("test", nil)
 	st := store.New(stub)
 
-	c1 := &CompositeThing{
+	c1 := &Compo{
 		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
 		Items: map[string]*Item{
 			"a": {
@@ -119,7 +121,7 @@ func TestPutAndGet(t *testing.T) {
 	a.NoError(err)
 	t.Logf("put: %+v", mustMarshal(c1))
 
-	c2, err := st.GetComposite(cc, cc.ValueKey(c1))
+	c2, err := st.GetComposite(cc, c1.Thing.ID)
 	a.NoError(err)
 	t.Logf("get: %+v", mustMarshal(c2))
 	a.Equal(c1, c2)
@@ -134,7 +136,7 @@ func TestPutAndDelete(t *testing.T) {
 	stub := shim.NewMockStub("test", nil)
 	st := store.New(stub)
 
-	c1 := &CompositeThing{
+	c1 := &Compo{
 		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
 		Items: map[string]*Item{
 			"a": {
@@ -154,14 +156,14 @@ func TestPutAndDelete(t *testing.T) {
 	a.NoError(err)
 	t.Logf("put: %+v", mustMarshal(c1))
 
-	has, err := st.HasComposite(cc, cc.ValueKey(c1))
+	has, err := st.HasComposite(cc, c1.Thing.ID)
 	a.NoError(err)
 	a.True(has)
 
-	err = st.DelComposite(cc, cc.ValueKey(c1))
+	err = st.DelComposite(cc, c1.Thing.ID)
 	a.NoError(err)
 
-	has, err = st.HasComposite(cc, cc.ValueKey(c1))
+	has, err = st.HasComposite(cc, c1.Thing.ID)
 	a.NoError(err)
 	a.False(has)
 
