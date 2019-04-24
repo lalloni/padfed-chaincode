@@ -5,13 +5,11 @@ package main
 import (
 	"os"
 	"path/filepath"
-	"regexp"
 
 	"github.com/lalloni/go-archiver"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/pkg/errors"
-	"github.com/rjeczalik/notify"
 	log "github.com/sirupsen/logrus"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/build"
@@ -148,8 +146,8 @@ func Buildbuild() error {
 
 // Ejecuta los tests ante cambios en el proyecto
 func Testwatch() error {
-	c := make(chan notify.EventInfo, 1000)
-	err := notify.Watch("./", c, notify.All)
+	c := make(chan build.Event, 1000)
+	err := build.Monitor(".", c, "-.*/**", "-target", "-target/**")
 	if err != nil {
 		return err
 	}
@@ -159,13 +157,8 @@ func Testwatch() error {
 	} else {
 		log.Error("FAILED")
 	}
-	ignores := regexp.MustCompile(`\/mage_output_file\.go$`)
 	for e := range c {
-		if ignores.MatchString(e.Path()) {
-			log.Infof("Ignoring %v", e)
-			continue
-		}
-		log.Infof("Running tests after receiving %v...", e)
+		log.Infof("Running tests after receiving %s...", e.String())
 		if Test() == nil {
 			log.Info("SUCCESS")
 		} else {
