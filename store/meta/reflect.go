@@ -1,6 +1,8 @@
 package meta
 
-import "reflect"
+import (
+	"reflect"
+)
 
 func FieldSetter(name string) SetterFunc {
 	return func(v interface{}, w interface{}) {
@@ -10,7 +12,7 @@ func FieldSetter(name string) SetterFunc {
 
 func FieldGetter(name string) GetterFunc {
 	return func(v interface{}) interface{} {
-		return reflect.ValueOf(v).FieldByName(name).Interface()
+		return reflect.ValueOf(v).Elem().FieldByName(name).Interface()
 	}
 }
 
