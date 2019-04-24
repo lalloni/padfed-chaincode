@@ -12,6 +12,11 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
+type Range struct {
+	First interface{}
+	Last  interface{}
+}
+
 type Store interface {
 	PutValue(key *key.Key, val interface{}) error
 	GetValue(key *key.Key, val interface{}) (bool, error)
@@ -22,6 +27,7 @@ type Store interface {
 	GetComposite(com *meta.PreparedComposite, id interface{}) (interface{}, error)
 	HasComposite(com *meta.PreparedComposite, id interface{}) (bool, error)
 	DelComposite(com *meta.PreparedComposite, id interface{}) error
+	DelCompositeRange(com *meta.PreparedComposite, r Range) ([]interface{}, error)
 }
 
 func New(stub shim.ChaincodeStubInterface, opts ...Option) Store {
@@ -192,6 +198,39 @@ func (s *simplestore) DelComposite(com *meta.PreparedComposite, id interface{}) 
 		}
 	}
 	return nil
+}
+
+func (s *simplestore) DelCompositeRange(com *meta.PreparedComposite, r Range) ([]interface{}, error) {
+	first, _ := com.IdentifierKey(r.First).RangeUsing(s.sep)
+	_, last := com.IdentifierKey(r.Last).RangeUsing(s.sep)
+	states, err := s.stub.GetStateByRange(first, last)
+	if err != nil {
+		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for deletion", com.Name, first, last)
+	}
+	defer states.Close()
+	res := []interface{}{}
+	for states.HasNext() {
+		state, err := states.Next()
+		if err != nil {
+			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for deletion", com.Name, first, last)
+		}
+		statekey, err := key.ParseUsing(state.GetKey(), s.sep)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing state key %q as composite %q key", state.GetKey(), com.Name)
+		}
+		if com.IsWitnessKey(statekey) {
+			id, err := com.KeyIdentifier(statekey)
+			if err != nil {
+				return nil, errors.Wrapf(err, "getting composite %q identifier for state %q", com.Name, state.GetKey())
+			}
+			res = append(res, id)
+		}
+		err = s.stub.DelState(state.GetKey())
+		if err != nil {
+			return nil, errors.Wrapf(err, "deleting composite %q range [%q,%q] state %q", com.Name, first, last, state.GetKey())
+		}
+	}
+	return res, nil
 }
 
 func (s *simplestore) internalPutValue(k *key.Key, value interface{}) error {

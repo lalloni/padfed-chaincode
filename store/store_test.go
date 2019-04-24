@@ -59,6 +59,9 @@ var cc = meta.MustPrepare(meta.Composite{
 	Keyer: func(id interface{}) *key.Key {
 		return key.Based("compo", strconv.FormatUint(id.(uint64), 10))
 	},
+	KeyIdentifier: func(k *key.Key) (interface{}, error) {
+		return strconv.ParseUint(k.Base[0].Value, 10, 64)
+	},
 	Singletons: []meta.Singleton{
 		{
 			Tag:     "thing",
@@ -243,6 +246,7 @@ func TestPutPartial(t *testing.T) {
 }
 
 func TestMemberError(t *testing.T) {
+
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -277,6 +281,52 @@ func TestMemberError(t *testing.T) {
 	a.NotEmpty(c.Foos)
 	a.NotEmpty(c.Foos["1"].Error)
 	a.NotEmpty(c.Errors)
+
+}
+
+func TestDelCompositeRange(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c1 := &Compo{
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}, ""},
+		Items: map[string]*Item{"a": {Name: "Pedro", Quantity: 10.0}},
+	}
+
+	for id := 100; id < 110; id++ {
+		c1.Thing.ID = uint64(id)
+		stub.MockTransactionStart("x-" + strconv.Itoa(id))
+		err := st.PutComposite(cc, c1)
+		stub.MockTransactionEnd("x-" + strconv.Itoa(id))
+		a.NoError(err)
+		t.Logf("put: %s", mustMarshal(c1))
+	}
+
+	ids, err := st.DelCompositeRange(cc, store.Range{First: uint64(102), Last: uint64(105)})
+	a.NoError(err)
+	a.Len(ids, 4)
+	t.Logf("deleted: %s", mustMarshal(ids))
+
+	has, err := st.HasComposite(cc, uint64(101))
+	a.NoError(err)
+	a.True(has)
+
+	has, err = st.HasComposite(cc, uint64(102))
+	a.NoError(err)
+	a.False(has)
+
+	has, err = st.HasComposite(cc, uint64(105))
+	a.NoError(err)
+	a.False(has)
+
+	has, err = st.HasComposite(cc, uint64(106))
+	a.NoError(err)
+	a.True(has)
 
 }
 

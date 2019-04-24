@@ -8,6 +8,7 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 )
@@ -22,7 +23,7 @@ func GetPersonaAPI(stub shim.ChaincodeStubInterface, args []string) *fabric.Resp
 		return fabric.ClientErrorResponse(fmt.Sprintf("sintaxis de función inválida: %v", err))
 	}
 	st := store.New(stub, opts...)
-	p, err := st.GetComposite(Persona, cuit)
+	p, err := st.GetComposite(cast.Persona, cuit)
 	if err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("obteniendo persona: %v", err))
 	}

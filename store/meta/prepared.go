@@ -126,6 +126,10 @@ func (cc *PreparedComposite) IdentifierKey(id interface{}) *key.Key {
 	return cc.Composite.Keyer(id)
 }
 
+func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (interface{}, error) {
+	return cc.Composite.KeyIdentifier(k)
+}
+
 func (cc *PreparedComposite) ValueKey(val interface{}) *key.Key {
 	return cc.IdentifierKey(cc.Composite.IdentifierGetter(val))
 }
@@ -139,6 +143,10 @@ func (cc *PreparedComposite) ValueWitness(val interface{}) *Entry {
 
 func (cc *PreparedComposite) KeyWitness(key *key.Key) *key.Key {
 	return key.Tagged(witnessTag)
+}
+
+func (cc *PreparedComposite) IsWitnessKey(key *key.Key) bool {
+	return key.Tag.Name == witnessTag
 }
 
 func (cc *PreparedComposite) SingletonsEntries(val interface{}) []*Entry {
