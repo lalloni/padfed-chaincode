@@ -64,8 +64,10 @@ func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{})
 		return errors.Wrapf(err, "putting composite %q witness", com.Name)
 	}
 	for _, entry := range com.SingletonsEntries(val) {
-		if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
-			return errors.Wrapf(err, "putting composite %q singleton %q", com.Name, entry)
+		if entry.Value != nil {
+			if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
+				return errors.Wrapf(err, "putting composite %q singleton %q", com.Name, entry)
+			}
 		}
 	}
 	for _, entry := range com.CollectionsEntries(val) {
