@@ -92,6 +92,7 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 		return nil, nil // no existe la persona
 	}
 	val := com.Composite.Creator()
+	com.Composite.IdentifierSetter(val, id)
 	start, end := com.Range(valkey, s.sep)
 	states, err := s.stub.GetStateByRange(start, end)
 	if err != nil {

@@ -86,11 +86,18 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 		}
 		members[collection.Tag] = collection
 	}
-	if com.Identifier == nil {
+	if com.IdentifierGetter == nil {
 		if com.IdentifierField != "" {
-			com.Identifier = FieldGetter(com.IdentifierField)
+			com.IdentifierGetter = FieldGetter(com.IdentifierField)
 		} else {
-			return nil, errors.New("composite must have an Identifier function or specify an identifier field name")
+			return nil, errors.New("composite must have an identifier getter function or specify an identifier field name")
+		}
+	}
+	if com.IdentifierSetter == nil {
+		if com.IdentifierField != "" {
+			com.IdentifierSetter = FieldSetter(com.IdentifierField)
+		} else {
+			return nil, errors.New("composite must have an identifier setter function or specify an identifier field name")
 		}
 	}
 	return &PreparedComposite{
@@ -111,7 +118,7 @@ func (cc *PreparedComposite) IdentifierKey(id interface{}) *key.Key {
 }
 
 func (cc *PreparedComposite) ValueKey(val interface{}) *key.Key {
-	return cc.IdentifierKey(cc.Composite.Identifier(val))
+	return cc.IdentifierKey(cc.Composite.IdentifierGetter(val))
 }
 
 func (cc *PreparedComposite) ValueWitness(val interface{}) *Entry {

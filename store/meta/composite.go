@@ -20,13 +20,14 @@ type Item struct {
 }
 
 type Composite struct {
-	Name            string
-	Creator         CreatorFunc
-	Identifier      GetterFunc
-	IdentifierField string
-	Keyer           KeyerFunc
-	Singletons      []Singleton
-	Collections     []Collection
+	Name             string
+	Creator          CreatorFunc
+	IdentifierField  string
+	IdentifierGetter GetterFunc
+	IdentifierSetter SetterFunc
+	Keyer            KeyerFunc
+	Singletons       []Singleton
+	Collections      []Collection
 }
 
 type Singleton struct {
