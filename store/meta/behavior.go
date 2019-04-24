@@ -96,8 +96,6 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 	if com.IdentifierSetter == nil {
 		if com.IdentifierField != "" {
 			com.IdentifierSetter = FieldSetter(com.IdentifierField)
-		} else {
-			return nil, errors.New("composite must have an identifier setter function or specify an identifier field name")
 		}
 	}
 	return &PreparedComposite{
