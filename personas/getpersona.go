@@ -19,7 +19,7 @@ func GetPersonaAPI(stub shim.ChaincodeStubInterface, args []string) *fabric.Resp
 		return fabric.ClientErrorResponse(fmt.Sprintf("cuit inválido: %v", args[0]))
 	}
 	st := store.New(stub)
-	p, err := st.GetComposite(Persona, Persona.IdentifierKey(cuit))
+	p, err := st.GetComposite(Persona, cuit)
 	if err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("obteniendo persona: %v", err))
 	}

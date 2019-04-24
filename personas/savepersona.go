@@ -18,7 +18,7 @@ func SavePersona(stub shim.ChaincodeStubInterface, p *model.Persona) *fabric.Res
 
 	st := store.New(stub)
 
-	if exist, err := st.HasComposite(Persona, Persona.ValueKey(p)); err != nil {
+	if exist, err := st.HasComposite(Persona, p.ID); err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("Error obteniendo existencia de persona: %v", err))
 	} else if !exist && p.Persona == nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("Se requiere el atributo persona al crear una persona"))

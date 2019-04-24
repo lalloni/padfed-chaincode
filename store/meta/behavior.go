@@ -20,6 +20,7 @@ func MustPrepare(com Composite) *PreparedComposite {
 }
 
 func Prepare(com Composite) (*PreparedComposite, error) {
+	value := com.Creator()
 	members := map[string]interface{}{}
 	for _, singleton := range com.Singletons {
 		if singleton.Tag == witnessTag {
@@ -28,16 +29,69 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 		if _, ok := members[singleton.Tag]; ok {
 			return nil, errors.Errorf("duplicate member tag: singleton %+v", singleton)
 		}
+		if singleton.Getter == nil {
+			if singleton.Field != "" {
+				singleton.Getter = FieldGetter(singleton.Field)
+			} else {
+				return nil, errors.Errorf("composite singleton with tag %q must have a getter function or specify a field name", singleton.Tag)
+			}
+		}
+		if singleton.Setter == nil {
+			if singleton.Field != "" {
+				singleton.Setter = FieldSetter(singleton.Field)
+			} else {
+				return nil, errors.Errorf("composite singleton with tag %q must have a setter function or specify a field name", singleton.Tag)
+			}
+		}
+		if singleton.Creator == nil {
+			if singleton.Field != "" {
+				singleton.Creator = ValueCreator(FieldGetter(singleton.Field)(value))
+			} else {
+				return nil, errors.Errorf("composite singleton with tag %q must have a creator function or specify a field name", singleton.Tag)
+			}
+		}
 		members[singleton.Tag] = singleton
 	}
 	for _, collection := range com.Collections {
+		if collection.Tag == "" {
+			return nil, errors.Errorf("composite collection %+v must specifify a tag name", collection)
+
+		}
 		if collection.Tag == witnessTag {
 			return nil, errors.Errorf("reserved member tag: collection %+v", collection)
 		}
 		if _, ok := members[collection.Tag]; ok {
 			return nil, errors.Errorf("duplicate member tag: collection %+v", collection)
 		}
+		if collection.Collector == nil {
+			if collection.Field != "" {
+				collection.Collector = MapCollector(FieldGetter(collection.Field))
+			} else {
+				return nil, errors.Errorf("composite collection with tag %q must have a collector function or specify a field name", collection.Tag)
+			}
+		}
+		if collection.Enumerator == nil {
+			if collection.Field != "" {
+				collection.Enumerator = MapEnumerator(FieldGetter(collection.Field))
+			} else {
+				return nil, errors.Errorf("composite collection with tag %q must have an enumerator function or specify a field name", collection.Tag)
+			}
+		}
+		if collection.Creator == nil {
+			if collection.Field != "" {
+				collection.Creator = ValueCreator(FieldGetter(collection.Field)(value))
+			} else {
+				return nil, errors.Errorf("composite collection with tag %q must have a creator function or specify a field name", collection.Tag)
+			}
+		}
 		members[collection.Tag] = collection
+	}
+	if com.Identifier == nil {
+		if com.IdentifierField != "" {
+			com.Identifier = FieldGetter(com.IdentifierField)
+		} else {
+			return nil, errors.New("composite must have an Identifier function or specify an identifier field name")
+		}
 	}
 	return &PreparedComposite{
 		Name:      com.Name,
@@ -87,8 +141,7 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) []*Entry {
 	valkey := cc.ValueKey(val)
 	entries := []*Entry(nil)
 	for _, collection := range cc.Composite.Collections {
-		items := []Item{}
-		collection.Enumerator(val, &items)
+		items := collection.Enumerator(val)
 		for _, item := range items {
 			entries = append(entries, &Entry{
 				Key:   valkey.Tagged(collection.Tag, item.Identifier),

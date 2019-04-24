@@ -17,9 +17,9 @@ type Store interface {
 	DelValue(key *key.Key) error
 
 	PutComposite(com *meta.PreparedComposite, val interface{}) error
-	GetComposite(com *meta.PreparedComposite, key *key.Key) (interface{}, error)
-	HasComposite(com *meta.PreparedComposite, key *key.Key) (bool, error)
-	DelComposite(com *meta.PreparedComposite, key *key.Key) error
+	GetComposite(com *meta.PreparedComposite, id interface{}) (interface{}, error)
+	HasComposite(com *meta.PreparedComposite, id interface{}) (bool, error)
+	DelComposite(com *meta.PreparedComposite, id interface{}) error
 }
 
 func New(stub shim.ChaincodeStubInterface, opts ...Option) Store {
@@ -82,8 +82,9 @@ func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{})
 	return nil
 }
 
-func (s *simplestore) GetComposite(com *meta.PreparedComposite, valkey *key.Key) (interface{}, error) {
-	if ok, err := s.HasComposite(com, valkey); err != nil {
+func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) (interface{}, error) {
+	valkey := com.IdentifierKey(id)
+	if ok, err := s.HasComposite(com, id); err != nil {
 		return nil, errors.Wrapf(err, "checking composite %q with key %q existence", com.Name, valkey)
 	} else if !ok {
 		return nil, nil // no existe la persona
@@ -124,7 +125,8 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, valkey *key.Key)
 	return val, nil
 }
 
-func (s *simplestore) HasComposite(com *meta.PreparedComposite, key *key.Key) (bool, error) {
+func (s *simplestore) HasComposite(com *meta.PreparedComposite, id interface{}) (bool, error) {
+	key := com.IdentifierKey(id)
 	wk := com.KeyWitness(key)
 	var a interface{}
 	found, err := s.internalGetValue(wk, &a)
@@ -134,7 +136,8 @@ func (s *simplestore) HasComposite(com *meta.PreparedComposite, key *key.Key) (b
 	return found, nil
 }
 
-func (s *simplestore) DelComposite(com *meta.PreparedComposite, key *key.Key) error {
+func (s *simplestore) DelComposite(com *meta.PreparedComposite, id interface{}) error {
+	key := com.IdentifierKey(id)
 	start, end := com.Range(key, s.sep)
 	states, err := s.stub.GetStateByRange(start, end)
 	if err != nil {

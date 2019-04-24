@@ -64,28 +64,34 @@ func personaImpuestoCollect(v interface{}, i meta.Item) {
 	v.(*model.Persona).Impuestos[i.Identifier] = i.Value.(*model.PersonaImpuesto)
 }
 
-func personaImpuestoEnum(v interface{}, items *[]meta.Item) {
+func personaImpuestoEnum(v interface{}) []meta.Item {
+	items := []meta.Item{}
 	for id, w := range v.(*model.Persona).Impuestos {
-		*items = append(*items, meta.NewItem(id, w))
+		items = append(items, meta.NewItem(id, w))
 	}
+	return items
 }
 
 func personaActividadCollect(v interface{}, i meta.Item) {
 	v.(*model.Persona).Actividades[i.Identifier] = i.Value.(*model.PersonaActividad)
 }
 
-func personaActividadEnum(v interface{}, items *[]meta.Item) {
+func personaActividadEnum(v interface{}) []meta.Item {
+	items := []meta.Item{}
 	for id, w := range v.(*model.Persona).Actividades {
-		*items = append(*items, meta.NewItem(id, w))
+		items = append(items, meta.NewItem(id, w))
 	}
+	return items
 }
 
 func personaDomicilioCollect(v interface{}, i meta.Item) {
 	v.(*model.Persona).Domicilios[i.Identifier] = i.Value.(*model.PersonaDomicilio)
 }
 
-func personaDomicilioEnum(v interface{}, items *[]meta.Item) {
+func personaDomicilioEnum(v interface{}) []meta.Item {
+	items := []meta.Item{}
 	for id, w := range v.(*model.Persona).Domicilios {
-		*items = append(*items, meta.NewItem(id, w))
+		items = append(items, meta.NewItem(id, w))
 	}
+	return items
 }
