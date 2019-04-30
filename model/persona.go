@@ -36,6 +36,7 @@ type Persona struct {
 	Etiquetas      map[string]*PersonaEtiqueta     `json:"etiquetas,omitempty"`
 	Contribuciones map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
 	Relaciones     map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
+	Cmsedes        map[string]*PersonaCmsede       `json:"cmsedes,omitempty"`
 }
 
 type PersonaBasica struct {
@@ -187,4 +188,11 @@ type PersonaRelacion struct {
 	Subtipo uint   `json:"subtipo,omitempty"`
 	Desde   *Fecha `json:"desde,omitempty"`
 	DS      *Fecha `json:"ds,omitempty"`
+}
+
+type PersonaCmsede struct {
+	Provincia uint   `json:"provincia,omitempty"`
+	Desde     *Fecha `json:"desde,omitempty"`
+	Hasta     *Fecha `json:"hasta,omitempty"`
+	DS        *Fecha `json:"ds,omitempty"`
 }
