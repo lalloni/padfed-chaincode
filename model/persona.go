@@ -127,7 +127,7 @@ type PersonaJurisdiccion struct {
 	Provincia *Provincia `json:"provincia,omitempty"` // 0 tiene valor de negocio
 	Desde     *Fecha     `json:"desde,omitempty"`
 	Hasta     *Fecha     `json:"hasta,omitempty"`
-	Sede      bool       `json:"sede,omitempty"`
+	Orgrec    uint       `json:"orgrec,omitempty"`
 	DS        *Fecha     `json:"ds,omitempty"`
 }
 
