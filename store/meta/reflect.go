@@ -37,6 +37,6 @@ func MapCollector(mapGetter GetterFunc) CollectorFunc {
 func ValueCreator(ref interface{}) CreatorFunc {
 	t := reflect.TypeOf(ref).Elem()
 	return func() interface{} {
-		return reflect.New(t)
+		return reflect.New(t).Interface()
 	}
 }

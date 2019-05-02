@@ -25,6 +25,16 @@ type Thing struct {
 	Thingies []Thingy `json:"thingies,omitempty"`
 }
 
+type Other struct {
+	Name   string `json:"name,omitempty"`
+	Number int    `json:"number,omitempty"`
+}
+
+type Foo struct {
+	Some string `json:"some,omitempty"`
+	Num  int    `json:"num,omitempty"`
+}
+
 type Item struct {
 	Name     string  `json:"name,omitempty"`
 	Quantity float64 `json:"quantity,omitempty"`
@@ -32,12 +42,14 @@ type Item struct {
 
 type Compo struct {
 	Thing *Thing           `json:"thing,omitempty"`
+	Other *Other           `json:"other,omitempty"`
 	Items map[string]*Item `json:"items,omitempty"`
+	Foos  map[string]*Foo  `json:"foos,omitempty"`
 }
 
 var cc = meta.MustPrepare(meta.Composite{
 	Name:    "compo",
-	Creator: func() interface{} { return &Compo{Items: map[string]*Item{}} },
+	Creator: func() interface{} { return &Compo{Items: map[string]*Item{}, Foos: map[string]*Foo{}} },
 	IdentifierGetter: func(v interface{}) interface{} {
 		return v.(*Compo).Thing.ID
 	},
@@ -50,6 +62,10 @@ var cc = meta.MustPrepare(meta.Composite{
 			Creator: func() interface{} { return &Thing{} },
 			Getter:  func(v interface{}) interface{} { return v.(*Compo).Thing },
 			Setter:  func(v interface{}, w interface{}) { v.(*Compo).Thing = w.(*Thing) },
+		},
+		{
+			Tag:   "other",
+			Field: "Other",
 		},
 	},
 	Collections: []meta.Collection{
@@ -64,6 +80,10 @@ var cc = meta.MustPrepare(meta.Composite{
 				}
 				return items
 			},
+		},
+		{
+			Tag:   "foos",
+			Field: "Foos",
 		},
 	},
 })
@@ -103,15 +123,14 @@ func TestPutAndGet(t *testing.T) {
 
 	c1 := &Compo{
 		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Other: &Other{"TT", 2123},
 		Items: map[string]*Item{
-			"a": {
-				Name:     "Pedro",
-				Quantity: 10.0,
-			},
-			"b": {
-				Name:     "Pablo",
-				Quantity: 20.0,
-			},
+			"a": {Name: "Pedro", Quantity: 10.0},
+			"b": {Name: "Pablo", Quantity: 20.0},
+		},
+		Foos: map[string]*Foo{
+			"foo1": {Some: "bar", Num: 634},
+			"foo2": {Some: "baz", Num: 634},
 		},
 	}
 

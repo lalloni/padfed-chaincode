@@ -91,10 +91,8 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 	} else if !ok {
 		return nil, nil // no existe la persona
 	}
-	val := com.Composite.Creator()
-	if com.Composite.IdentifierSetter != nil {
-		com.Composite.IdentifierSetter(val, id)
-	}
+	val := com.CreateValue()
+	com.SetIdentifier(val, id)
 	start, end := com.Range(valkey, s.sep)
 	states, err := s.stub.GetStateByRange(start, end)
 	if err != nil {
@@ -110,15 +108,17 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 		if err != nil {
 			return nil, errors.Wrapf(err, "parsing composite %q with key %q item", com.Name, state.GetKey())
 		}
-		switch member := com.Member(statekey).(type) {
-		case meta.Collection:
+		switch {
+		case com.Collection(statekey) != nil:
+			member := com.Collection(statekey)
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
 			if err != nil {
 				return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
 			}
 			member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
-		case meta.Singleton:
+		case com.Singleton(statekey) != nil:
+			member := com.Singleton(statekey)
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
 			if err != nil {
