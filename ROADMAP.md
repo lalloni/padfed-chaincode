@@ -13,7 +13,7 @@
 - [x] Migrar DelPersona a Store
 - [x] Migrar PutPersona a Store
 - [x] Migrar PutPersonas a Store
-- [ ] Eliminar consultas y transacciones que operan sobre PersonaImpuesto
+- [x] Eliminar consultas y transacciones que operan sobre PersonaImpuesto
 - [ ] Actualizar formato de keys en queryPersona/All, delPersonaByRange
 
 ### Tareas

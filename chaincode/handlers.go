@@ -5,7 +5,6 @@ import (
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/impuestos"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/inscripciones"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/personas"
 )
 
@@ -30,10 +29,6 @@ func BuildHandlers() Handlers {
 	h["putParamImpuestos"] = impuestos.PutParamImpuestos
 	h["queryParamImpuestos"] = impuestos.QueryParamImpuestos
 	h["delParamImpuestosAll"] = adaptNoArg(impuestos.DeleteAll)
-
-	// inscripciones
-	h["putPersonaImpuestos"] = inscripciones.PutPersonaImpuestos
-	h["queryPersonaImpuestos"] = inscripciones.QueryPersonaImpuestos
 
 	// genéricas
 	h["queryHistory"] = fabric.QueryHistory
