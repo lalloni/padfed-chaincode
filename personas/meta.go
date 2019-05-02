@@ -32,5 +32,6 @@ var Persona = meta.MustPrepare(meta.Composite{
 		{Tag: "eti", Field: "Etiquetas"},
 		{Tag: "con", Field: "Contribuciones"},
 		{Tag: "rel", Field: "Relaciones"},
+		{Tag: "cms", Field: "CMSedes"},
 	},
 })

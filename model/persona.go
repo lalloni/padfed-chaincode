@@ -13,6 +13,7 @@ func NewPersona() *Persona {
 		Etiquetas:      map[string]*PersonaEtiqueta{},
 		Contribuciones: map[string]*PersonaContribucion{},
 		Relaciones:     map[string]*PersonaRelacion{},
+		CMSedes:        map[string]*PersonaCMSede{},
 	}
 }
 
@@ -36,7 +37,7 @@ type Persona struct {
 	Etiquetas      map[string]*PersonaEtiqueta     `json:"etiquetas,omitempty"`
 	Contribuciones map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
 	Relaciones     map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
-	Cmsedes        map[string]*PersonaCmsede       `json:"cmsedes,omitempty"`
+	CMSedes        map[string]*PersonaCMSede       `json:"cmsedes,omitempty"`
 }
 
 type PersonaBasica struct {
@@ -189,7 +190,7 @@ type PersonaRelacion struct {
 	DS      *Fecha `json:"ds,omitempty"`
 }
 
-type PersonaCmsede struct {
+type PersonaCMSede struct {
 	Provincia uint   `json:"provincia,omitempty"`
 	Desde     *Fecha `json:"desde,omitempty"`
 	Hasta     *Fecha `json:"hasta,omitempty"`
