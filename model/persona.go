@@ -101,7 +101,7 @@ type PersonaDomicilio struct {
 	Provincia   *Provincia `json:"provincia,omitempty"` // 0 es un valor de negocio
 	Localidad   string     `json:"localidad,omitempty"`
 	CP          string     `json:"cp,omitempty"`
-	Nomenclador uint       `json:"nomenclador,omitempty"`
+	Nomenclador string     `json:"nomenclador,omitempty"`
 	Adicional   *Adicional `json:"adicional,omitempty"`
 	Baja        *Fecha     `json:"baja,omitempty"`
 	DS          *Fecha     `json:"ds,omitempty"`
@@ -127,7 +127,7 @@ type PersonaJurisdiccion struct {
 	Provincia *Provincia `json:"provincia,omitempty"` // 0 tiene valor de negocio
 	Desde     *Fecha     `json:"desde,omitempty"`
 	Hasta     *Fecha     `json:"hasta,omitempty"`
-	Orgrec    uint       `json:"orgrec,omitempty"`
+	Org       uint       `json:"org,omitempty"`
 	DS        *Fecha     `json:"ds,omitempty"`
 }
 
