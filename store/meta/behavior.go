@@ -169,7 +169,12 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) []*Entry {
 	return entries
 }
 
-func (cc *PreparedComposite) Range(key *key.Key, sep *key.Sep) (string, string) {
+func (cc *PreparedComposite) Range(key *key.Key) (string, string) {
+	s := key.String()
+	return s, s + string(utf8.MaxRune)
+}
+
+func (cc *PreparedComposite) RangeSep(key *key.Key, sep *key.Sep) (string, string) {
 	s := key.StringUsing(sep)
 	return s, s + string(utf8.MaxRune)
 }

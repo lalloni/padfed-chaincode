@@ -93,7 +93,7 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 	}
 	val := com.CreateValue()
 	com.SetIdentifier(val, id)
-	start, end := com.Range(valkey, s.sep)
+	start, end := com.RangeSep(valkey, s.sep)
 	states, err := s.stub.GetStateByRange(start, end)
 	if err != nil {
 		return nil, errors.Wrapf(err, "getting composite %q with key %q states iterator", com.Name, valkey)
@@ -143,7 +143,7 @@ func (s *simplestore) HasComposite(com *meta.PreparedComposite, id interface{}) 
 
 func (s *simplestore) DelComposite(com *meta.PreparedComposite, id interface{}) error {
 	key := com.IdentifierKey(id)
-	start, end := com.Range(key, s.sep)
+	start, end := com.RangeSep(key, s.sep)
 	states, err := s.stub.GetStateByRange(start, end)
 	if err != nil {
 		return errors.Wrapf(err, "getting composite %q states with key %q for deletion", com.Name, key)
