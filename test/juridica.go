@@ -66,7 +66,7 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
             "tipo": 1,
             "orden": 1,
             "estado": 11,
-            "nomenclador": "401084021",
+            "nomenclador": 401084021,
             "cp": "1084",
             "provincia": 0,
             "localidad": "N/A",
@@ -77,7 +77,7 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
             "tipo": 2,
             "orden": 1,
             "estado": 11,
-            "nomenclador":" 401084021",
+            "nomenclador": 401084021,
             "cp": "1084",
             "provincia": 0,
             "localidad": "N/A",
@@ -89,6 +89,19 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
         "1": {
             "numero": 46788554,
             "orden": 1
+        }
+    },
+    "cmsedes":{
+        "0": {
+            "provincia": 0,
+            "desde": "2019-06-23",
+            "hasta": "2019-04-14",
+            "ds": "2019-04-14"
+        },
+        "1": {
+            "provincia": 1,
+            "desde": "2019-06-23",
+            "ds":"2019-04-14"
         }
     }
 }

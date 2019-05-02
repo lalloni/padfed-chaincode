@@ -84,12 +84,11 @@ func samplePersonaDomicilioBytes() []byte {
   "provincia": 0,
   "localidad": "pérez",
   "cp": "C1428FFR",
-  "nomenclador": "what?",
+  "nomenclador": 10,
   "adicional": {
     "tipo": 99,
     "dato": "mmmm"
   },
-  "nota": "bla bla bla",
   "baja": "2019-01-01",
   "ds": "2019-04-08"
 }`)
@@ -111,12 +110,11 @@ func samplePersonaDomicilio() *model.PersonaDomicilio {
 		Provincia:   model.ProvinciaCódigo(0),
 		Localidad:   "pérez",
 		CP:          "C1428FFR",
-		Nomenclador: "what?",
+		Nomenclador: 10,
 		Adicional: &model.Adicional{
 			Tipo: 99,
 			Dato: "mmmm",
 		},
-		Nota: "bla bla bla",
 		Baja: model.FechaEn(2019, 1, 1),
 		DS:   model.FechaEn(2019, 4, 8),
 	}
