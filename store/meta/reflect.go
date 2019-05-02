@@ -19,9 +19,10 @@ func FieldGetter(name string) GetterFunc {
 func MapEnumerator(mapGetter GetterFunc) EnumeratorFunc {
 	return func(v interface{}) []Item {
 		items := []Item{}
-		mi := reflect.ValueOf(mapGetter(v)).MapRange()
-		for mi.Next() {
-			items = append(items, NewItem(mi.Key().String(), mi.Value().Interface()))
+		mv := reflect.ValueOf(mapGetter(v))
+		vs := mv.MapKeys()
+		for _, v := range vs {
+			items = append(items, NewItem(v.String(), mv.MapIndex(v).Interface()))
 		}
 		return items
 	}
