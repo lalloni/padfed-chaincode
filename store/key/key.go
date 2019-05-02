@@ -2,6 +2,7 @@ package key
 
 import (
 	"strings"
+	"unicode/utf8"
 
 	"github.com/pkg/errors"
 )
@@ -97,6 +98,16 @@ func (k *Key) StringUsing(sep *Sep) string {
 		s.WriteString(k.Tag.StringUsing(sep))
 	}
 	return s.String()
+}
+
+func (k *Key) Range() (string, string) {
+	s := k.String()
+	return s, s + string(utf8.MaxRune)
+}
+
+func (k *Key) RangeUsing(sep *Sep) (string, string) {
+	s := k.StringUsing(sep)
+	return s, s + string(utf8.MaxRune)
 }
 
 // Seg es par clave-valor de una key

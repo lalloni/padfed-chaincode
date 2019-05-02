@@ -17,11 +17,11 @@ func DelPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("Parámetro 1 incorrecto: %q: %v", args[0], err))
 	}
-	start, _ := Persona.Range(Persona.IdentifierKey(id))
+	start, _ := Persona.IdentifierKey(id).Range()
 	id, err = strconv.ParseUint(args[1], 10, 64)
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("Parámetro 2 incorrecto: %q: %v", args[1], err))
 	}
-	_, end := Persona.Range(Persona.IdentifierKey(id))
+	_, end := Persona.IdentifierKey(id).Range()
 	return fabric.DeleteByKeyRange(stub, start, end)
 }

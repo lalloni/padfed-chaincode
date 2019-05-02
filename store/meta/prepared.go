@@ -3,7 +3,6 @@ package meta
 import (
 	"fmt"
 	"reflect"
-	"unicode/utf8"
 
 	"github.com/pkg/errors"
 
@@ -110,25 +109,25 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 	}
 	return &PreparedComposite{
 		Name:        com.Name,
-		composite:   &com,
-		singletons:  singletons,
-		collections: collections,
+		Composite:   &com,
+		Singletons:  singletons,
+		Collections: collections,
 	}, nil
 }
 
 type PreparedComposite struct {
 	Name        string
-	composite   *Composite
-	singletons  map[string]*Singleton
-	collections map[string]*Collection
+	Composite   *Composite
+	Singletons  map[string]*Singleton
+	Collections map[string]*Collection
 }
 
 func (cc *PreparedComposite) IdentifierKey(id interface{}) *key.Key {
-	return cc.composite.Keyer(id)
+	return cc.Composite.Keyer(id)
 }
 
 func (cc *PreparedComposite) ValueKey(val interface{}) *key.Key {
-	return cc.IdentifierKey(cc.composite.IdentifierGetter(val))
+	return cc.IdentifierKey(cc.Composite.IdentifierGetter(val))
 }
 
 func (cc *PreparedComposite) ValueWitness(val interface{}) *Entry {
@@ -145,7 +144,7 @@ func (cc *PreparedComposite) KeyWitness(key *key.Key) *key.Key {
 func (cc *PreparedComposite) SingletonsEntries(val interface{}) []*Entry {
 	valkey := cc.ValueKey(val)
 	entries := []*Entry(nil)
-	for _, singleton := range cc.singletons {
+	for _, singleton := range cc.Singletons {
 		entries = append(entries, &Entry{
 			Key:   valkey.Tagged(singleton.Tag),
 			Value: singleton.Getter(val),
@@ -157,7 +156,7 @@ func (cc *PreparedComposite) SingletonsEntries(val interface{}) []*Entry {
 func (cc *PreparedComposite) CollectionsEntries(val interface{}) []*Entry {
 	valkey := cc.ValueKey(val)
 	entries := []*Entry(nil)
-	for _, collection := range cc.collections {
+	for _, collection := range cc.Collections {
 		items := collection.Enumerator(val)
 		for _, item := range items {
 			entries = append(entries, &Entry{
@@ -169,32 +168,22 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) []*Entry {
 	return entries
 }
 
-func (cc *PreparedComposite) Range(key *key.Key) (string, string) {
-	s := key.String()
-	return s, s + string(utf8.MaxRune)
-}
-
-func (cc *PreparedComposite) RangeSep(key *key.Key, sep *key.Sep) (string, string) {
-	s := key.StringUsing(sep)
-	return s, s + string(utf8.MaxRune)
-}
-
-func (cc *PreparedComposite) Collection(key *key.Key) *Collection {
-	return cc.collections[key.Tag.Name]
-}
-
-func (cc *PreparedComposite) Singleton(key *key.Key) *Singleton {
-	return cc.singletons[key.Tag.Name]
+func (cc *PreparedComposite) Create() interface{} {
+	return cc.Composite.Creator()
 }
 
 func (cc *PreparedComposite) SetIdentifier(val, id interface{}) {
-	if cc.composite.IdentifierSetter != nil {
-		cc.composite.IdentifierSetter(val, id)
+	if cc.Composite.IdentifierSetter != nil {
+		cc.Composite.IdentifierSetter(val, id)
 	}
 }
 
-func (cc *PreparedComposite) CreateValue() interface{} {
-	return cc.composite.Creator()
+func (cc *PreparedComposite) Collection(k *key.Key) *Collection {
+	return cc.Collections[k.Tag.Name]
+}
+
+func (cc *PreparedComposite) Singleton(k *key.Key) *Singleton {
+	return cc.Singletons[k.Tag.Name]
 }
 
 type Entry struct {
