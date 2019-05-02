@@ -11,8 +11,8 @@
 - [x] Validar opcionalidad de singletons y collections
 - [x] Migrar GetPersona a Store
 - [x] Migrar DelPersona a Store
-- [ ] Migrar PutPersona a Store
-- [ ] Migrar PutPersonas a Store
+- [x] Migrar PutPersona a Store
+- [x] Migrar PutPersonas a Store
 - [ ] Eliminar consultas y transacciones que operan sobre PersonaImpuesto
 - [ ] Actualizar formato de keys en queryPersona/All, delPersonaByRange
 
