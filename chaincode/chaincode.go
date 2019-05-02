@@ -26,7 +26,7 @@ type Ctx struct {
 
 func New(log *shim.ChaincodeLogger, testing bool) shim.Chaincode {
 	return &padfedcc{
-		handlers: BuildHandlers(),
+		handlers: BuildHandlers(testing),
 		log:      log,
 		testing:  testing,
 	}
@@ -46,9 +46,8 @@ func (s *padfedcc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 		return peerResponse(ctx, r)
 	}
 	if !s.testing {
-		r = checkClientID(ctx)
-		if !r.IsOK() {
-			return peerResponse(ctx, r)
+		if ctx.mspid != AFIP {
+			return peerResponse(ctx, fabric.ForbiddenErrorResponse("MSPID must be AFIP"))
 		}
 	}
 	r = impuestos.LoadInitial(stub)
@@ -65,19 +64,10 @@ func (s *padfedcc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 
 	s.log.Infof("processing invocation of %s(%v) on transaction %s", ctx.function, ctx.args, ctx.txid)
 
-	if !s.testing {
-		switch ctx.function {
-		case "putPersona", "putPersonas":
-			if err := checkClientID(ctx); !err.IsOK() {
-				return peerResponse(ctx, err)
-			}
-		}
-	}
-
 	if handler, ok := s.handlers[ctx.function]; ok {
 		r = handler(stub, ctx.args)
 	} else {
-		r = fabric.ClientErrorResponse("Invalid Smart Contract function name " + ctx.function)
+		r = fabric.ClientErrorResponse("unknown chaincode function name " + ctx.function)
 	}
 
 	return peerResponse(ctx, r)
@@ -119,13 +109,6 @@ func setContext(stub shim.ChaincodeStubInterface, testing bool) (*Ctx, *fabric.R
 		ctx.certIssuer = x509Certificate.Issuer.String()
 	}
 	return ctx, &fabric.Response{}
-}
-
-func checkClientID(ctx *Ctx) *fabric.Response {
-	if ctx.mspid != "AFIP" {
-		return fabric.ForbiddenErrorResponse("mspid [" + ctx.mspid + "] - La funcion [" + ctx.function + "] solo puede ser invocada por AFIP")
-	}
-	return &fabric.Response{}
 }
 
 func peerResponse(ctx *Ctx, response *fabric.Response) peer.Response {
