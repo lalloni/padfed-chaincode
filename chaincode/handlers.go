@@ -7,7 +7,6 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/impuestos"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/personas"
 )
 
@@ -21,25 +20,20 @@ func BuildHandlers(testing bool) Handlers {
 
 	h := Handlers{}
 
-	// personas
-	h["putPersona"] = requireMSP(AFIP, testing, personas.PutPersona)
-	h["putPersonas"] = requireMSP(AFIP, testing, personas.PutPersonas)
-	h["delPersona"] = requireMSP(AFIP, testing, personas.DelPersona)
-	h["delPersonasByRange"] = requireMSP(AFIP, testing, personas.DelPersonasByRange)
-
+	// API Personas
+	h["putPersona"] = onlyAFIP(testing, personas.PutPersona)
+	h["delPersona"] = onlyAFIP(testing, personas.DelPersona)
 	h["getPersona"] = personas.GetPersonaAPI
+	h["putPersonas"] = onlyAFIP(testing, personas.PutPersonas)
+
+	// Internas / development / testing
+	h["delPersonasByRange"] = onlyAFIP(testing, personas.DelPersonasByRange)
+	h["deleteAll"] = onlyAFIP(testing, adaptNoArg(fabric.DeleteAll))
+	h["deleteByKeyRange"] = onlyAFIP(testing, adaptString2(fabric.DeleteByKeyRange))
+
+	// API Bajo Nivel
 	h["queryPersona"] = personas.QueryPersona
 	h["queryAllPersona"] = personas.QueryAllPersona
-
-	// impuestos
-	h["putParamImpuestos"] = impuestos.PutParamImpuestos
-	h["queryParamImpuestos"] = impuestos.QueryParamImpuestos
-	h["delParamImpuestosAll"] = adaptNoArg(impuestos.DeleteAll)
-
-	// genéricas
-	h["deleteAll"] = requireMSP(AFIP, testing, adaptNoArg(fabric.DeleteAll))
-	h["deleteByKeyRange"] = requireMSP(AFIP, testing, adaptString2(fabric.DeleteByKeyRange))
-
 	h["queryHistory"] = fabric.QueryHistory
 	h["queryByKey"] = adaptString1(fabric.QueryByKey)
 	h["queryByKeyRange"] = adaptString2(fabric.QueryByKeyRange)
@@ -66,7 +60,8 @@ func adaptString2(h func(shim.ChaincodeStubInterface, string, string) *fabric.Re
 	}
 }
 
-func requireMSP(mspid string, testing bool, h Handler) Handler {
+func onlyAFIP(testing bool, h Handler) Handler {
+	mspid := AFIP
 	return func(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
 		if !testing {
 			id, err := cid.New(stub)
