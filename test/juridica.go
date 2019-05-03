@@ -91,9 +91,9 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
             "orden": 1
         }
     },
-    "cmsedes":{
+    "cmsedes": {
         "0": {
-            "provincia": 0,
+            "provincia": 2,
             "desde": "2019-06-23",
             "hasta": "2019-04-14",
             "ds": "2019-04-14"

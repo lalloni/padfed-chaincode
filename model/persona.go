@@ -81,9 +81,9 @@ type Documento struct {
 
 type PersonaActividad struct {
 	Actividad string `json:"actividad,omitempty"`
-	Orden     uint   `json:"prden,omitempty"`
-	Periodo   uint   `json:"periodo,omitempty"`
-	Estado    string `json:"estado,omitempty"`
+	Orden     uint   `json:"orden,omitempty"`
+	Desde     uint   `json:"desde,omitempty"`
+	Hasta     uint   `json:"hasta,omitempty"`
 	DS        *Fecha `json:"ds,omitempty"`
 }
 
@@ -191,8 +191,8 @@ type PersonaRelacion struct {
 }
 
 type PersonaCMSede struct {
-	Provincia uint   `json:"provincia,omitempty"`
-	Desde     *Fecha `json:"desde,omitempty"`
-	Hasta     *Fecha `json:"hasta,omitempty"`
-	DS        *Fecha `json:"ds,omitempty"`
+	Provincia *Provincia `json:"provincia,omitempty"` // 0 tiene valor de negocio
+	Desde     *Fecha     `json:"desde,omitempty"`
+	Hasta     *Fecha     `json:"hasta,omitempty"`
+	DS        *Fecha     `json:"ds,omitempty"`
 }
