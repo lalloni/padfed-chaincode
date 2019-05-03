@@ -113,7 +113,7 @@ tasks:
       binary: '{{ .target }}/chaincode'
     silent: true
     cmds:
-      - go build -mod=vendor -o "{{ .binary }}" main.go
+      - go build -mod=vendor -o "{{ .binary }}" main.go version.go
     sources:
       - '**/*.go'
     generates:
@@ -199,10 +199,11 @@ tasks:
       - cmd: test -f '{{ .credentials }}' || (echo 'No existe archivo de credenciales (ver salida de "task --summary publish")' ; exit 1)
       - task: check
       - task: test
-      - cmd: git tag -a 'v{{ .version }}' -m 'Release {{ .version }}'
+      - cmd: git tag -s 'v{{ .version }}' -m 'Release {{ .version }}'
       - cmd: rm -rf '{{ .target }}/release'
         ignore_error: true
       - cmd: git clone . '{{ .target }}/release'
+      - cmd: sed -e 's/dev/{{ .version }}/' version.go >'{{ .target }}/release/version.go'
       - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout --quiet 'v{{ .version }}'
       - cmd: task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
       - cmd: git push '{{ .remote }}' tag 'v{{ .version }}'
