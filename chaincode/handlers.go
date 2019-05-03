@@ -1,6 +1,7 @@
 package chaincode
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
@@ -21,7 +22,7 @@ func BuildHandlers(version string, testing bool) Handlers {
 	h := Handlers{}
 
 	h["version"] = func(shim.ChaincodeStubInterface, []string) *fabric.Response {
-		return fabric.SuccessResponse(version, 0)
+		return fabric.SuccessResponseWithBuffer(bytes.NewBufferString(version))
 	}
 
 	// API Personas

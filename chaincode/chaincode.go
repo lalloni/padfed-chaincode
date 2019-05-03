@@ -13,6 +13,7 @@ import (
 )
 
 type Ctx struct {
+	version     string
 	verboseMode bool
 	// current data transaction
 	txid     string
@@ -29,19 +30,21 @@ func New(log *shim.ChaincodeLogger, version string, testing bool) shim.Chaincode
 		handlers: BuildHandlers(version, testing),
 		log:      log,
 		testing:  testing,
+		version:  version,
 	}
 }
 
 type padfedcc struct {
 	testing  bool
 	log      *shim.ChaincodeLogger
+	version  string
 	handlers Handlers
 }
 
 var verboseRegexp = regexp.MustCompile(`^(.*)(\?verbose=)(true|false)$`)
 
 func (s *padfedcc) Init(stub shim.ChaincodeStubInterface) peer.Response {
-	ctx, r := setContext(stub, s.testing)
+	ctx, r := setContext(stub, s.version, s.testing)
 	if !r.IsOK() {
 		return peerResponse(ctx, r)
 	}
@@ -58,7 +61,7 @@ func (s *padfedcc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	var ctx *Ctx
 	var r *fabric.Response
 
-	if ctx, r = setContext(stub, s.testing); !r.IsOK() {
+	if ctx, r = setContext(stub, s.version, s.testing); !r.IsOK() {
 		return peerResponse(ctx, r)
 	}
 
@@ -73,9 +76,10 @@ func (s *padfedcc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	return peerResponse(ctx, r)
 }
 
-func setContext(stub shim.ChaincodeStubInterface, testing bool) (*Ctx, *fabric.Response) {
+func setContext(stub shim.ChaincodeStubInterface, version string, testing bool) (*Ctx, *fabric.Response) {
 	ctx := &Ctx{}
 	ctx.txid = stub.GetTxID()
+	ctx.version = version
 	ctx.function, ctx.args = stub.GetFunctionAndParameters()
 	// Check for verbose mode
 	res := verboseRegexp.FindStringSubmatch(ctx.function)
@@ -117,6 +121,7 @@ func peerResponse(ctx *Ctx, response *fabric.Response) peer.Response {
 	}
 	response.Txid = ctx.txid
 	if ctx.verboseMode || !response.IsOK() {
+		response.Version = ctx.version
 		response.Function = ctx.function
 		response.Mspid = ctx.mspid
 		response.CertIssuer = ctx.certIssuer
@@ -124,6 +129,7 @@ func peerResponse(ctx *Ctx, response *fabric.Response) peer.Response {
 	} else {
 		response.Msg = ""
 		response.Function = ""
+		response.Version = ""
 		response.Mspid = ""
 		response.CertIssuer = ""
 		response.CertSubject = ""
@@ -132,6 +138,5 @@ func peerResponse(ctx *Ctx, response *fabric.Response) peer.Response {
 	if response.IsOK() {
 		return shim.Success(responseAsBytes)
 	}
-	return shim.Error(string(responseAsBytes))
-
+	return shim.Error(string(responseAsBytes)) // TODO (pil): esto devuelve un json tuneleado en una string en un json... wtf?
 }
