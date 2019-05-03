@@ -51,7 +51,7 @@ func QueryPersona(t *testing.T, stub *shim.MockStub, cuit uint64) peer.Response 
 }
 
 func SetInitTests(t *testing.T) *shim.MockStub {
-	scc := chaincode.New(shim.NewLogger("padfedcc"), true)
+	scc := chaincode.New(shim.NewLogger("padfedcc"), "test", true)
 	stub := shim.NewMockStub("padfed", scc)
 	CheckInit(t, stub, [][]byte{})
 	return stub

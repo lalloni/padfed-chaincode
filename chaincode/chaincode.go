@@ -24,9 +24,9 @@ type Ctx struct {
 	certSubject string
 }
 
-func New(log *shim.ChaincodeLogger, testing bool) shim.Chaincode {
+func New(log *shim.ChaincodeLogger, version string, testing bool) shim.Chaincode {
 	return &padfedcc{
-		handlers: BuildHandlers(testing),
+		handlers: BuildHandlers(version, testing),
 		log:      log,
 		testing:  testing,
 	}
