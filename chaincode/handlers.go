@@ -1,46 +1,42 @@
 package chaincode
 
 import (
+	"fmt"
+
+	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/impuestos"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/inscripciones"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/personas"
 )
+
+const AFIP = "AFIP"
 
 type Handler func(shim.ChaincodeStubInterface, []string) *fabric.Response
 
 type Handlers map[string]Handler
 
-func BuildHandlers() Handlers {
+func BuildHandlers(testing bool) Handlers {
 
 	h := Handlers{}
 
-	// personas
-	h["putPersona"] = personas.PutPersona
-	h["putPersonas"] = personas.PutPersonas
-	h["delPersona"] = personas.DelPersona
+	// API Personas
+	h["putPersona"] = onlyAFIP(testing, personas.PutPersona)
+	h["delPersona"] = onlyAFIP(testing, personas.DelPersona)
 	h["getPersona"] = personas.GetPersonaAPI
-	h["delPersonasByRange"] = personas.DelPersonasByRange
+	h["putPersonas"] = onlyAFIP(testing, personas.PutPersonas)
+
+	// Internas / development / testing
+	h["delPersonasByRange"] = onlyAFIP(testing, personas.DelPersonasByRange)
+	h["deleteAll"] = onlyAFIP(testing, adaptNoArg(fabric.DeleteAll))
+	h["deleteByKeyRange"] = onlyAFIP(testing, adaptString2(fabric.DeleteByKeyRange))
+
+	// API Bajo Nivel
 	h["queryPersona"] = personas.QueryPersona
 	h["queryAllPersona"] = personas.QueryAllPersona
-
-	// impuestos
-	h["putParamImpuestos"] = impuestos.PutParamImpuestos
-	h["queryParamImpuestos"] = impuestos.QueryParamImpuestos
-	h["delParamImpuestosAll"] = adaptNoArg(impuestos.DeleteAll)
-
-	// inscripciones
-	h["putPersonaImpuestos"] = inscripciones.PutPersonaImpuestos
-	h["queryPersonaImpuestos"] = inscripciones.QueryPersonaImpuestos
-
-	// genéricas
 	h["queryHistory"] = fabric.QueryHistory
 	h["queryByKey"] = adaptString1(fabric.QueryByKey)
 	h["queryByKeyRange"] = adaptString2(fabric.QueryByKeyRange)
-	h["deleteAll"] = adaptNoArg(fabric.DeleteAll)
-	h["deleteByKeyRange"] = adaptString2(fabric.DeleteByKeyRange)
 
 	return h
 
@@ -61,5 +57,25 @@ func adaptString1(h func(shim.ChaincodeStubInterface, string) *fabric.Response) 
 func adaptString2(h func(shim.ChaincodeStubInterface, string, string) *fabric.Response) Handler {
 	return func(s shim.ChaincodeStubInterface, args []string) *fabric.Response {
 		return h(s, args[0], args[1])
+	}
+}
+
+func onlyAFIP(testing bool, h Handler) Handler {
+	mspid := AFIP
+	return func(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
+		if !testing {
+			id, err := cid.New(stub)
+			if err != nil {
+				return fabric.SystemErrorResponse(fmt.Sprintf("getting client identity: %v", err))
+			}
+			s, err := id.GetMSPID()
+			if err != nil {
+				return fabric.SystemErrorResponse(fmt.Sprintf("getting client MSPID: %v", err))
+			}
+			if s != mspid {
+				return fabric.ForbiddenErrorResponse(fmt.Sprintf("MSPID must be %q", mspid))
+			}
+		}
+		return h(stub, args)
 	}
 }

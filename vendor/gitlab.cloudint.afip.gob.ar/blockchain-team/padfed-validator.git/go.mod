@@ -5,8 +5,10 @@ require (
 	github.com/Masterminds/semver v1.4.2 // indirect
 	github.com/Masterminds/sprig v2.18.0+incompatible
 	github.com/bitly/go-simplejson v0.5.0
+	github.com/bmatcuk/doublestar v1.1.1
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/evanphx/json-patch v4.1.0+incompatible
+	github.com/fsnotify/fsnotify v1.4.7
 	github.com/ghodss/yaml v1.0.0
 	github.com/gobuffalo/packr/v2 v2.0.9
 	github.com/google/uuid v1.1.1 // indirect
@@ -17,7 +19,6 @@ require (
 	github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505
 	github.com/magefile/mage v1.8.1-0.20190314142316-8dce728c572d
 	github.com/pkg/errors v0.8.1
-	github.com/rjeczalik/notify v0.9.2
 	github.com/sirupsen/logrus v1.4.0
 	github.com/stretchr/testify v1.3.0
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect

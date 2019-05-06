@@ -3,17 +3,18 @@ package personas
 import (
 	"bytes"
 	"log"
-	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/pkg/errors"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/helpers"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 )
 
 func QueryPersonasByRangeFormated(stub shim.ChaincodeStubInterface, cuitInicio string, cuitFin string, full bool) *fabric.Response {
-	cuitInicio = "PER_" + cuitInicio
-	cuitFin = "PER_" + cuitFin
+	cuitInicio = "per:" + cuitInicio
+	cuitFin = "per:" + cuitFin
 
 	if full || (cuitInicio == cuitFin) {
 		cuitFin += "z"
@@ -32,13 +33,12 @@ func QueryPersonasByRangeFormated(stub shim.ChaincodeStubInterface, cuitInicio s
 	}
 	log.Println("- query:" + buffer.String())
 
-	return fabric.SuccessResponseWithBuffer(&buffer)
+	return fabric.SuccessResponseWithBuffer(buffer)
 }
 
-func buildResponse(resultsIterator shim.StateQueryIteratorInterface, full bool) (bytes.Buffer, error) {
-	var buffer bytes.Buffer
+func buildResponse(resultsIterator shim.StateQueryIteratorInterface, full bool) (*bytes.Buffer, error) {
+	buffer := &bytes.Buffer{}
 	bArrayMemberAlreadyWritten := false
-	var currentKey []string
 
 	buffer.WriteString("[")
 	for resultsIterator.HasNext() {
@@ -46,13 +46,16 @@ func buildResponse(resultsIterator shim.StateQueryIteratorInterface, full bool) 
 		if err != nil {
 			return buffer, err
 		}
-		currentKey = (strings.Split(queryResponse.Key, "_"))
-
-		if !full && len(currentKey) > 2 {
-			// ignore assets diff to persona
-			continue
+		if !full {
+			k, err := key.Parse(queryResponse.Key)
+			if err != nil {
+				return nil, errors.Wrap(err, "parsing asset key")
+			}
+			if k.Tag.Name != "per" {
+				continue
+			}
 		}
-		helpers.WriteInBuffer(&buffer, queryResponse.Value, queryResponse.Key, bArrayMemberAlreadyWritten)
+		helpers.WriteInBuffer(buffer, queryResponse.Value, queryResponse.Key, bArrayMemberAlreadyWritten)
 		bArrayMemberAlreadyWritten = true
 	}
 	buffer.WriteString("]")

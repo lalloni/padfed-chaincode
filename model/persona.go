@@ -1,5 +1,22 @@
 package model
 
+func NewPersona() *Persona {
+	return &Persona{
+		Actividades:    map[string]*PersonaActividad{},
+		Impuestos:      map[string]*PersonaImpuesto{},
+		Domicilios:     map[string]*PersonaDomicilio{},
+		Telefonos:      map[string]*PersonaTelefono{},
+		Jurisdicciones: map[string]*PersonaJurisdiccion{},
+		Emails:         map[string]*PersonaEmail{},
+		Archivos:       map[string]*PersonaArchivo{},
+		Categorias:     map[string]*PersonaCategoria{},
+		Etiquetas:      map[string]*PersonaEtiqueta{},
+		Contribuciones: map[string]*PersonaContribucion{},
+		Relaciones:     map[string]*PersonaRelacion{},
+		CMSedes:        map[string]*PersonaCMSede{},
+	}
+}
+
 type Persona struct {
 
 	// siempre requerido
@@ -20,6 +37,7 @@ type Persona struct {
 	Etiquetas      map[string]*PersonaEtiqueta     `json:"etiquetas,omitempty"`
 	Contribuciones map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
 	Relaciones     map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
+	CMSedes        map[string]*PersonaCMSede       `json:"cmsedes,omitempty"`
 }
 
 type PersonaBasica struct {
@@ -63,9 +81,9 @@ type Documento struct {
 
 type PersonaActividad struct {
 	Actividad string `json:"actividad,omitempty"`
-	Orden     uint   `json:"prden,omitempty"`
-	Periodo   uint   `json:"periodo,omitempty"`
-	Estado    string `json:"estado,omitempty"`
+	Orden     uint   `json:"orden,omitempty"`
+	Desde     uint   `json:"desde,omitempty"`
+	Hasta     uint   `json:"hasta,omitempty"`
 	DS        *Fecha `json:"ds,omitempty"`
 }
 
@@ -86,7 +104,6 @@ type PersonaDomicilio struct {
 	CP          string     `json:"cp,omitempty"`
 	Nomenclador string     `json:"nomenclador,omitempty"`
 	Adicional   *Adicional `json:"adicional,omitempty"`
-	Nota        string     `json:"nota,omitempty"`
 	Baja        *Fecha     `json:"baja,omitempty"`
 	DS          *Fecha     `json:"ds,omitempty"`
 }
@@ -111,7 +128,7 @@ type PersonaJurisdiccion struct {
 	Provincia *Provincia `json:"provincia,omitempty"` // 0 tiene valor de negocio
 	Desde     *Fecha     `json:"desde,omitempty"`
 	Hasta     *Fecha     `json:"hasta,omitempty"`
-	Sede      bool       `json:"sede,omitempty"`
+	Org       uint       `json:"org,omitempty"`
 	DS        *Fecha     `json:"ds,omitempty"`
 }
 
@@ -171,4 +188,11 @@ type PersonaRelacion struct {
 	Subtipo uint   `json:"subtipo,omitempty"`
 	Desde   *Fecha `json:"desde,omitempty"`
 	DS      *Fecha `json:"ds,omitempty"`
+}
+
+type PersonaCMSede struct {
+	Provincia *Provincia `json:"provincia,omitempty"` // 0 tiene valor de negocio
+	Desde     *Fecha     `json:"desde,omitempty"`
+	Hasta     *Fecha     `json:"hasta,omitempty"`
+	DS        *Fecha     `json:"ds,omitempty"`
 }

@@ -6,6 +6,7 @@ require (
 	github.com/fsouza/go-dockerclient v1.3.6 // indirect
 	github.com/gobuffalo/packr/v2 v2.1.0 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.1.0 // indirect
 	github.com/hyperledger/fabric v1.4.0
@@ -15,11 +16,12 @@ require (
 	github.com/miekg/pkcs11 v0.0.0-20190225171305-6120d95c0e95 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
+	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
+	github.com/pierrec/lz4 v2.0.5+incompatible
 	github.com/pkg/errors v0.8.1
 	github.com/spf13/viper v1.3.2 // indirect
 	github.com/stretchr/testify v1.3.0
-	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.8.0
+	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.9.1
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.9.1 // indirect
