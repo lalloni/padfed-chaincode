@@ -188,6 +188,57 @@ func TestPutAndDelete(t *testing.T) {
 
 }
 
+func TestPutPartial(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	id := uint64(1234)
+
+	c1 := &Compo{
+		Thing: &Thing{id, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Other: &Other{"TT", 2123},
+		Items: map[string]*Item{
+			"a": {Name: "Pedro", Quantity: 10.0},
+			"b": {Name: "Pablo", Quantity: 20.0},
+		},
+		Foos: map[string]*Foo{
+			"foo1": {Some: "bar", Num: 634},
+			"foo2": {Some: "baz", Num: 634},
+		},
+	}
+
+	stub.MockTransactionStart("x")
+	err := st.PutComposite(cc, c1)
+	stub.MockTransactionEnd("x")
+	a.NoError(err)
+	t.Logf("put: %s", mustMarshal(c1))
+
+	c2, err := st.GetComposite(cc, id)
+	a.NoError(err)
+	t.Logf("get: %s", mustMarshal(c2))
+	a.Equal(c1, c2)
+
+	c3 := *c1
+	c3.Other = nil
+	stub.MockTransactionStart("x")
+	err = st.PutComposite(cc, &c3)
+	stub.MockTransactionEnd("x")
+	a.NoError(err)
+	t.Logf("put: %s", mustMarshal(&c3))
+
+	c2, err = st.GetComposite(cc, id)
+	a.NoError(err)
+	t.Logf("get: %s", mustMarshal(c2))
+	a.Equal(c1, c2)
+	a.NotNil(c2.(*Compo).Other)
+
+}
+
 func mustMarshal(v interface{}) string {
 	bs, err := json.Marshal(v)
 	if err != nil {
