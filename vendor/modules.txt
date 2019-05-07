@@ -106,19 +106,21 @@ github.com/hashicorp/hcl/json/token
 github.com/huandu/xstrings
 # github.com/hyperledger/fabric v1.4.0
 github.com/hyperledger/fabric/core/chaincode/shim
-github.com/hyperledger/fabric/core/chaincode/lib/cid
 github.com/hyperledger/fabric/protos/peer
+github.com/hyperledger/fabric/core/chaincode/lib/cid
+github.com/hyperledger/fabric/protos/ledger/queryresult
+github.com/hyperledger/fabric/core/chaincode/shim/ext/cid
 github.com/hyperledger/fabric/bccsp/factory
 github.com/hyperledger/fabric/common/ledger
 github.com/hyperledger/fabric/common/util
 github.com/hyperledger/fabric/core/comm
-github.com/hyperledger/fabric/protos/ledger/queryresult
 github.com/hyperledger/fabric/protos/utils
-github.com/hyperledger/fabric/common/attrmgr
-github.com/hyperledger/fabric/protos/msp
 github.com/hyperledger/fabric/protos/common
 github.com/hyperledger/fabric/protos/ledger/rwset
+github.com/hyperledger/fabric/protos/msp
 github.com/hyperledger/fabric/protos/token
+github.com/hyperledger/fabric/common/attrmgr
+github.com/hyperledger/fabric/core/chaincode/shim/ext/attrmgr
 github.com/hyperledger/fabric/bccsp
 github.com/hyperledger/fabric/bccsp/pkcs11
 github.com/hyperledger/fabric/bccsp/sw
@@ -152,7 +154,7 @@ github.com/joho/godotenv
 github.com/karrick/godirwalk
 # github.com/konsorten/go-windows-terminal-sequences v1.0.2
 github.com/konsorten/go-windows-terminal-sequences
-# github.com/lalloni/afip v1.2.0
+# github.com/lalloni/afip v1.5.0
 github.com/lalloni/afip/cuit
 github.com/lalloni/afip/periodo
 # github.com/lalloni/go-archiver v0.0.0-20190403175244-e10b574c02e4
@@ -178,6 +180,8 @@ github.com/mgutz/ansi
 github.com/miekg/pkcs11
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
+# github.com/moul/number-to-words v0.1.1-0.20190331115228-12cc6429d0fe
+github.com/moul/number-to-words
 # github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 github.com/op/go-logging
 # github.com/opencontainers/go-digest v1.0.0-rc1
@@ -213,8 +217,16 @@ github.com/spf13/jwalterweatherman
 github.com/spf13/pflag
 # github.com/spf13/viper v1.3.2
 github.com/spf13/viper
+# github.com/spyzhov/ajson v0.0.1
+github.com/spyzhov/ajson
 # github.com/stretchr/testify v1.3.0
 github.com/stretchr/testify/assert
+# github.com/tidwall/gjson v1.2.1
+github.com/tidwall/gjson
+# github.com/tidwall/match v1.0.1
+github.com/tidwall/match
+# github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65
+github.com/tidwall/pretty
 # github.com/ulikunitz/xz v0.5.6
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/xlog
