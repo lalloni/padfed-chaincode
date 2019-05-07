@@ -4,6 +4,7 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 )
 
+type KeyFunc func(*key.Key) (interface{}, error)
 type KeyerFunc func(interface{}) *key.Key
 
 type CreatorFunc func() interface{}
@@ -26,6 +27,7 @@ type Composite struct {
 	IdentifierGetter GetterFunc
 	IdentifierSetter SetterFunc
 	Keyer            KeyerFunc
+	KeyIdentifier    KeyFunc
 	Singletons       []Singleton
 	Collections      []Collection
 }
