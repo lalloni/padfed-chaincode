@@ -115,6 +115,7 @@ github.com/huandu/xstrings
 github.com/hyperledger/fabric/core/chaincode/shim
 github.com/hyperledger/fabric/core/chaincode/lib/cid
 github.com/hyperledger/fabric/protos/peer
+github.com/hyperledger/fabric/core/chaincode/shim/ext/cid
 github.com/hyperledger/fabric/bccsp/factory
 github.com/hyperledger/fabric/common/ledger
 github.com/hyperledger/fabric/common/util
@@ -126,6 +127,7 @@ github.com/hyperledger/fabric/protos/msp
 github.com/hyperledger/fabric/protos/common
 github.com/hyperledger/fabric/protos/ledger/rwset
 github.com/hyperledger/fabric/protos/token
+github.com/hyperledger/fabric/core/chaincode/shim/ext/attrmgr
 github.com/hyperledger/fabric/bccsp
 github.com/hyperledger/fabric/bccsp/pkcs11
 github.com/hyperledger/fabric/bccsp/sw
