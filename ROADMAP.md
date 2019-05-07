@@ -25,7 +25,7 @@
 
 ### Hitos
 
-- [ ] Emprolijar modo desarrollo
+- [ ] Emprolijar "modo desarrollo" (funciones de cc para testing)
 - [ ] Impuesto en Store como composites
 
 ### Cambios específicos
@@ -40,6 +40,7 @@
 
 ### Hitos
 
+- [ ] Rediseño de API externa del chaincode (status, uniformar uso de campos payload y message, uniformar estructura de respuesta)
 - [ ] ACL
 - [ ] Cache de parámetros persistidos en State
 - [ ] Emprolijar API genérica
