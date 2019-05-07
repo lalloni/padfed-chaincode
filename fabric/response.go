@@ -26,6 +26,7 @@ type Response struct {
 	CertSubject string        `json:"certSubject,omitempty"`
 	Assets      int           `json:"assets,omitempty"`
 	WrongItem   int           `json:"wrongItem,omitempty"`
+	Version     string        `json:"version,omitempty"`
 }
 
 func (r *Response) IsOK() bool {

@@ -1,6 +1,7 @@
 package chaincode
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
@@ -16,9 +17,13 @@ type Handler func(shim.ChaincodeStubInterface, []string) *fabric.Response
 
 type Handlers map[string]Handler
 
-func BuildHandlers(testing bool) Handlers {
+func BuildHandlers(version string, testing bool) Handlers {
 
 	h := Handlers{}
+
+	h["version"] = func(shim.ChaincodeStubInterface, []string) *fabric.Response {
+		return fabric.SuccessResponseWithBuffer(bytes.NewBufferString(version))
+	}
 
 	// API Personas
 	h["putPersona"] = onlyAFIP(testing, personas.PutPersona)
