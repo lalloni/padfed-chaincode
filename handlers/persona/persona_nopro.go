@@ -1,4 +1,4 @@
-package business
+package persona
 
 import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"

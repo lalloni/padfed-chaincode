@@ -5,7 +5,8 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/generic"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/chaincode"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
@@ -28,18 +29,25 @@ func main() {
 	}
 
 	OnlyAFIP := authorization.MSPID("AFIP")
-	Everyone := authorization.Free
+	Everyone := authorization.Allowed
 
 	r := router.New()
 
 	r.SetInitHandler(OnlyAFIP, handler.SuccessHandler)
 
+	// Meta
 	r.SetHandlerFunc(Everyone, VersionHandler)
-	r.SetHandlerFunc(Everyone, business.GetPersonaHandler)
-	r.SetHandlerFunc(OnlyAFIP, business.PutPersonaHandler)
-	r.SetHandlerFunc(OnlyAFIP, business.PutPersonaListHandler)
-	r.SetHandlerFunc(OnlyAFIP, business.DelPersonaHandler)
-	r.SetHandlerFunc(OnlyAFIP, business.DelPersonaRangeHandler)
+
+	// Business
+	r.SetHandlerFunc(Everyone, persona.GetPersonaHandler)
+	r.SetHandlerFunc(OnlyAFIP, persona.PutPersonaHandler)
+	r.SetHandlerFunc(OnlyAFIP, persona.PutPersonaListHandler)
+	r.SetHandlerFunc(OnlyAFIP, persona.DelPersonaHandler)
+	r.SetHandlerFunc(OnlyAFIP, persona.DelPersonaRangeHandler)
+
+	// Generic
+	r.SetHandlerFunc(OnlyAFIP, generic.GetStateHandler)
+	r.SetHandlerFunc(OnlyAFIP, generic.PutStateHandler)
 
 	cc := chaincode.New(log, r)
 

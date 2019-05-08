@@ -1,4 +1,4 @@
-package business
+package persona
 
 import (
 	"encoding/json"
