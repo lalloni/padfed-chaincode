@@ -22,3 +22,7 @@ func DelPersonaRangeHandler(ctx *context.Context) *response.Response {
 	}
 	return response.OK(ids)
 }
+
+func GetPersonaRangeHandler(ctx *context.Context) *response.Response {
+	return response.NotImplemented()
+}

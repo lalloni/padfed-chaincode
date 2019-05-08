@@ -7,3 +7,5 @@ const (
 	Testing
 	Production
 )
+
+var Mode = Production

@@ -24,7 +24,7 @@ type Context struct {
 	clientid    cid.ClientIdentity
 	clientcrt   *x509.Certificate
 	clientmspid string
-	function    Function
+	function    string
 }
 
 func (ctx *Context) ClientIdentity() (cid.ClientIdentity, error) {
@@ -68,9 +68,9 @@ func (ctx *Context) ClientMSPID() (string, error) {
 	return ctx.clientmspid, nil
 }
 
-func (ctx *Context) Function() Function {
-	if ctx.function == Function("") {
-		ctx.function = Function(string(ctx.Stub.GetArgs()[0]))
+func (ctx *Context) Function() string {
+	if ctx.function == "" {
+		ctx.function = string(ctx.Stub.GetArgs()[0])
 	}
 	return ctx.function
 }

@@ -27,20 +27,26 @@ type cc struct {
 
 func (c *cc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	ctx := context.New(stub)
+	c.log.Debugf("received Init in transaction %q", ctx.Stub.GetTxID())
 	handle := c.router.InitHandler()
 	if handle != nil {
 		return c.response(ctx, handle(ctx))
 	}
-	return c.response(ctx, response.OK(nil))
+	res := c.response(ctx, response.OK(nil))
+	c.log.Debugf("responding init in transaction %q with status %d", ctx.Stub.GetTxID(), res.GetStatus())
+	return res
 }
 
 func (c *cc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	ctx := context.New(stub)
-	handle := c.router.InvokeHandler(ctx.Function())
+	c.log.Debugf("received invoke %q in transaction %q", ctx.Function(), ctx.Stub.GetTxID())
+	handle := c.router.Handler(router.Name(ctx.Function()))
 	if handle == nil {
 		handle = handler.NotImplementedHandler
 	}
-	return c.response(ctx, handle(ctx))
+	res := c.response(ctx, handle(ctx))
+	c.log.Debugf("responding invoke %q in transaction %q with status %d", ctx.Function(), ctx.Stub.GetTxID(), res.GetStatus())
+	return res
 }
 
 func (c *cc) response(ctx *context.Context, r *response.Response) peer.Response {

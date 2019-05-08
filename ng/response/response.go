@@ -2,8 +2,6 @@ package response
 
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 )
 
 type Response struct {
@@ -26,8 +24,8 @@ type Client struct {
 }
 
 type Transaction struct {
-	ID       string           `json:"id,omitempty"`
-	Function context.Function `json:"function,omitempty"`
+	ID       string `json:"id,omitempty"`
+	Function string `json:"function,omitempty"`
 }
 
 func (r *Response) OK() bool {

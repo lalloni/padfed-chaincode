@@ -8,7 +8,9 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/chaincode"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
 
@@ -26,21 +28,27 @@ func main() {
 	}
 
 	OnlyAFIP := authorization.MSPID("AFIP")
-	All := authorization.Free
+	Everyone := authorization.Free
 
-	rtr := router.New()
+	r := router.New()
 
-	rtr.SetInitHandler(OnlyAFIP, handler.SuccessHandler)
-	rtr.SetInvokeHandler(All, "GetPersona", business.GetPersonaHandler)
-	rtr.SetInvokeHandler(OnlyAFIP, "PutPersona", business.PutPersonaHandler)
-	rtr.SetInvokeHandler(OnlyAFIP, "PutPersonaList", business.PutPersonaListHandler)
-	rtr.SetInvokeHandler(OnlyAFIP, "DelPersona", business.DelPersonaHandler)
-	rtr.SetInvokeHandler(OnlyAFIP, "DelPersonaRange", business.DelPersonaRangeHandler)
+	r.SetInitHandler(OnlyAFIP, handler.SuccessHandler)
 
-	cc := chaincode.New(log, rtr)
+	r.SetHandlerFunc(Everyone, VersionHandler)
+	r.SetHandlerFunc(Everyone, business.GetPersonaHandler)
+	r.SetHandlerFunc(OnlyAFIP, business.PutPersonaHandler)
+	r.SetHandlerFunc(OnlyAFIP, business.PutPersonaListHandler)
+	r.SetHandlerFunc(OnlyAFIP, business.DelPersonaHandler)
+	r.SetHandlerFunc(OnlyAFIP, business.DelPersonaRangeHandler)
+
+	cc := chaincode.New(log, r)
 
 	if err := shim.Start(cc); err != nil {
 		log.Errorf("starting chaincode: %v", err)
 	}
 
+}
+
+func VersionHandler(ctx *context.Context) *response.Response {
+	return response.OK(Version)
 }
