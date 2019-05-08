@@ -37,7 +37,7 @@ func StatusWithResult(status int32, result interface{}) *Response {
 	return &Response{
 		Status: status,
 		Payload: &Payload{
-			Result: result,
+			Content: result,
 		},
 	}
 }

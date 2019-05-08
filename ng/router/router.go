@@ -2,48 +2,80 @@ package router
 
 import (
 	"fmt"
+	"strings"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
+
+type Name string
+
+func (n *Name) String() string {
+	return strings.ToLower(string(*n)) // para que los nombres de las funciones sean case-insensitive
+}
 
 type Router interface {
 	InitHandler() handler.Handler
-	InvokeHandler(context.Function) handler.Handler
 	SetInitHandler(authorization.Check, handler.Handler)
-	SetInvokeHandler(authorization.Check, context.Function, handler.Handler)
+	Handler(Name) handler.Handler
+	SetHandler(Name, authorization.Check, handler.Handler)
+	FunctionsHandler() handler.Handler
 }
 
-func New() Router {
-	return &router{}
+func New(c *Config) Router {
+	r := &router{
+		functionHandlers: map[string]handler.Handler{},
+	}
+	if c != nil {
+		if c.Init != nil {
+			if c.Init.Check != nil || c.Init.Handler != nil {
+				r.SetInitHandler(c.Init.Check, HandlerDefault(c.Init.Handler, handler.SuccessHandler))
+			}
+		}
+		for _, fun := range c.Funs {
+			r.SetHandler(NameDefault(fun.Name, fun.Handler), fun.Check, fun.Handler)
+		}
+	}
+	return r
 }
 
 type router struct {
 	initHandler      handler.Handler
-	functionHandlers map[context.Function]handler.Handler
+	functionHandlers map[string]handler.Handler
+}
+
+func (r *router) FunctionsHandler() handler.Handler {
+	return func(ctx *context.Context) *response.Response {
+		fs := []string{}
+		for f := range r.functionHandlers {
+			fs = append(fs, f)
+		}
+		return response.OK(fs)
+	}
 }
 
 func (r *router) InitHandler() handler.Handler {
 	return r.initHandler
 }
 
-func (r *router) InvokeHandler(fn context.Function) handler.Handler {
-	return r.functionHandlers[fn]
-}
-
 func (r *router) SetInitHandler(ch authorization.Check, h handler.Handler) {
 	if ch != nil {
-		r.initHandler = handler.AuthorizationHandler("init", ch, h)
+		r.initHandler = authorization.Handler("init", ch, h)
 	} else {
 		r.initHandler = h
 	}
 }
 
-func (r *router) SetInvokeHandler(ch authorization.Check, fn context.Function, h handler.Handler) {
+func (r *router) Handler(n Name) handler.Handler {
+	return r.functionHandlers[n.String()]
+}
+
+func (r *router) SetHandler(n Name, ch authorization.Check, h handler.Handler) {
 	if ch != nil {
-		r.functionHandlers[fn] = handler.AuthorizationHandler(fmt.Sprintf("invoke function %q", fn), ch, h)
+		r.functionHandlers[n.String()] = authorization.Handler(fmt.Sprintf("invoke function %q", n), ch, h)
 	} else {
-		r.functionHandlers[fn] = h
+		r.functionHandlers[n.String()] = h
 	}
 }

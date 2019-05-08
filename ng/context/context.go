@@ -8,11 +8,13 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim/ext/cid"
 	"github.com/pkg/errors"
 
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/logging"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 )
 
-func New(stub shim.ChaincodeStubInterface) *Context {
+func New(stub shim.ChaincodeStubInterface, path ...string) *Context {
 	return &Context{
+		path:  path,
 		Stub:  stub,
 		Store: store.New(stub),
 	}
@@ -21,10 +23,15 @@ func New(stub shim.ChaincodeStubInterface) *Context {
 type Context struct {
 	Stub        shim.ChaincodeStubInterface
 	Store       store.Store
+	path        []string
 	clientid    cid.ClientIdentity
 	clientcrt   *x509.Certificate
 	clientmspid string
-	function    Function
+	function    string
+}
+
+func (ctx *Context) Logger(path ...string) *shim.ChaincodeLogger {
+	return logging.ChaincodeLogger(append(ctx.path, path...)...)
 }
 
 func (ctx *Context) ClientIdentity() (cid.ClientIdentity, error) {
@@ -68,9 +75,9 @@ func (ctx *Context) ClientMSPID() (string, error) {
 	return ctx.clientmspid, nil
 }
 
-func (ctx *Context) Function() Function {
-	if ctx.function == Function("") {
-		ctx.function = Function(string(ctx.Stub.GetArgs()[0]))
+func (ctx *Context) Function() string {
+	if ctx.function == "" {
+		ctx.function = string(ctx.Stub.GetArgs()[0])
 	}
 	return ctx.function
 }
@@ -88,20 +95,30 @@ func (ctx *Context) ArgString(n int) (string, error) {
 	return string(bs), err
 }
 
-func (ctx *Context) ArgInt(n int) (int, error) {
+func (ctx *Context) ArgInt64(n int) (int64, error) {
 	bs, err := ctx.ArgBytes(n)
 	if err != nil {
 		return 0, err
 	}
-	v, err := strconv.ParseInt(string(bs), 10, strconv.IntSize)
-	return int(v), err
+	return strconv.ParseInt(string(bs), 10, 64)
 }
 
-func (ctx *Context) ArgUint(n int) (uint, error) {
+func (ctx *Context) ArgUint64(n int) (uint64, error) {
 	bs, err := ctx.ArgBytes(n)
 	if err != nil {
 		return 0, err
 	}
-	v, err := strconv.ParseUint(string(bs), 10, strconv.IntSize)
-	return uint(v), err
+	return strconv.ParseUint(string(bs), 10, 64)
+}
+
+func (ctx *Context) ArgKV(pos int) (string, []byte, error) {
+	key, err := ctx.ArgString(pos)
+	if err != nil {
+		return "", nil, err
+	}
+	val, err := ctx.ArgBytes(pos + 1)
+	if err != nil {
+		return "", nil, err
+	}
+	return key, val, nil
 }

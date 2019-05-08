@@ -1,14 +1,20 @@
 package store_test
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/json"
 	"strconv"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/op/go-logging"
 	"github.com/stretchr/testify/assert"
 
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
@@ -56,27 +62,24 @@ var cc = meta.MustPrepare(meta.Composite{
 	IdentifierGetter: func(v interface{}) interface{} {
 		return v.(*Compo).Thing.ID
 	},
-	Keyer: func(id interface{}) *key.Key {
-		return key.Based("compo", strconv.FormatUint(id.(uint64), 10))
+	IdentifierKey: func(id interface{}) (*key.Key, error) {
+		return key.NewBase("compo", strconv.FormatUint(id.(uint64), 10)), nil
 	},
 	KeyIdentifier: func(k *key.Key) (interface{}, error) {
 		return strconv.ParseUint(k.Base[0].Value, 10, 64)
 	},
 	Singletons: []meta.Singleton{
-		{
-			Tag:     "thing",
+		{Tag: "thing",
 			Creator: func() interface{} { return &Thing{} },
 			Getter:  func(v interface{}) interface{} { return v.(*Compo).Thing },
 			Setter:  func(v interface{}, w interface{}) { v.(*Compo).Thing = w.(*Thing) },
 		},
-		{
-			Tag:   "other",
+		{Tag: "other",
 			Field: "Other",
 		},
 	},
 	Collections: []meta.Collection{
-		{
-			Tag:       "item",
+		{Tag: "item",
 			Creator:   func() interface{} { return &Item{} },
 			Collector: func(v interface{}, i meta.Item) { v.(*Compo).Items[i.Identifier] = i.Value.(*Item) },
 			Enumerator: func(v interface{}) []meta.Item {
@@ -87,10 +90,7 @@ var cc = meta.MustPrepare(meta.Composite{
 				return items
 			},
 		},
-		{
-			Tag:   "foos",
-			Field: "Foos",
-		},
+		{Tag: "foos", Field: "Foos"},
 	},
 })
 
@@ -102,7 +102,7 @@ func TestPutAndGetValue(t *testing.T) {
 	stub := shim.NewMockStub("test", nil)
 
 	st := store.New(stub)
-	key := key.Based("thing", "1")
+	key := key.NewBase("thing", "1")
 
 	stub.MockTransactionStart("x")
 
@@ -118,7 +118,7 @@ func TestPutAndGetValue(t *testing.T) {
 	a.Equal(t1, t2)
 }
 
-func TestPutAndGet(t *testing.T) {
+func TestPutAndGetComposite(t *testing.T) {
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -152,7 +152,21 @@ func TestPutAndGet(t *testing.T) {
 	a.Equal(c1, c2)
 }
 
-func TestPutAndDelete(t *testing.T) {
+func TestGetMissingComposite(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c, err := st.GetComposite(cc, uint64(1))
+	a.NoError(err)
+	a.Nil(c)
+}
+
+func TestPutAndDeleteComposite(t *testing.T) {
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -194,7 +208,7 @@ func TestPutAndDelete(t *testing.T) {
 
 }
 
-func TestPutPartial(t *testing.T) {
+func TestPutPartialComposite(t *testing.T) {
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -307,7 +321,7 @@ func TestDelCompositeRange(t *testing.T) {
 		t.Logf("put: %s", mustMarshal(c1))
 	}
 
-	ids, err := st.DelCompositeRange(cc, store.Range{First: uint64(102), Last: uint64(105)})
+	ids, err := st.DelCompositeRange(cc, &store.Range{First: uint64(102), Last: uint64(105)})
 	a.NoError(err)
 	a.Len(ids, 4)
 	t.Logf("deleted: %s", mustMarshal(ids))
@@ -330,10 +344,106 @@ func TestDelCompositeRange(t *testing.T) {
 
 }
 
+func TestGetCompositeRange(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c1 := &Compo{
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}, ""},
+		Items: map[string]*Item{"a": {Name: "Pedro", Quantity: 10.0}},
+		Foos:  map[string]*Foo{},
+	}
+
+	i0, i1 := 102, 105
+	k := []*Compo{}
+	for id := 100; id < 110; id++ {
+		c1.Thing.ID = uint64(id)
+		stub.MockTransactionStart("x-" + strconv.Itoa(id))
+		err := st.PutComposite(cc, c1)
+		stub.MockTransactionEnd("x-" + strconv.Itoa(id))
+		a.NoError(err)
+		t.Logf("put: %s", mustMarshal(c1))
+		if i0 <= id && id <= i1 {
+			o := &Compo{}
+			a.NoError(deepCopy(c1, o))
+			k = append(k, o)
+		}
+	}
+	t.Logf("kept: %s", mustMarshal(k))
+
+	cs, err := st.GetCompositeRange(cc, &store.Range{First: uint64(i0), Last: uint64(i1)})
+	a.NoError(err)
+	a.Len(cs, i1-i0+1)
+	t.Logf("got: %s", mustMarshal(cs))
+
+	for i := 0; i <= i1-i0; i++ {
+		a.EqualValues(k[i], cs[i])
+	}
+
+}
+
+func TestGetCompositeAll(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c1 := &Compo{
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}, ""},
+		Items: map[string]*Item{"a": {Name: "Pedro", Quantity: 10.0}},
+		Foos:  map[string]*Foo{},
+	}
+
+	for id := 100; id < 110; id++ {
+		c1.Thing.ID = uint64(id)
+		stub.MockTransactionStart("x-" + strconv.Itoa(id))
+		err := st.PutComposite(cc, c1)
+		stub.MockTransactionEnd("x-" + strconv.Itoa(id))
+		a.NoError(err)
+	}
+
+	pers := test.RandomPersonas(10, nil)
+	_, _, index, _ := test.SummaryPersonasID(pers)
+	for _, per := range pers {
+		per := per
+		txid := uuid.New().String()
+		stub.MockTransactionStart(txid)
+		err := st.PutComposite(cast.Persona, &per)
+		stub.MockTransactionEnd(txid)
+		a.NoError(err)
+	}
+
+	rpers, err := st.GetCompositeAll(cast.Persona)
+	a.NoError(err)
+	a.Len(rpers, 10)
+	for _, rper := range rpers {
+		p := rper.(*model.Persona)
+		a.EqualValues(index[p.ID], *p)
+	}
+
+}
+
 func mustMarshal(v interface{}) string {
 	bs, err := json.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
 	return string(bs)
+}
+
+func deepCopy(src, tgt interface{}) error {
+	b := bytes.Buffer{}
+	err := gob.NewEncoder(&b).Encode(src)
+	if err != nil {
+		return err
+	}
+	return gob.NewDecoder(bytes.NewReader(b.Bytes())).Decode(tgt)
 }

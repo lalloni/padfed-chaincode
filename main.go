@@ -20,7 +20,7 @@ func main() {
 		}
 		shim.SetLoggingLevel(level)
 	}
-	cc := chaincode.New(log, version, false)
+	cc := chaincode.New(log, Version, false)
 	if err := shim.Start(cc); err != nil {
 		log.Errorf("starting chaincode: %v", err)
 	}

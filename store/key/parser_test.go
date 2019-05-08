@@ -20,10 +20,10 @@ func TestParseUsing(t *testing.T) {
 		err  bool
 		k    *key.Key
 	}{
-		{"one-segment", "a=1", false, key.Based("a", "1")},
-		{"two-segments-no-tag", "a=1;b=2", false, key.Based("a", "1", "b", "2")},
-		{"two-segments-and-tag", "a=1;b=2#pepe", false, key.Based("a", "1", "b", "2").Tagged("pepe")},
-		{"two-segments-and-tag-value", "a=1;b=2#pepe=3", false, key.Based("a", "1", "b", "2").Tagged("pepe", "3")},
+		{"one-segment", "a=1", false, key.NewBase("a", "1")},
+		{"two-segments-no-tag", "a=1;b=2", false, key.NewBase("a", "1", "b", "2")},
+		{"two-segments-and-tag", "a=1;b=2#pepe", false, key.NewBase("a", "1", "b", "2").Tagged("pepe")},
+		{"two-segments-and-tag-value", "a=1;b=2#pepe=3", false, key.NewBase("a", "1", "b", "2").Tagged("pepe", "3")},
 		{"no-segment-value-1", "a#2", true, nil},
 		{"no-segment-value-2", "a=#2", true, nil},
 		{"no-segments", "#2", true, nil},

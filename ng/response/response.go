@@ -2,8 +2,6 @@ package response
 
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 )
 
 type Response struct {
@@ -13,10 +11,11 @@ type Response struct {
 }
 
 type Payload struct {
-	Client      *Client      `json:"client,omitempty"`
-	Transaction *Transaction `json:"transation,omitempty"`
-	Result      interface{}  `json:"result,omitempty"`
-	Fault       interface{}  `json:"fault,omitempty"`
+	Client          *Client      `json:"client,omitempty"`
+	Transaction     *Transaction `json:"transaction,omitempty"`
+	Content         interface{}  `json:"content,omitempty"`
+	ContentEncoding string       `json:"content-encoding,omitempty"`
+	Fault           interface{}  `json:"fault,omitempty"`
 }
 
 type Client struct {
@@ -26,8 +25,8 @@ type Client struct {
 }
 
 type Transaction struct {
-	ID       string           `json:"id,omitempty"`
-	Function context.Function `json:"function,omitempty"`
+	ID       string `json:"id,omitempty"`
+	Function string `json:"function,omitempty"`
 }
 
 func (r *Response) OK() bool {

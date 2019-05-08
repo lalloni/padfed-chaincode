@@ -14,15 +14,23 @@ func DelPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric
 	if len(args) != 2 {
 		return fabric.ClientErrorResponse("Número incorrecto de parámetros. Se esperaba 2 parámetros con {CUIL_INICIO, CUIL_FIN}")
 	}
-	id, err := strconv.ParseUint(args[0], 10, 64)
+	sid, err := strconv.ParseUint(args[0], 10, 64)
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("Parámetro 1 incorrecto: %q: %v", args[0], err))
 	}
-	start, _ := cast.Persona.IdentifierKey(id).Range()
-	id, err = strconv.ParseUint(args[1], 10, 64)
+	eid, err := strconv.ParseUint(args[1], 10, 64)
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("Parámetro 2 incorrecto: %q: %v", args[1], err))
 	}
-	_, end := cast.Persona.IdentifierKey(id).Range()
+	sk, err := cast.Persona.IdentifierKey(sid)
+	if err != nil {
+		return fabric.SystemErrorResponse(err.Error())
+	}
+	ek, err := cast.Persona.IdentifierKey(eid)
+	if err != nil {
+		return fabric.SystemErrorResponse(err.Error())
+	}
+	start, _ := sk.Range()
+	_, end := ek.Range()
 	return fabric.DeleteByKeyRange(stub, start, end)
 }

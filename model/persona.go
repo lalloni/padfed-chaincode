@@ -1,23 +1,5 @@
 package model
 
-func NewPersona() *Persona {
-	return &Persona{
-		Actividades:     map[string]*PersonaActividad{},
-		Impuestos:       map[string]*PersonaImpuesto{},
-		Domicilios:      map[string]*PersonaDomicilio{},
-		Telefonos:       map[string]*PersonaTelefono{},
-		Jurisdicciones:  map[string]*PersonaJurisdiccion{},
-		Emails:          map[string]*PersonaEmail{},
-		Archivos:        map[string]*PersonaArchivo{},
-		Categorias:      map[string]*PersonaCategoria{},
-		Etiquetas:       map[string]*PersonaEtiqueta{},
-		Contribuciones:  map[string]*PersonaContribucion{},
-		Relaciones:      map[string]*PersonaRelacion{},
-		CMSedes:         map[string]*PersonaCMSede{},
-		DomiciliosRoles: map[string]*PersonaDomicilioRol{},
-	}
-}
-
 type Persona struct {
 
 	// siempre requerido
