@@ -17,7 +17,7 @@ var (
 				return model.NewPersona()
 			},
 			Keyer: func(id interface{}) *key.Key {
-				return key.Based("per", strconv.FormatUint(id.(uint64), 10))
+				return key.NewBase("per", strconv.FormatUint(id.(uint64), 10))
 			},
 			KeyIdentifier: func(k *key.Key) (interface{}, error) {
 				return strconv.ParseUint(k.Base[0].Value, 10, 64)

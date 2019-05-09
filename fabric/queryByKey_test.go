@@ -18,7 +18,7 @@ func TestQueryByKey(t *testing.T) {
 	if res.Status != shim.OK {
 		t.Errorf("putPersona failed with: %s", res.Message)
 	}
-	res = test.QueryByKey(t, stub, key.Based("per", "30679638943").Tagged("per").String())
+	res = test.QueryByKey(t, stub, key.NewBase("per", "30679638943").Tagged("per").String())
 	if res.Status != shim.OK {
 		t.Errorf("queryByKey failed with: %s", res.Message)
 	}

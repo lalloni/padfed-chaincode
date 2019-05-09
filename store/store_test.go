@@ -43,8 +43,8 @@ type Item struct {
 type Compo struct {
 	Thing *Thing           `json:"thing,omitempty"`
 	Other *Other           `json:"other,omitempty"`
-	Items map[string]*Item `json:"items,omitempty"`
-	Foos  map[string]*Foo  `json:"foos,omitempty"`
+	Items map[string]*Item `json:"items"`
+	Foos  map[string]*Foo  `json:"foos"`
 }
 
 var cc = meta.MustPrepare(meta.Composite{
@@ -54,7 +54,7 @@ var cc = meta.MustPrepare(meta.Composite{
 		return v.(*Compo).Thing.ID
 	},
 	Keyer: func(id interface{}) *key.Key {
-		return key.Based("compo", strconv.FormatUint(id.(uint64), 10))
+		return key.NewBase("compo", strconv.FormatUint(id.(uint64), 10))
 	},
 	KeyIdentifier: func(k *key.Key) (interface{}, error) {
 		return strconv.ParseUint(k.Base[0].Value, 10, 64)
@@ -99,7 +99,7 @@ func TestPutAndGetValue(t *testing.T) {
 	stub := shim.NewMockStub("test", nil)
 
 	st := store.New(stub)
-	key := key.Based("thing", "1")
+	key := key.NewBase("thing", "1")
 
 	stub.MockTransactionStart("x")
 
@@ -265,7 +265,7 @@ func TestDelCompositeRange(t *testing.T) {
 		t.Logf("put: %s", mustMarshal(c1))
 	}
 
-	ids, err := st.DelCompositeRange(cc, store.Range{First: uint64(102), Last: uint64(105)})
+	ids, err := st.DelCompositeRange(cc, &store.Range{First: uint64(102), Last: uint64(105)})
 	a.NoError(err)
 	a.Len(ids, 4)
 	t.Logf("deleted: %s", mustMarshal(ids))
@@ -288,10 +288,61 @@ func TestDelCompositeRange(t *testing.T) {
 
 }
 
+func TestGetCompositeRange(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c1 := &Compo{
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Items: map[string]*Item{"a": {Name: "Pedro", Quantity: 10.0}},
+		Foos:  map[string]*Foo{},
+	}
+
+	i0, i1 := 102, 105
+	k := []*Compo{}
+	for id := 100; id < 110; id++ {
+		c1.Thing.ID = uint64(id)
+		stub.MockTransactionStart("x-" + strconv.Itoa(id))
+		err := st.PutComposite(cc, c1)
+		stub.MockTransactionEnd("x-" + strconv.Itoa(id))
+		a.NoError(err)
+		t.Logf("put: %s", mustMarshal(c1))
+		if i0 <= id && id <= i1 {
+			o := &Compo{}
+			a.NoError(deepCopy(c1, o))
+			k = append(k, o)
+		}
+	}
+	t.Logf("kept: %s", mustMarshal(k))
+
+	cs, err := st.GetCompositeRange(cc, &store.Range{First: uint64(i0), Last: uint64(i1)})
+	a.NoError(err)
+	a.Len(cs, i1-i0+1)
+	t.Logf("got: %s", mustMarshal(cs))
+
+	for i := 0; i <= i1-i0; i++ {
+		a.EqualValues(k[i], cs[i])
+	}
+
+}
+
 func mustMarshal(v interface{}) string {
 	bs, err := json.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
 	return string(bs)
+}
+
+func deepCopy(src, tgt interface{}) error {
+	bs, err := json.Marshal(src)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(bs, tgt)
 }

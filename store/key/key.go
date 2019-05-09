@@ -32,7 +32,7 @@ type Key struct {
 	Tag  Seg
 }
 
-func Based(ss ...string) *Key {
+func NewBase(ss ...string) *Key {
 	s := len(ss)
 	l := s - s%2
 	k := &Key{}
@@ -43,6 +43,10 @@ func Based(ss ...string) *Key {
 		})
 	}
 	return k
+}
+
+func NewBaseKey(k *Key) *Key {
+	return &Key{Base: k.Base}
 }
 
 func (k *Key) Tagged(name string, value ...string) *Key {
@@ -61,6 +65,18 @@ func (k *Key) AppendBase(name, value string) *Key {
 		Base: append(k.Base, Seg{Name: name, Value: value}),
 		Tag:  k.Tag,
 	}
+}
+
+func (k *Key) Equal(o *Key) bool {
+	if len(k.Base) != len(o.Base) || k.Tag != o.Tag {
+		return false
+	}
+	for i := 0; i < len(k.Base); i++ {
+		if k.Base[i] != o.Base[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func (k *Key) Validate() error {

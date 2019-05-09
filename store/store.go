@@ -4,6 +4,7 @@ import (
 	"reflect"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/hyperledger/fabric/protos/ledger/queryresult"
 	"github.com/pkg/errors"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/filtering"
@@ -27,7 +28,8 @@ type Store interface {
 	GetComposite(com *meta.PreparedComposite, id interface{}) (interface{}, error)
 	HasComposite(com *meta.PreparedComposite, id interface{}) (bool, error)
 	DelComposite(com *meta.PreparedComposite, id interface{}) error
-	DelCompositeRange(com *meta.PreparedComposite, r Range) ([]interface{}, error)
+	DelCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error)
+	GetCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error)
 }
 
 func New(stub shim.ChaincodeStubInterface, opts ...Option) Store {
@@ -115,23 +117,9 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 		if err != nil {
 			return nil, errors.Wrapf(err, "parsing composite %q with key %q item", com.Name, state.GetKey())
 		}
-		switch {
-		case com.Collection(statekey) != nil:
-			member := com.Collection(statekey)
-			itemval := member.Creator()
-			err := s.internalParseValue(state.GetValue(), itemval)
-			if err != nil {
-				return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
-			}
-			member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
-		case com.Singleton(statekey) != nil:
-			member := com.Singleton(statekey)
-			itemval := member.Creator()
-			err := s.internalParseValue(state.GetValue(), itemval)
-			if err != nil {
-				return nil, errors.Wrapf(err, "parsing composite %q with key %q singleton item %q value", com.Name, valkey, statekey)
-			}
-			member.Setter(val, itemval)
+		err = s.inject(com, statekey, state, valkey, val)
+		if err != nil {
+			return nil, err
 		}
 	}
 	return val, nil
@@ -168,9 +156,8 @@ func (s *simplestore) DelComposite(com *meta.PreparedComposite, id interface{}) 
 	return nil
 }
 
-func (s *simplestore) DelCompositeRange(com *meta.PreparedComposite, r Range) ([]interface{}, error) {
-	first, _ := com.IdentifierKey(r.First).RangeUsing(s.sep)
-	_, last := com.IdentifierKey(r.Last).RangeUsing(s.sep)
+func (s *simplestore) DelCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error) {
+	first, last := s.identifierKeyRange(com, r)
 	states, err := s.stub.GetStateByRange(first, last)
 	if err != nil {
 		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for deletion", com.Name, first, last)
@@ -196,6 +183,46 @@ func (s *simplestore) DelCompositeRange(com *meta.PreparedComposite, r Range) ([
 		err = s.stub.DelState(state.GetKey())
 		if err != nil {
 			return nil, errors.Wrapf(err, "deleting composite %q range [%q,%q] state %q", com.Name, first, last, state.GetKey())
+		}
+	}
+	return res, nil
+}
+
+func (s *simplestore) GetCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error) {
+	first, last := s.identifierKeyRange(com, r)
+	states, err := s.stub.GetStateByRange(first, last)
+	if err != nil {
+		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for reading", com.Name, first, last)
+	}
+	defer states.Close()
+	var (
+		valkey  *key.Key
+		val, id interface{}
+	)
+	res := []interface{}{}
+	for states.HasNext() {
+		state, err := states.Next()
+		if err != nil {
+			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for reading", com.Name, first, last)
+		}
+		statekey, err := key.ParseUsing(state.GetKey(), s.sep)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing state key %q as composite %q key", state.GetKey(), com.Name)
+		}
+		basekey := key.NewBaseKey(statekey)
+		if valkey == nil || !valkey.Equal(basekey) {
+			valkey = basekey
+			val = com.Create()
+			id, err = com.KeyIdentifier(valkey)
+			if err != nil {
+				return nil, errors.Wrapf(err, "building identifier for composite %q key %q", com.Name, valkey)
+			}
+			com.SetIdentifier(val, id)
+			res = append(res, val)
+		}
+		err = s.inject(com, statekey, state, valkey, val)
+		if err != nil {
+			return nil, err
 		}
 	}
 	return res, nil
@@ -248,4 +275,32 @@ func (s *simplestore) internalParseValue(bs []byte, value interface{}) error {
 		return errors.Wrap(err, "unmarshaling value")
 	}
 	return nil
+}
+
+func (s *simplestore) inject(com *meta.PreparedComposite, statekey *key.Key, state *queryresult.KV, valkey *key.Key, val interface{}) error {
+	switch {
+	case com.Collection(statekey) != nil:
+		member := com.Collection(statekey)
+		itemval := member.Creator()
+		err := s.internalParseValue(state.GetValue(), itemval)
+		if err != nil {
+			return errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
+		}
+		member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
+	case com.Singleton(statekey) != nil:
+		member := com.Singleton(statekey)
+		itemval := member.Creator()
+		err := s.internalParseValue(state.GetValue(), itemval)
+		if err != nil {
+			return errors.Wrapf(err, "parsing composite %q with key %q singleton item %q value", com.Name, valkey, statekey)
+		}
+		member.Setter(val, itemval)
+	}
+	return nil
+}
+
+func (s *simplestore) identifierKeyRange(com *meta.PreparedComposite, r *Range) (string, string) {
+	first, _ := com.IdentifierKey(r.First).RangeUsing(s.sep)
+	_, last := com.IdentifierKey(r.Last).RangeUsing(s.sep)
+	return first, last
 }

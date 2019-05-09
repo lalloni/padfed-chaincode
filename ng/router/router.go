@@ -12,6 +12,10 @@ import (
 
 type Name string
 
+func (n *Name) String() string {
+	return strings.ToLower(string(*n)) // para que los nombres de las funciones sean case-insensitive
+}
+
 type Router interface {
 	InitHandler() handler.Handler
 	SetInitHandler(authorization.Check, handler.Handler)
@@ -22,13 +26,13 @@ type Router interface {
 
 func New() Router {
 	return &router{
-		functionHandlers: map[Name]handler.Handler{},
+		functionHandlers: map[string]handler.Handler{},
 	}
 }
 
 type router struct {
 	initHandler      handler.Handler
-	functionHandlers map[Name]handler.Handler
+	functionHandlers map[string]handler.Handler
 }
 
 func (r *router) InitHandler() handler.Handler {
@@ -44,14 +48,14 @@ func (r *router) SetInitHandler(ch authorization.Check, h handler.Handler) {
 }
 
 func (r *router) Handler(n Name) handler.Handler {
-	return r.functionHandlers[n]
+	return r.functionHandlers[n.String()]
 }
 
 func (r *router) SetHandler(n Name, ch authorization.Check, h handler.Handler) {
 	if ch != nil {
-		r.functionHandlers[n] = handler.AuthorizationHandler(fmt.Sprintf("invoke function %q", n), ch, h)
+		r.functionHandlers[n.String()] = handler.AuthorizationHandler(fmt.Sprintf("invoke function %q", n), ch, h)
 	} else {
-		r.functionHandlers[n] = h
+		r.functionHandlers[n.String()] = h
 	}
 }
 
