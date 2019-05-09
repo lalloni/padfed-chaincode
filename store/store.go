@@ -69,25 +69,36 @@ func (s *simplestore) DelValue(k *key.Key) error {
 }
 
 func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{}) error {
-	we := com.ValueWitness(val)
-	if err := s.internalPutValue(we.Key, we.Value); err != nil {
-		return errors.Wrapf(err, "putting composite %q witness", com.Name)
+	we, err := com.ValueWitness(val)
+	if err != nil {
+		return errors.Wrapf(err, "getting composite %q value %v witness", com.Name(), val)
 	}
-	for _, entry := range com.SingletonsEntries(val) {
+	if err := s.internalPutValue(we.Key, we.Value); err != nil {
+		return errors.Wrapf(err, "putting composite %q witness", com.Name())
+	}
+	entries, err := com.SingletonsEntries(val)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	for _, entry := range entries {
 		if !reflect.ValueOf(entry.Value).IsNil() {
 			if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
-				return errors.Wrapf(err, "putting composite %q singleton %q", com.Name, entry)
+				return errors.Wrapf(err, "putting composite %q singleton %q", com.Name(), entry)
 			}
 		}
 	}
-	for _, entry := range com.CollectionsEntries(val) {
+	entries, err = com.CollectionsEntries(val)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	for _, entry := range entries {
 		if reflect.ValueOf(entry.Value).IsNil() {
 			if err := s.internalDelValue(entry.Key); err != nil {
-				return errors.Wrapf(err, "deleting composite %q collection entry %q", com.Name, entry)
+				return errors.Wrapf(err, "deleting composite %q collection entry %q", com.Name(), entry)
 			}
 		} else {
 			if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
-				return errors.Wrapf(err, "putting composite %q collection entry %q", com.Name, entry)
+				return errors.Wrapf(err, "putting composite %q collection entry %q", com.Name(), entry)
 			}
 		}
 	}
@@ -95,27 +106,36 @@ func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{})
 }
 
 func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) (interface{}, error) {
-	valkey := com.IdentifierKey(id)
+	valkey, err := com.IdentifierKey(id)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	if ok, err := s.HasComposite(com, id); err != nil {
-		return nil, errors.Wrapf(err, "checking composite %q with key %q existence", com.Name, valkey)
+		return nil, errors.Wrapf(err, "checking composite %q with key %q existence", com.Name(), valkey)
 	} else if !ok {
 		return nil, nil // no existe la persona
 	}
-	val := com.Create()
-	com.SetIdentifier(val, id)
+	val, err := com.Create()
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	err = com.SetIdentifier(val, id)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 	states, err := s.stub.GetStateByRange(valkey.RangeUsing(s.sep))
 	if err != nil {
-		return nil, errors.Wrapf(err, "getting composite %q with key %q states iterator", com.Name, valkey)
+		return nil, errors.Wrapf(err, "getting composite %q with key %q states iterator", com.Name(), valkey)
 	}
 	defer states.Close()
 	for states.HasNext() {
 		state, err := states.Next()
 		if err != nil {
-			return nil, errors.Wrapf(err, "getting composite %q with key %q next state", com.Name, valkey)
+			return nil, errors.Wrapf(err, "getting composite %q with key %q next state", com.Name(), valkey)
 		}
 		statekey, err := key.ParseUsing(state.GetKey(), s.sep)
 		if err != nil {
-			return nil, errors.Wrapf(err, "parsing composite %q with key %q item", com.Name, state.GetKey())
+			return nil, errors.Wrapf(err, "parsing composite %q with key %q item", com.Name(), state.GetKey())
 		}
 		err = s.inject(com, statekey, state, valkey, val)
 		if err != nil {
@@ -126,73 +146,85 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 }
 
 func (s *simplestore) HasComposite(com *meta.PreparedComposite, id interface{}) (bool, error) {
-	key := com.IdentifierKey(id)
+	key, err := com.IdentifierKey(id)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
 	wk := com.KeyWitness(key)
 	var a interface{}
 	found, err := s.internalGetValue(wk, &a)
 	if err != nil {
-		return false, errors.Wrapf(err, "getting composite %q witness with key %q", com.Name, wk.StringUsing(s.sep))
+		return false, errors.Wrapf(err, "getting composite %q witness with key %q", com.Name(), wk.StringUsing(s.sep))
 	}
 	return found, nil
 }
 
 func (s *simplestore) DelComposite(com *meta.PreparedComposite, id interface{}) error {
-	key := com.IdentifierKey(id)
+	key, err := com.IdentifierKey(id)
+	if err != nil {
+		return errors.WithStack(err)
+	}
 	states, err := s.stub.GetStateByRange(key.RangeUsing(s.sep))
 	if err != nil {
-		return errors.Wrapf(err, "getting composite %q states with key %q for deletion", com.Name, key)
+		return errors.Wrapf(err, "getting composite %q states with key %q for deletion", com.Name(), key)
 	}
 	defer states.Close()
 	for states.HasNext() {
 		state, err := states.Next()
 		if err != nil {
-			return errors.Wrapf(err, "getting composite %q with key %q next state for deletion", com.Name, key)
+			return errors.Wrapf(err, "getting composite %q with key %q next state for deletion", com.Name(), key)
 		}
 		err = s.stub.DelState(state.GetKey())
 		if err != nil {
-			return errors.Wrapf(err, "deleting composite %q with key %q state %q", com.Name, key, state.GetKey())
+			return errors.Wrapf(err, "deleting composite %q with key %q state %q", com.Name(), key, state.GetKey())
 		}
 	}
 	return nil
 }
 
 func (s *simplestore) DelCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error) {
-	first, last := s.identifierKeyRange(com, r)
+	first, last, err := s.identifierKeyRange(com, r)
+	if err != nil {
+		return nil, errors.Wrapf(err, "getting keys range %v", r)
+	}
 	states, err := s.stub.GetStateByRange(first, last)
 	if err != nil {
-		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for deletion", com.Name, first, last)
+		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for deletion", com.Name(), first, last)
 	}
 	defer states.Close()
 	res := []interface{}{}
 	for states.HasNext() {
 		state, err := states.Next()
 		if err != nil {
-			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for deletion", com.Name, first, last)
+			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for deletion", com.Name(), first, last)
 		}
 		statekey, err := key.ParseUsing(state.GetKey(), s.sep)
 		if err != nil {
-			return nil, errors.Wrapf(err, "parsing state key %q as composite %q key", state.GetKey(), com.Name)
+			return nil, errors.Wrapf(err, "parsing state key %q as composite %q key", state.GetKey(), com.Name())
 		}
 		if com.IsWitnessKey(statekey) {
 			id, err := com.KeyIdentifier(statekey)
 			if err != nil {
-				return nil, errors.Wrapf(err, "getting composite %q identifier for state %q", com.Name, state.GetKey())
+				return nil, errors.WithStack(err)
 			}
 			res = append(res, id)
 		}
 		err = s.stub.DelState(state.GetKey())
 		if err != nil {
-			return nil, errors.Wrapf(err, "deleting composite %q range [%q,%q] state %q", com.Name, first, last, state.GetKey())
+			return nil, errors.Wrapf(err, "deleting composite %q range [%q,%q] state %q", com.Name(), first, last, state.GetKey())
 		}
 	}
 	return res, nil
 }
 
 func (s *simplestore) GetCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error) {
-	first, last := s.identifierKeyRange(com, r)
+	first, last, err := s.identifierKeyRange(com, r)
+	if err != nil {
+		return nil, errors.Wrapf(err, "getting keys range %v", r)
+	}
 	states, err := s.stub.GetStateByRange(first, last)
 	if err != nil {
-		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for reading", com.Name, first, last)
+		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for reading", com.Name(), first, last)
 	}
 	defer states.Close()
 	var (
@@ -203,19 +235,22 @@ func (s *simplestore) GetCompositeRange(com *meta.PreparedComposite, r *Range) (
 	for states.HasNext() {
 		state, err := states.Next()
 		if err != nil {
-			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for reading", com.Name, first, last)
+			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for reading", com.Name(), first, last)
 		}
 		statekey, err := key.ParseUsing(state.GetKey(), s.sep)
 		if err != nil {
-			return nil, errors.Wrapf(err, "parsing state key %q as composite %q key", state.GetKey(), com.Name)
+			return nil, errors.Wrapf(err, "parsing state key %q as composite %q key", state.GetKey(), com.Name())
 		}
 		basekey := key.NewBaseKey(statekey)
 		if valkey == nil || !valkey.Equal(basekey) {
 			valkey = basekey
-			val = com.Create()
+			val, err = com.Create()
+			if err != nil {
+				return nil, errors.WithStack(err)
+			}
 			id, err = com.KeyIdentifier(valkey)
 			if err != nil {
-				return nil, errors.Wrapf(err, "building identifier for composite %q key %q", com.Name, valkey)
+				return nil, errors.WithStack(err)
 			}
 			com.SetIdentifier(val, id)
 			res = append(res, val)
@@ -284,7 +319,7 @@ func (s *simplestore) inject(com *meta.PreparedComposite, statekey *key.Key, sta
 		itemval := member.Creator()
 		err := s.internalParseValue(state.GetValue(), itemval)
 		if err != nil {
-			return errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
+			return errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name(), valkey, statekey)
 		}
 		member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
 	case com.Singleton(statekey) != nil:
@@ -292,15 +327,23 @@ func (s *simplestore) inject(com *meta.PreparedComposite, statekey *key.Key, sta
 		itemval := member.Creator()
 		err := s.internalParseValue(state.GetValue(), itemval)
 		if err != nil {
-			return errors.Wrapf(err, "parsing composite %q with key %q singleton item %q value", com.Name, valkey, statekey)
+			return errors.Wrapf(err, "parsing composite %q with key %q singleton item %q value", com.Name(), valkey, statekey)
 		}
 		member.Setter(val, itemval)
 	}
 	return nil
 }
 
-func (s *simplestore) identifierKeyRange(com *meta.PreparedComposite, r *Range) (string, string) {
-	first, _ := com.IdentifierKey(r.First).RangeUsing(s.sep)
-	_, last := com.IdentifierKey(r.Last).RangeUsing(s.sep)
-	return first, last
+func (s *simplestore) identifierKeyRange(com *meta.PreparedComposite, r *Range) (string, string, error) {
+	fk, err := com.IdentifierKey(r.First)
+	if err != nil {
+		return "", "", errors.Wrap(err, "getting range start key")
+	}
+	lk, err := com.IdentifierKey(r.Last)
+	if err != nil {
+		return "", "", errors.Wrap(err, "getting range end key")
+	}
+	first, _ := fk.RangeUsing(s.sep)
+	_, last := lk.RangeUsing(s.sep)
+	return first, last, nil
 }

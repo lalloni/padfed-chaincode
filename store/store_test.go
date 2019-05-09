@@ -53,27 +53,28 @@ var cc = meta.MustPrepare(meta.Composite{
 	IdentifierGetter: func(v interface{}) interface{} {
 		return v.(*Compo).Thing.ID
 	},
-	Keyer: func(id interface{}) *key.Key {
+	IdentifierKey: func(id interface{}) *key.Key {
 		return key.NewBase("compo", strconv.FormatUint(id.(uint64), 10))
 	},
-	KeyIdentifier: func(k *key.Key) (interface{}, error) {
-		return strconv.ParseUint(k.Base[0].Value, 10, 64)
+	KeyIdentifier: func(k *key.Key) interface{} {
+		if v, err := strconv.ParseUint(k.Base[0].Value, 10, 64); err != nil {
+			panic(err)
+		} else {
+			return v
+		}
 	},
 	Singletons: []meta.Singleton{
-		{
-			Tag:     "thing",
+		{Tag: "thing",
 			Creator: func() interface{} { return &Thing{} },
 			Getter:  func(v interface{}) interface{} { return v.(*Compo).Thing },
 			Setter:  func(v interface{}, w interface{}) { v.(*Compo).Thing = w.(*Thing) },
 		},
-		{
-			Tag:   "other",
+		{Tag: "other",
 			Field: "Other",
 		},
 	},
 	Collections: []meta.Collection{
-		{
-			Tag:       "item",
+		{Tag: "item",
 			Creator:   func() interface{} { return &Item{} },
 			Collector: func(v interface{}, i meta.Item) { v.(*Compo).Items[i.Identifier] = i.Value.(*Item) },
 			Enumerator: func(v interface{}) []meta.Item {
@@ -84,10 +85,7 @@ var cc = meta.MustPrepare(meta.Composite{
 				return items
 			},
 		},
-		{
-			Tag:   "foos",
-			Field: "Foos",
-		},
+		{Tag: "foos", Field: "Foos"},
 	},
 })
 
@@ -115,7 +113,7 @@ func TestPutAndGetValue(t *testing.T) {
 	a.Equal(t1, t2)
 }
 
-func TestPutAndGet(t *testing.T) {
+func TestPutAndGetComposite(t *testing.T) {
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -149,7 +147,21 @@ func TestPutAndGet(t *testing.T) {
 	a.Equal(c1, c2)
 }
 
-func TestPutAndDelete(t *testing.T) {
+func TestGetMissingComposite(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c, err := st.GetComposite(cc, uint64(1))
+	a.NoError(err)
+	a.Nil(c)
+}
+
+func TestPutAndDeleteComposite(t *testing.T) {
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -191,7 +203,7 @@ func TestPutAndDelete(t *testing.T) {
 
 }
 
-func TestPutPartial(t *testing.T) {
+func TestPutPartialComposite(t *testing.T) {
 	a := assert.New(t)
 
 	shim.SetLoggingLevel(shim.LogDebug)

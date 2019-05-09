@@ -9,7 +9,7 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 )
 
-var witnessTag = "wit"
+const witnessTag = "wit"
 
 func MustPrepare(com Composite) *PreparedComposite {
 	cc, err := Prepare(com)
@@ -108,37 +108,74 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 		}
 	}
 	return &PreparedComposite{
-		Name:        com.Name,
-		Composite:   &com,
-		Singletons:  singletons,
-		Collections: collections,
+		name:        com.Name,
+		composite:   &com,
+		singletons:  singletons,
+		collections: collections,
 	}, nil
 }
 
 type PreparedComposite struct {
-	Name        string
-	Composite   *Composite
-	Singletons  map[string]*Singleton
-	Collections map[string]*Collection
+	name        string
+	composite   *Composite
+	singletons  map[string]*Singleton
+	collections map[string]*Collection
 }
 
-func (cc *PreparedComposite) IdentifierKey(id interface{}) *key.Key {
-	return cc.Composite.Keyer(id)
+func (cc *PreparedComposite) Name() string {
+	return cc.name
 }
 
-func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (interface{}, error) {
-	return cc.Composite.KeyIdentifier(k)
+func (cc *PreparedComposite) IdentifierKey(id interface{}) (k *key.Key, err error) {
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("building composite %q key from id %v: %v", cc.name, id, p)
+		}
+	}()
+	k = cc.composite.IdentifierKey(id)
+	return
 }
 
-func (cc *PreparedComposite) ValueKey(val interface{}) *key.Key {
-	return cc.IdentifierKey(cc.Composite.IdentifierGetter(val))
+func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (v interface{}, err error) {
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("building composite %q id from key %s: %v", cc.name, k, p)
+		}
+	}()
+	v = cc.composite.KeyIdentifier(k)
+	return
 }
 
-func (cc *PreparedComposite) ValueWitness(val interface{}) *Entry {
-	return &Entry{
-		Key:   cc.ValueKey(val).Tagged(witnessTag),
-		Value: 1,
+func (cc *PreparedComposite) ValueKey(val interface{}) (*key.Key, error) {
+	id, err := cc.ValueIdentifier(val)
+	if err != nil {
+		return nil, err
 	}
+	return cc.IdentifierKey(id)
+}
+
+func (cc *PreparedComposite) ValueIdentifier(val interface{}) (id interface{}, err error) {
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("getting composite %q id from value %v: %v", cc.name, val, p)
+		}
+	}()
+	id = cc.composite.IdentifierGetter(val)
+	return
+}
+
+func (cc *PreparedComposite) ValueWitness(val interface{}) (*Entry, error) {
+	k, err := cc.ValueKey(val)
+	if err != nil {
+		return nil, err
+	}
+	return &Entry{
+		Key:   k.Tagged(witnessTag),
+		Value: 1,
+	}, nil
 }
 
 func (cc *PreparedComposite) KeyWitness(key *key.Key) *key.Key {
@@ -149,22 +186,42 @@ func (cc *PreparedComposite) IsWitnessKey(key *key.Key) bool {
 	return key.Tag.Name == witnessTag
 }
 
-func (cc *PreparedComposite) SingletonsEntries(val interface{}) []*Entry {
-	valkey := cc.ValueKey(val)
-	entries := []*Entry(nil)
-	for _, singleton := range cc.Singletons {
+func (cc *PreparedComposite) SingletonsEntries(val interface{}) (entries []*Entry, err error) {
+	valkey, err := cc.ValueKey(val)
+	if err != nil {
+		return nil, err
+	}
+	var singleton *Singleton
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("getting composite %q singleton %q value from %v: %v", cc.name, singleton.Tag, val, p)
+		}
+	}()
+	entries = []*Entry{}
+	for _, singleton = range cc.singletons {
 		entries = append(entries, &Entry{
 			Key:   valkey.Tagged(singleton.Tag),
 			Value: singleton.Getter(val),
 		})
 	}
-	return entries
+	return
 }
 
-func (cc *PreparedComposite) CollectionsEntries(val interface{}) []*Entry {
-	valkey := cc.ValueKey(val)
-	entries := []*Entry(nil)
-	for _, collection := range cc.Collections {
+func (cc *PreparedComposite) CollectionsEntries(val interface{}) (entries []*Entry, err error) {
+	valkey, err := cc.ValueKey(val)
+	if err != nil {
+		return nil, err
+	}
+	var collection *Collection
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("getting composite %q collection %q items from %v: %v", cc.name, collection.Tag, val, p)
+		}
+	}()
+	entries = []*Entry{}
+	for _, collection = range cc.collections {
 		items := collection.Enumerator(val)
 		for _, item := range items {
 			entries = append(entries, &Entry{
@@ -173,25 +230,39 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) []*Entry {
 			})
 		}
 	}
-	return entries
+	return
 }
 
-func (cc *PreparedComposite) Create() interface{} {
-	return cc.Composite.Creator()
+func (cc *PreparedComposite) Create() (v interface{}, err error) {
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("creating composite %q value: %v", cc.name, p)
+		}
+	}()
+	v = cc.composite.Creator()
+	return
 }
 
-func (cc *PreparedComposite) SetIdentifier(val, id interface{}) {
-	if cc.Composite.IdentifierSetter != nil {
-		cc.Composite.IdentifierSetter(val, id)
+func (cc *PreparedComposite) SetIdentifier(val, id interface{}) (err error) {
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("setting composite %q id %v in value %v: %v", cc.name, id, val, p)
+		}
+	}()
+	if cc.composite.IdentifierSetter != nil {
+		cc.composite.IdentifierSetter(val, id)
 	}
+	return
 }
 
 func (cc *PreparedComposite) Collection(k *key.Key) *Collection {
-	return cc.Collections[k.Tag.Name]
+	return cc.collections[k.Tag.Name]
 }
 
 func (cc *PreparedComposite) Singleton(k *key.Key) *Singleton {
-	return cc.Singletons[k.Tag.Name]
+	return cc.singletons[k.Tag.Name]
 }
 
 type Entry struct {
