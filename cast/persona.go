@@ -16,15 +16,11 @@ var (
 			Creator: func() interface{} {
 				return model.NewPersona()
 			},
-			IdentifierKey: func(id interface{}) *key.Key {
-				return key.NewBase("per", strconv.FormatUint(id.(uint64), 10))
+			IdentifierKey: func(id interface{}) (*key.Key, error) {
+				return key.NewBase("per", strconv.FormatUint(id.(uint64), 10)), nil
 			},
-			KeyIdentifier: func(k *key.Key) interface{} {
-				if v, e := strconv.ParseUint(k.Base[0].Value, 10, 64); e != nil {
-					panic(e)
-				} else {
-					return v
-				}
+			KeyIdentifier: func(k *key.Key) (interface{}, error) {
+				return strconv.ParseUint(k.Base[0].Value, 10, 64)
 			},
 			Singletons: []meta.Singleton{
 				{Tag: "per", Field: "Persona"},

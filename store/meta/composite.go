@@ -4,8 +4,8 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 )
 
-type ValFunc func(*key.Key) interface{}
-type KeyFunc func(interface{}) *key.Key
+type ValFunc func(*key.Key) (interface{}, error)
+type KeyFunc func(interface{}) (*key.Key, error)
 
 type CreatorFunc func() interface{}
 

@@ -10,7 +10,6 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/chaincode"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
@@ -29,27 +28,31 @@ func main() {
 	}
 
 	OnlyAFIP := authorization.MSPID("AFIP")
-	Everyone := authorization.Allowed
 
-	r := router.New()
+	r := router.New(&router.Config{
+		Init: router.R("", OnlyAFIP, nil),
+		Funs: router.Rs(
 
-	r.SetInitHandler(OnlyAFIP, handler.SuccessHandler)
+			// Meta
+			router.R("version", nil, VersionHandler),
 
-	// Meta
-	r.SetHandlerFunc(Everyone, VersionHandler)
+			// Business
+			router.R("GetPersona", nil, persona.GetPersonaHandler),
+			router.R("DelPersona", OnlyAFIP, persona.DelPersonaHandler),
+			router.R("PutPersona", OnlyAFIP, persona.PutPersonaHandler),
+			router.R("PutPersonaList", OnlyAFIP, persona.PutPersonaListHandler),
 
-	// Business
-	r.SetHandlerFunc(Everyone, persona.GetPersonaHandler)
-	r.SetHandlerFunc(OnlyAFIP, persona.PutPersonaHandler)
-	r.SetHandlerFunc(OnlyAFIP, persona.PutPersonaListHandler)
-	r.SetHandlerFunc(OnlyAFIP, persona.DelPersonaHandler)
-	r.SetHandlerFunc(OnlyAFIP, persona.DelPersonaRangeHandler)
+			// Business not productive
+			router.R("GetPersonaRange", OnlyAFIP, persona.GetPersonaRangeHandler),
+			router.R("DelPersonaRange", OnlyAFIP, persona.DelPersonaRangeHandler),
 
-	// Generic
-	r.SetHandlerFunc(OnlyAFIP, generic.GetStateHandler)
-	r.SetHandlerFunc(OnlyAFIP, generic.PutStateHandler)
+			// Generic
+			router.R("GetState", OnlyAFIP, generic.GetStateHandler),
+			router.R("PutState", OnlyAFIP, generic.PutStateHandler),
+		),
+	})
 
-	cc := chaincode.New(log, r)
+	cc := chaincode.New("padfed", r)
 
 	if err := shim.Start(cc); err != nil {
 		log.Errorf("starting chaincode: %v", err)

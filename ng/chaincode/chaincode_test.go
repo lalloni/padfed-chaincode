@@ -15,24 +15,20 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
 
 func TestInitHandler(t *testing.T) {
 	a := assert.New(t)
 	init := false
-	r := router.New()
-	r.SetInitHandler(authorization.Allowed, func(*context.Context) *response.Response {
+	mock := test.NewMock("cc", router.New(router.C(router.RH(func(*context.Context) *response.Response {
 		init = true
 		return response.OK("blah!")
-	})
-	log := shim.NewLogger("cc")
-	mock := shim.NewMockStub("cc", chaincode.New(log, r))
-	res := mock.MockInit(uuid.New().String(), [][]byte{})
+	}))))
+	res, p, err := test.MockInit(mock)
+	a.NoError(err)
 	a.True(init)
 	a.EqualValues(http.StatusOK, res.Status)
-	p := response.Payload{}
-	err := json.Unmarshal(res.Payload, &p)
-	a.NoError(err)
 	a.EqualValues("blah!", p.Result)
 }
 
@@ -44,7 +40,7 @@ func TestInvokeHandler(t *testing.T) {
 		res  peer.Response
 		p    response.Payload
 	)
-	r := router.New()
+	r := router.New(nil)
 	r.SetHandler(router.Name("f1"), authorization.Allowed, func(*context.Context) *response.Response {
 		call = true
 		return response.OK("blah!")
@@ -53,8 +49,8 @@ func TestInvokeHandler(t *testing.T) {
 		call = true
 		return response.OK("bleh!") // never invoked
 	})
-	log := shim.NewLogger("cc")
-	mock := shim.NewMockStub("cc", chaincode.New(log, r))
+
+	mock := shim.NewMockStub("cc", chaincode.New("cc", r))
 
 	call = false
 	p = response.Payload{}

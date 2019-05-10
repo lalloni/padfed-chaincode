@@ -10,7 +10,7 @@ import (
 )
 
 func DelPersonaRangeHandler(ctx *context.Context) *response.Response {
-	r, first, last, err := argUintRange(ctx, 1)
+	r, first, last, err := argUint64Range(ctx, 1)
 	if err != nil {
 		return response.BadRequest("invalid persona range: %v", err)
 	}
@@ -22,7 +22,7 @@ func DelPersonaRangeHandler(ctx *context.Context) *response.Response {
 }
 
 func GetPersonaRangeHandler(ctx *context.Context) *response.Response {
-	r, first, last, err := argUintRange(ctx, 1)
+	r, first, last, err := argUint64Range(ctx, 1)
 	if err != nil {
 		return response.BadRequest("invalid persona range: %v", err)
 	}
@@ -33,12 +33,12 @@ func GetPersonaRangeHandler(ctx *context.Context) *response.Response {
 	return response.OK(ps)
 }
 
-func argUintRange(ctx *context.Context, pos int) (*store.Range, uint, uint, error) {
-	a, err := ctx.ArgUint(pos)
+func argUint64Range(ctx *context.Context, pos int) (*store.Range, uint64, uint64, error) {
+	a, err := ctx.ArgUint64(pos)
 	if err != nil {
 		return nil, 0, 0, errors.Wrapf(err, "invalid range start")
 	}
-	b, err := ctx.ArgUint(pos + 1)
+	b, err := ctx.ArgUint64(pos + 1)
 	if err != nil {
 		return nil, 0, 0, errors.Wrapf(err, "invalid range end")
 	}

@@ -133,8 +133,7 @@ func (cc *PreparedComposite) IdentifierKey(id interface{}) (k *key.Key, err erro
 			err = errors.Errorf("building composite %q key from id %v: %v", cc.name, id, p)
 		}
 	}()
-	k = cc.composite.IdentifierKey(id)
-	return
+	return cc.composite.IdentifierKey(id)
 }
 
 func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (v interface{}, err error) {
@@ -144,8 +143,7 @@ func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (v interface{}, err error
 			err = errors.Errorf("building composite %q id from key %s: %v", cc.name, k, p)
 		}
 	}()
-	v = cc.composite.KeyIdentifier(k)
-	return
+	return cc.composite.KeyIdentifier(k)
 }
 
 func (cc *PreparedComposite) ValueKey(val interface{}) (*key.Key, error) {
@@ -160,7 +158,7 @@ func (cc *PreparedComposite) ValueIdentifier(val interface{}) (id interface{}, e
 	defer func() {
 		p := recover()
 		if p != nil {
-			err = errors.Errorf("getting composite %q id from value %v: %v", cc.name, val, p)
+			err = errors.Errorf("getting composite %q id: %v", cc.name, p)
 		}
 	}()
 	id = cc.composite.IdentifierGetter(val)
@@ -195,7 +193,7 @@ func (cc *PreparedComposite) SingletonsEntries(val interface{}) (entries []*Entr
 	defer func() {
 		p := recover()
 		if p != nil {
-			err = errors.Errorf("getting composite %q singleton %q value from %v: %v", cc.name, singleton.Tag, val, p)
+			err = errors.Errorf("getting composite %q singleton %q value: %v", cc.name, singleton.Tag, p)
 		}
 	}()
 	entries = []*Entry{}
@@ -217,7 +215,7 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) (entries []*Ent
 	defer func() {
 		p := recover()
 		if p != nil {
-			err = errors.Errorf("getting composite %q collection %q items from %v: %v", cc.name, collection.Tag, val, p)
+			err = errors.Errorf("getting composite %q collection %q items: %v", cc.name, collection.Tag, p)
 		}
 	}()
 	entries = []*Entry{}
@@ -248,7 +246,7 @@ func (cc *PreparedComposite) SetIdentifier(val, id interface{}) (err error) {
 	defer func() {
 		p := recover()
 		if p != nil {
-			err = errors.Errorf("setting composite %q id %v in value %v: %v", cc.name, id, val, p)
+			err = errors.Errorf("setting composite %q id %v: %v", cc.name, id, p)
 		}
 	}()
 	if cc.composite.IdentifierSetter != nil {

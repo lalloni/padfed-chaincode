@@ -13,7 +13,7 @@ import (
 
 func GetPersonaHandler(ctx *context.Context) *response.Response {
 
-	cuit, err := ctx.ArgUint(1)
+	cuit, err := ctx.ArgUint64(1)
 	if err != nil {
 		return response.BadRequest("invalid persona id: %v", err)
 	}
@@ -32,7 +32,7 @@ func GetPersonaHandler(ctx *context.Context) *response.Response {
 
 func DelPersonaHandler(ctx *context.Context) *response.Response {
 
-	id, err := ctx.ArgUint(1)
+	id, err := ctx.ArgUint64(1)
 	if err != nil {
 		return response.BadRequest("invalid persona id: %v", err)
 	}
@@ -69,8 +69,8 @@ func PutPersonaHandler(ctx *context.Context) *response.Response {
 		return response.BadRequestWithFault(res)
 	}
 
-	per := model.Persona{}
-	err = json.Unmarshal(bs, &per)
+	per := &model.Persona{}
+	err = json.Unmarshal(bs, per)
 	if err != nil {
 		return response.Error("unmarshalling persona: %v", err)
 	}
@@ -101,7 +101,8 @@ func PutPersonaListHandler(ctx *context.Context) *response.Response {
 	}
 
 	for n, per := range perl.Personas {
-		res := save(ctx, per)
+		per := per
+		res := save(ctx, &per)
 		if !res.OK() {
 			res.Message = fmt.Sprintf("persona %d: %s", n+1, res.Message)
 			return res
@@ -112,7 +113,7 @@ func PutPersonaListHandler(ctx *context.Context) *response.Response {
 
 }
 
-func save(ctx *context.Context, per model.Persona) *response.Response {
+func save(ctx *context.Context, per *model.Persona) *response.Response {
 
 	if per.ID == 0 {
 		return response.BadRequest("id required")

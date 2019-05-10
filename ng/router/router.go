@@ -2,8 +2,6 @@ package router
 
 import (
 	"fmt"
-	"reflect"
-	"runtime"
 	"strings"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
@@ -21,13 +19,23 @@ type Router interface {
 	SetInitHandler(authorization.Check, handler.Handler)
 	Handler(Name) handler.Handler
 	SetHandler(Name, authorization.Check, handler.Handler)
-	SetHandlerFunc(authorization.Check, handler.Handler)
 }
 
-func New() Router {
-	return &router{
+func New(c *Config) Router {
+	r := &router{
 		functionHandlers: map[string]handler.Handler{},
 	}
+	if c != nil {
+		if c.Init != nil {
+			if c.Init.Check != nil || c.Init.Handler != nil {
+				r.SetInitHandler(c.Init.Check, HandlerDefault(c.Init.Handler, handler.SuccessHandler))
+			}
+		}
+		for _, fun := range c.Funs {
+			r.SetHandler(NameDefault(fun.Name, fun.Handler), fun.Check, fun.Handler)
+		}
+	}
+	return r
 }
 
 type router struct {
@@ -41,7 +49,7 @@ func (r *router) InitHandler() handler.Handler {
 
 func (r *router) SetInitHandler(ch authorization.Check, h handler.Handler) {
 	if ch != nil {
-		r.initHandler = handler.AuthorizationHandler("init", ch, h)
+		r.initHandler = authorization.Handler("init", ch, h)
 	} else {
 		r.initHandler = h
 	}
@@ -53,15 +61,8 @@ func (r *router) Handler(n Name) handler.Handler {
 
 func (r *router) SetHandler(n Name, ch authorization.Check, h handler.Handler) {
 	if ch != nil {
-		r.functionHandlers[n.String()] = handler.AuthorizationHandler(fmt.Sprintf("invoke function %q", n), ch, h)
+		r.functionHandlers[n.String()] = authorization.Handler(fmt.Sprintf("invoke function %q", n), ch, h)
 	} else {
 		r.functionHandlers[n.String()] = h
 	}
-}
-
-func (r *router) SetHandlerFunc(ch authorization.Check, h handler.Handler) {
-	s := runtime.FuncForPC(reflect.ValueOf(h).Pointer()).Name()
-	s = s[strings.LastIndex(s, ".")+1:]
-	s = strings.TrimSuffix(s, "Handler")
-	r.SetHandler(Name(s), ch, h)
 }

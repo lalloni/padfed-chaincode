@@ -53,15 +53,11 @@ var cc = meta.MustPrepare(meta.Composite{
 	IdentifierGetter: func(v interface{}) interface{} {
 		return v.(*Compo).Thing.ID
 	},
-	IdentifierKey: func(id interface{}) *key.Key {
-		return key.NewBase("compo", strconv.FormatUint(id.(uint64), 10))
+	IdentifierKey: func(id interface{}) (*key.Key, error) {
+		return key.NewBase("compo", strconv.FormatUint(id.(uint64), 10)), nil
 	},
-	KeyIdentifier: func(k *key.Key) interface{} {
-		if v, err := strconv.ParseUint(k.Base[0].Value, 10, 64); err != nil {
-			panic(err)
-		} else {
-			return v
-		}
+	KeyIdentifier: func(k *key.Key) (interface{}, error) {
+		return strconv.ParseUint(k.Base[0].Value, 10, 64)
 	},
 	Singletons: []meta.Singleton{
 		{Tag: "thing",

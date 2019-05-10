@@ -71,7 +71,7 @@ func (s *simplestore) DelValue(k *key.Key) error {
 func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{}) error {
 	we, err := com.ValueWitness(val)
 	if err != nil {
-		return errors.Wrapf(err, "getting composite %q value %v witness", com.Name(), val)
+		return errors.Wrapf(err, "getting composite %q value witness", com.Name())
 	}
 	if err := s.internalPutValue(we.Key, we.Value); err != nil {
 		return errors.Wrapf(err, "putting composite %q witness", com.Name())
@@ -252,7 +252,10 @@ func (s *simplestore) GetCompositeRange(com *meta.PreparedComposite, r *Range) (
 			if err != nil {
 				return nil, errors.WithStack(err)
 			}
-			com.SetIdentifier(val, id)
+			err = com.SetIdentifier(val, id)
+			if err != nil {
+				return nil, errors.Wrapf(err, "setting composite %q id %v from key %v", com.Name(), id, valkey)
+			}
 			res = append(res, val)
 		}
 		err = s.inject(com, statekey, state, valkey, val)
