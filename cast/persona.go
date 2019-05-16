@@ -12,16 +12,11 @@ var (
 	Persona = meta.MustPrepare(
 		meta.Composite{
 			Name:            "persona",
+			KeyBaseName:     "per",
 			IdentifierField: "ID",
-			Creator: func() interface{} {
-				return model.NewPersona()
-			},
-			IdentifierKey: func(id interface{}) (*key.Key, error) {
-				return key.NewBase("per", strconv.FormatUint(id.(uint64), 10)), nil
-			},
-			KeyIdentifier: func(k *key.Key) (interface{}, error) {
-				return strconv.ParseUint(k.Base[0].Value, 10, 64)
-			},
+			IdentifierKey:   Uint64Key("per"),
+			KeyIdentifier:   Uint64Identifier(0),
+			Creator:         func() interface{} { return &model.Persona{} },
 			Singletons: []meta.Singleton{
 				{Tag: "per", Field: "Persona"},
 			},
@@ -43,3 +38,15 @@ var (
 		},
 	)
 )
+
+func Uint64Key(name string) meta.KeyFunc {
+	return func(id interface{}) (*key.Key, error) {
+		return key.NewBase(name, strconv.FormatUint(id.(uint64), 10)), nil
+	}
+}
+
+func Uint64Identifier(seg int) meta.ValFunc {
+	return func(k *key.Key) (interface{}, error) {
+		return strconv.ParseUint(k.Base[seg].Value, 10, 64)
+	}
+}
