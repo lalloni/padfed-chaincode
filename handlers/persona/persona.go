@@ -94,13 +94,13 @@ func PutPersonaListHandler(ctx *context.Context) *response.Response {
 		return response.BadRequestWithFault(res)
 	}
 
-	perl := model.PersonaList{}
-	err = json.Unmarshal(bs, &perl)
+	pers := []model.Persona{}
+	err = json.Unmarshal(bs, &pers)
 	if err != nil {
 		return response.Error("unmarshalling persona list: %v", err)
 	}
 
-	for n, per := range perl.Personas {
+	for n, per := range pers {
 		per := per
 		res := save(ctx, &per)
 		if !res.OK() {
@@ -109,7 +109,7 @@ func PutPersonaListHandler(ctx *context.Context) *response.Response {
 		}
 	}
 
-	return response.OK(len(perl.Personas))
+	return response.OK(len(pers))
 
 }
 

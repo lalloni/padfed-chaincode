@@ -33,6 +33,14 @@ func GetPersonaRangeHandler(ctx *context.Context) *response.Response {
 	return response.OK(ps)
 }
 
+func GetPersonaAllHandler(ctx *context.Context) *response.Response {
+	ps, err := ctx.Store.GetCompositeAll(cast.Persona)
+	if err != nil {
+		return response.Error("getting persona all: %v", err)
+	}
+	return response.OK(ps)
+}
+
 func argUint64Range(ctx *context.Context, pos int) (*store.Range, uint64, uint64, error) {
 	a, err := ctx.ArgUint64(pos)
 	if err != nil {
