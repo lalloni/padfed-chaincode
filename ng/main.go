@@ -29,28 +29,26 @@ func main() {
 
 	OnlyAFIP := authorization.MSPID("AFIP")
 
-	r := router.New(&router.Config{
-		Init: router.R("", OnlyAFIP, nil),
-		Funs: router.Rs(
+	r := router.New(nil)
 
-			// Meta
-			router.R("version", nil, VersionHandler),
+	r.SetInitHandler(OnlyAFIP, nil)
 
-			// Business
-			router.R("GetPersona", nil, persona.GetPersonaHandler),
-			router.R("DelPersona", OnlyAFIP, persona.DelPersonaHandler),
-			router.R("PutPersona", OnlyAFIP, persona.PutPersonaHandler),
-			router.R("PutPersonaList", OnlyAFIP, persona.PutPersonaListHandler),
+	// Meta
+	r.SetHandler("version", nil, VersionHandler)
 
-			// Business not productive
-			router.R("GetPersonaRange", OnlyAFIP, persona.GetPersonaRangeHandler),
-			router.R("DelPersonaRange", OnlyAFIP, persona.DelPersonaRangeHandler),
+	// Business
+	r.SetHandler("GetPersona", nil, persona.GetPersonaHandler)
+	r.SetHandler("DelPersona", OnlyAFIP, persona.DelPersonaHandler)
+	r.SetHandler("PutPersona", OnlyAFIP, persona.PutPersonaHandler)
+	r.SetHandler("PutPersonaList", OnlyAFIP, persona.PutPersonaListHandler)
 
-			// Generic
-			router.R("GetState", OnlyAFIP, generic.GetStateHandler),
-			router.R("PutState", OnlyAFIP, generic.PutStateHandler),
-		),
-	})
+	// Business not productive
+	r.SetHandler("GetPersonaRange", OnlyAFIP, persona.GetPersonaRangeHandler)
+	r.SetHandler("DelPersonaRange", OnlyAFIP, persona.DelPersonaRangeHandler)
+
+	// Generic
+	r.SetHandler("GetState", OnlyAFIP, generic.GetStateHandler)
+	r.SetHandler("PutState", OnlyAFIP, generic.PutStateHandler)
 
 	cc := chaincode.New("padfed", r)
 
