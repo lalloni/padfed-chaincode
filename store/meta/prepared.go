@@ -70,7 +70,7 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 		}
 		if collection.Collector == nil {
 			if collection.Field != "" {
-				collection.Collector = MapCollector(FieldGetter(collection.Field))
+				collection.Collector = MapCollector(FieldGetter(collection.Field), FieldSetter(collection.Field))
 			} else {
 				return nil, errors.Errorf("composite collection with tag %q must have a collector function or specify a field name", collection.Tag)
 			}
@@ -261,6 +261,10 @@ func (cc *PreparedComposite) Collection(k *key.Key) *Collection {
 
 func (cc *PreparedComposite) Singleton(k *key.Key) *Singleton {
 	return cc.singletons[k.Tag.Name]
+}
+
+func (cc *PreparedComposite) KeyBaseName() string {
+	return cc.composite.KeyBaseName
 }
 
 type Entry struct {

@@ -30,6 +30,7 @@ type Store interface {
 	DelComposite(com *meta.PreparedComposite, id interface{}) error
 	DelCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error)
 	GetCompositeRange(com *meta.PreparedComposite, r *Range) ([]interface{}, error)
+	GetCompositeAll(com *meta.PreparedComposite) ([]interface{}, error)
 }
 
 func New(stub shim.ChaincodeStubInterface, opts ...Option) Store {
@@ -227,6 +228,24 @@ func (s *simplestore) GetCompositeRange(com *meta.PreparedComposite, r *Range) (
 		return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] for reading", com.Name(), first, last)
 	}
 	defer states.Close()
+	return s.internalReadCompositeIterator(com, states)
+}
+
+func (s *simplestore) GetCompositeAll(com *meta.PreparedComposite) ([]interface{}, error) {
+	kbn := com.KeyBaseName()
+	if kbn == "" {
+		return nil, errors.Errorf("getting composite %q all instances: keybasename is empty", com.Name())
+	}
+	first, last := key.NewBase(kbn, "").RangeUsing(s.sep)
+	states, err := s.stub.GetStateByRange(first, last)
+	if err != nil {
+		return nil, errors.Wrapf(err, "getting composite %q all instances for reading", com.Name())
+	}
+	defer states.Close()
+	return s.internalReadCompositeIterator(com, states)
+}
+
+func (s *simplestore) internalReadCompositeIterator(com *meta.PreparedComposite, states shim.StateQueryIteratorInterface) ([]interface{}, error) {
 	var (
 		valkey  *key.Key
 		val, id interface{}
@@ -235,7 +254,7 @@ func (s *simplestore) GetCompositeRange(com *meta.PreparedComposite, r *Range) (
 	for states.HasNext() {
 		state, err := states.Next()
 		if err != nil {
-			return nil, errors.Wrapf(err, "getting composite %q range [%q,%q] next key for reading", com.Name(), first, last)
+			return nil, errors.Wrapf(err, "getting composite %q iterator next key for reading", com.Name())
 		}
 		statekey, err := key.ParseUsing(state.GetKey(), s.sep)
 		if err != nil {

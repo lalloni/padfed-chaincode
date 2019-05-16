@@ -28,6 +28,7 @@ type Composite struct {
 	IdentifierSetter SetterFunc
 	IdentifierKey    KeyFunc
 	KeyIdentifier    ValFunc
+	KeyBaseName      string
 	Singletons       []Singleton
 	Collections      []Collection
 }

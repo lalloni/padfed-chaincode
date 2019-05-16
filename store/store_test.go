@@ -5,10 +5,14 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/op/go-logging"
 	"github.com/stretchr/testify/assert"
 
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
@@ -335,6 +339,50 @@ func TestGetCompositeRange(t *testing.T) {
 
 	for i := 0; i <= i1-i0; i++ {
 		a.EqualValues(k[i], cs[i])
+	}
+
+}
+
+func TestGetCompositeAll(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+	st := store.New(stub)
+
+	c1 := &Compo{
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Items: map[string]*Item{"a": {Name: "Pedro", Quantity: 10.0}},
+		Foos:  map[string]*Foo{},
+	}
+
+	for id := 100; id < 110; id++ {
+		c1.Thing.ID = uint64(id)
+		stub.MockTransactionStart("x-" + strconv.Itoa(id))
+		err := st.PutComposite(cc, c1)
+		stub.MockTransactionEnd("x-" + strconv.Itoa(id))
+		a.NoError(err)
+	}
+
+	pers := test.RandomPersonas(10, nil)
+	_, _, index, _ := test.SummaryPersonasID(pers)
+	for _, per := range pers {
+		per := per
+		txid := uuid.New().String()
+		stub.MockTransactionStart(txid)
+		err := st.PutComposite(cast.Persona, &per)
+		stub.MockTransactionEnd(txid)
+		a.NoError(err)
+	}
+
+	rpers, err := st.GetCompositeAll(cast.Persona)
+	a.NoError(err)
+	a.Len(rpers, 10)
+	for _, rper := range rpers {
+		p := rper.(*model.Persona)
+		a.EqualValues(index[p.ID], *p)
 	}
 
 }

@@ -28,9 +28,14 @@ func MapEnumerator(mapGetter GetterFunc) EnumeratorFunc {
 	}
 }
 
-func MapCollector(mapGetter GetterFunc) CollectorFunc {
+func MapCollector(mapGetter GetterFunc, mapSetter SetterFunc) CollectorFunc {
 	return func(v interface{}, item Item) {
-		reflect.ValueOf(mapGetter(v)).SetMapIndex(reflect.ValueOf(item.Identifier), reflect.ValueOf(item.Value))
+		mv := reflect.ValueOf(mapGetter(v))
+		if mv.IsNil() {
+			mv = reflect.MakeMap(mv.Type())
+			mapSetter(v, mv.Interface())
+		}
+		mv.SetMapIndex(reflect.ValueOf(item.Identifier), reflect.ValueOf(item.Value))
 	}
 }
 
