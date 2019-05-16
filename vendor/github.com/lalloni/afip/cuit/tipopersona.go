@@ -20,5 +20,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-// Package cuit exports functions for validating, parsing and formatting CUIT and CUIL numbers.
 package cuit
+
+import "strconv"
+
+const (
+	// PersonaFísica es el tipo de las personas físicas ("humanas")
+	PersonaFísica TipoPersona = iota
+
+	// PersonaJurídica es el tipo de las personas jurídicas
+	PersonaJurídica
+)
+
+// tipopersona es un tipo privado para impedir creación de TipoPersona fuera de este paquete
+type tipopersona uint8
+
+// TipoPersona es un enumerado de los tipos de persona
+type TipoPersona tipopersona
+
+func (t TipoPersona) String() string {
+	switch t {
+	case PersonaFísica:
+		return "Persona Física"
+	case PersonaJurídica:
+		return "Persona Jurídica"
+	default:
+		return "TipoPersona(" + strconv.Itoa(int(t)) + ")"
+	}
+}
+
+const minjurídica = 3e10
+
+// TipoPersonaCUIT retorna el TipoPersona que corresponde al cuit suministrado según su rango
+func TipoPersonaCUIT(cuit uint64) TipoPersona {
+	if cuit < minjurídica {
+		return PersonaFísica
+	}
+	return PersonaJurídica
+}

@@ -13,11 +13,14 @@ require (
 	github.com/hyperledger/fabric v1.4.0
 	github.com/hyperledger/fabric-amcl v0.0.0-20181230093703-5ccba6eab8d6 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
-	github.com/lalloni/afip v1.2.0
+	github.com/lalloni/afip v1.5.0
 	github.com/miekg/pkcs11 v0.0.0-20190225171305-6120d95c0e95 // indirect
+	github.com/mitchellh/mapstructure v1.1.2
+	github.com/moul/number-to-words v0.1.1-0.20190331115228-12cc6429d0fe
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/pierrec/lz4 v2.0.5+incompatible
 	github.com/pkg/errors v0.8.1
+	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/spf13/viper v1.3.2 // indirect
 	github.com/stretchr/testify v1.3.0
 	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0

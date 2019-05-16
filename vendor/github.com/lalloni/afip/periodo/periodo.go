@@ -1,6 +1,6 @@
 // MIT License
 //
-// Copyright (c) 2018 Pablo Ignacio Lalloni
+// Copyright (c) 2019 Pablo Ignacio Lalloni
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -103,11 +103,11 @@ func DecomposePeriodoMensual(p uint) (y, m uint) {
 //
 // Valida que:
 //
-// - El año (y) esté dentro del rango [MinYear, MaxYear] (que por defecto es [1000,9999])
-// - El mes (m) esté dentro del rango [0,12]
-// - Que el día (d):
-//   - Si m = 0: sea igual a 0
-//   - Si m > 0: esté dentro del rango [0, ds] siendo ds el correcto según el mes y año (considerando años bisiestos)
+//   - El año (y) esté dentro del rango [MinYear, MaxYear] (que por defecto es [1000,9999])
+//   - El mes (m) esté dentro del rango [0,12]
+//   - Que el día (d):
+//     - Si m = 0: sea igual a 0
+//     - Si m > 0: esté dentro del rango [0, ds] siendo ds el correcto según el mes y año (considerando años bisiestos)
 func CheckPeriodoDiario(y, m, d uint) bool {
 	if y < MinYear || y > MaxYear || m < minMonth || m > maxMonth {
 		return false
@@ -132,8 +132,8 @@ func CheckPeriodoDiarioCompound(v uint) bool {
 //
 // Valida que:
 //
-// - El año (y) esté dentro del rango [MinYear, MaxYear] (que por defecto es [1000,9999])
-// - El mes (m) esté dentro del rango [0,12]
+//   - El año (y) esté dentro del rango [MinYear, MaxYear] (que por defecto es [1000,9999])
+//   - El mes (m) esté dentro del rango [0,12]
 func CheckPeriodoMensual(y, m uint) bool {
 	return y >= MinYear && y <= MaxYear && m >= minMonth && m <= maxMonth
 }
@@ -148,7 +148,7 @@ func CheckPeriodoMensualCompound(v uint) bool {
 //
 // Valida que:
 //
-// - El año (y) esté dentro del rango [MinYear, MaxYear] (que por defecto es [1000,9999])
+//   - El año (y) esté dentro del rango [MinYear, MaxYear] (que por defecto es [1000,9999])
 func CheckPeriodoAnual(y uint) bool {
 	return y >= MinYear && y <= MaxYear
 }
