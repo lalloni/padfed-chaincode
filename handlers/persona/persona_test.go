@@ -42,9 +42,9 @@ func TestGetPutDelPersonaHandler(t *testing.T) {
 		t.Logf("response status: %v message: %s payload: %s", res.Status, res.Message, string(res.Payload))
 		a.NoError(err)
 		per1 := &model.Persona{}
-		err = mapstructure.Decode(payload.Result, per1)
+		err = mapstructure.Decode(payload.Content, per1)
 		a.NoError(err)
-		a.NotNil(payload.Result)
+		a.NotNil(payload.Content)
 		a.EqualValues(http.StatusOK, res.Status)
 		a.EqualValues(&per, per1)
 
@@ -80,18 +80,18 @@ func TestPutPersonaListHandler(t *testing.T) {
 
 	res, payload, err := test.MockInvoke(mock, "putpl", &pers)
 	a.NoError(err)
-	a.NotNil(payload.Result)
+	a.NotNil(payload.Content)
 	if !a.EqualValues(http.StatusOK, res.Status) {
 		t.Logf("status: %d message: %q fault: %s list: %s", res.Status, res.Message, test.MustMarshal(payload.Fault), test.MustMarshal(pers))
 	}
-	a.EqualValues(q, payload.Result)
+	a.EqualValues(q, payload.Content)
 
 	res, payload, err = test.MockInvoke(mock, "getpr", min, max)
 	a.NoError(err)
-	a.NotNil(payload.Result)
+	a.NotNil(payload.Content)
 	a.EqualValues(http.StatusOK, res.Status)
-	a.EqualValues(q, len(payload.Result.([]interface{})))
-	for _, per := range payload.Result.([]interface{}) {
+	a.EqualValues(q, len(payload.Content.([]interface{})))
+	for _, per := range payload.Content.([]interface{}) {
 		per1 := model.Persona{}
 		err = mapstructure.Decode(per, &per1)
 		a.NoError(err)
@@ -100,14 +100,14 @@ func TestPutPersonaListHandler(t *testing.T) {
 
 	res, payload, err = test.MockInvoke(mock, "getpr", min, max-1)
 	a.NoError(err)
-	a.NotNil(payload.Result)
+	a.NotNil(payload.Content)
 	a.EqualValues(http.StatusOK, res.Status)
-	a.EqualValues(q-1, len(payload.Result.([]interface{})))
+	a.EqualValues(q-1, len(payload.Content.([]interface{})))
 
 	res, payload, err = test.MockInvoke(mock, "getpr", min+1, max-1)
 	a.NoError(err)
-	a.NotNil(payload.Result)
+	a.NotNil(payload.Content)
 	a.EqualValues(http.StatusOK, res.Status)
-	a.EqualValues(q-2, len(payload.Result.([]interface{})))
+	a.EqualValues(q-2, len(payload.Content.([]interface{})))
 
 }

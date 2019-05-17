@@ -40,7 +40,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rids := []uint64{}
-	err = mapstructure.Decode(payload.Result, &rids)
+	err = mapstructure.Decode(payload.Content, &rids)
 	a.NoError(err)
 	a.EqualValues(len(pers)-2, len(rids))
 	a.ElementsMatch(ids[1:len(ids)-1], rids)
@@ -49,7 +49,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	per := model.Persona{}
-	err = mapstructure.Decode(payload.Result, &per)
+	err = mapstructure.Decode(payload.Content, &per)
 	a.NoError(err)
 	a.EqualValues(index[min], per)
 
@@ -57,7 +57,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	per = model.Persona{}
-	err = mapstructure.Decode(payload.Result, &per)
+	err = mapstructure.Decode(payload.Content, &per)
 	a.NoError(err)
 	a.EqualValues(index[max], per)
 
@@ -93,7 +93,7 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rpers := []model.Persona{}
-	err = mapstructure.Decode(payload.Result, &rpers)
+	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers)-2, len(rpers))
 	_, _, rindex, rids := test.SummaryPersonasID(rpers)
@@ -109,7 +109,7 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rpers = []model.Persona{}
-	err = mapstructure.Decode(payload.Result, &rpers)
+	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers), len(rpers))
 	rmin, rmax, _, rids := test.SummaryPersonasID(rpers)
@@ -144,7 +144,7 @@ func TestGetPersonaAllHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rpers := []model.Persona{}
-	err = mapstructure.Decode(payload.Result, &rpers)
+	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers), len(rpers))
 	rmin, rmax, _, rids := test.SummaryPersonasID(rpers)

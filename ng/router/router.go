@@ -5,7 +5,9 @@ import (
 	"strings"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
 
 type Name string
@@ -19,6 +21,7 @@ type Router interface {
 	SetInitHandler(authorization.Check, handler.Handler)
 	Handler(Name) handler.Handler
 	SetHandler(Name, authorization.Check, handler.Handler)
+	FunctionsHandler() handler.Handler
 }
 
 func New(c *Config) Router {
@@ -41,6 +44,16 @@ func New(c *Config) Router {
 type router struct {
 	initHandler      handler.Handler
 	functionHandlers map[string]handler.Handler
+}
+
+func (r *router) FunctionsHandler() handler.Handler {
+	return func(ctx *context.Context) *response.Response {
+		fs := []string{}
+		for f := range r.functionHandlers {
+			fs = append(fs, f)
+		}
+		return response.OK(fs)
+	}
 }
 
 func (r *router) InitHandler() handler.Handler {

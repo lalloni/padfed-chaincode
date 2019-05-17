@@ -11,10 +11,11 @@ type Response struct {
 }
 
 type Payload struct {
-	Client      *Client      `json:"client,omitempty"`
-	Transaction *Transaction `json:"transaction,omitempty"`
-	Result      interface{}  `json:"result,omitempty"`
-	Fault       interface{}  `json:"fault,omitempty"`
+	Client          *Client      `json:"client,omitempty"`
+	Transaction     *Transaction `json:"transaction,omitempty"`
+	Content         interface{}  `json:"content,omitempty"`
+	ContentEncoding string       `json:"content-encoding,omitempty"`
+	Fault           interface{}  `json:"fault,omitempty"`
 }
 
 type Client struct {

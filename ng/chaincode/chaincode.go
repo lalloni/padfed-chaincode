@@ -3,6 +3,7 @@ package chaincode
 import (
 	"bytes"
 	"encoding/json"
+	"unicode/utf8"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
@@ -79,8 +80,18 @@ func (c *cc) response(ctx *context.Context, logger *shim.ChaincodeLogger, r *res
 		r.Payload.Client = &response.Client{MSPID: mspid, Subject: subject, Issuer: issuer}
 	}
 	if r.Payload != nil {
+		if bs, ok := r.Payload.Content.([]byte); ok {
+			if utf8.Valid(bs) {
+				r.Payload.Content = string(bs)
+			} else {
+				// JSON encoding will encode []byte as a base64 string
+				r.Payload.ContentEncoding = "base64"
+			}
+		}
 		b := &bytes.Buffer{}
-		err := json.NewEncoder(b).Encode(r.Payload)
+		enc := json.NewEncoder(b)
+		enc.SetEscapeHTML(false) // do not html-escape "<", ">", "&"
+		err := enc.Encode(r.Payload)
 		if err != nil {
 			return c.response(ctx, logger, response.Error("encoding response payload: %v", err))
 		}

@@ -14,9 +14,11 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
 
+const name = "padfedcc"
+
 func main() {
 
-	log := shim.NewLogger("padfed")
+	log := shim.NewLogger(name)
 	l := os.Getenv("SHIM_LOGGING_LEVEL")
 	if l != "" {
 		level, err := shim.LogLevel(os.Getenv("SHIM_LOGGING_LEVEL"))
@@ -34,7 +36,8 @@ func main() {
 	r.SetInitHandler(OnlyAFIP, nil)
 
 	// Meta
-	r.SetHandler("version", nil, VersionHandler)
+	r.SetHandler("Version", nil, VersionHandler)
+	r.SetHandler("Functions", nil, r.FunctionsHandler())
 
 	// Business
 	r.SetHandler("GetPersona", nil, persona.GetPersonaHandler)
@@ -42,15 +45,16 @@ func main() {
 	r.SetHandler("PutPersona", OnlyAFIP, persona.PutPersonaHandler)
 	r.SetHandler("PutPersonaList", OnlyAFIP, persona.PutPersonaListHandler)
 
-	// Business not productive
+	// Business (debugging only)
 	r.SetHandler("GetPersonaRange", OnlyAFIP, persona.GetPersonaRangeHandler)
 	r.SetHandler("DelPersonaRange", OnlyAFIP, persona.DelPersonaRangeHandler)
+	r.SetHandler("GetPersonaAll", OnlyAFIP, persona.GetPersonaAllHandler)
 
 	// Generic
-	r.SetHandler("GetState", OnlyAFIP, generic.GetStateHandler)
-	r.SetHandler("PutState", OnlyAFIP, generic.PutStateHandler)
+	r.SetHandler("GetStates", OnlyAFIP, generic.GetStatesHandler)
+	r.SetHandler("PutStates", OnlyAFIP, generic.PutStatesHandler)
 
-	cc := chaincode.New("padfed", r)
+	cc := chaincode.New(name, r)
 
 	if err := shim.Start(cc); err != nil {
 		log.Errorf("starting chaincode: %v", err)

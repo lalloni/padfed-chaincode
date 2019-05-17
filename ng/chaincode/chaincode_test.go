@@ -29,7 +29,7 @@ func TestInitHandler(t *testing.T) {
 	a.NoError(err)
 	a.True(init)
 	a.EqualValues(http.StatusOK, res.Status)
-	a.EqualValues("blah!", p.Result)
+	a.EqualValues("blah!", p.Content)
 }
 
 func TestInvokeHandler(t *testing.T) {
@@ -59,7 +59,7 @@ func TestInvokeHandler(t *testing.T) {
 	a.EqualValues(http.StatusOK, res.Status)
 	err = json.Unmarshal(res.Payload, &p)
 	a.NoError(err)
-	a.EqualValues("blah!", p.Result)
+	a.EqualValues("blah!", p.Content)
 
 	call = false
 	res = mock.MockInvoke(uuid.New().String(), [][]byte{[]byte("f2")})

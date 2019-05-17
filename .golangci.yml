@@ -5,3 +5,4 @@ linters:
         - gochecknoinits
         - gochecknoglobals
         - lll
+        - misspell
