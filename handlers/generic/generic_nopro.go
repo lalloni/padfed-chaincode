@@ -37,14 +37,16 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 // (no JSON) o bien un JSON array de strings.
 //
 // En caso de recibir un raw string se retorna un array de bytes con el contenido
-// recuperado de la key.
+// recuperado de la key. En caso de no existir la key retorna un status code not
+// found.
 //
 // En caso de recibir un JSON array de strings retorna un JSON array de objetos que
-// contienen los atributos "key", "content" y opcionalmente "encoding".
+// contienen los atributos "key", "content" y opcionalmente "encoding". Si la key
+// no existe no incluye el atributo "content" en la respuesta.
 //
 // Si "content" no pudiera ser representado como una string codificada en UTF-8,
 // será codificado en Base64 y se asignará el valor "base64" al atributo
-// "encoding".
+// "encoding", caso contrario no se incluye.
 func GetStatesHandler(ctx *context.Context) *response.Response {
 	arg, err := ctx.ArgBytes(1)
 	if err != nil {
@@ -75,8 +77,26 @@ func GetStatesHandler(ctx *context.Context) *response.Response {
 	return response.OK(result)
 }
 
+// DelStatesHandler es un handler que puede recibir como argumento un raw string
+// (no JSON) o bien un JSON array de strings y las marca para eliminación.
 func DelStatesHandler(ctx *context.Context) *response.Response {
-	return response.NotImplemented()
+	arg, err := ctx.ArgBytes(1)
+	if err != nil {
+		return response.BadRequest("getting argument: %v", err)
+	}
+	keys := []string{}
+	err = json.Unmarshal(arg, &keys)
+	if err != nil {
+		// interpretar arg como una raw string
+		keys = []string{string(arg)}
+	}
+	for _, key := range keys {
+		err := ctx.Stub.DelState(key)
+		if err != nil {
+			return response.Error("deleting key: %v", err)
+		}
+	}
+	return response.OK(nil)
 }
 
 func GetStatesHistoryHandler(ctx *context.Context) *response.Response {

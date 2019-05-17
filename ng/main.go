@@ -53,6 +53,7 @@ func main() {
 	// Generic
 	r.SetHandler("GetStates", OnlyAFIP, generic.GetStatesHandler)
 	r.SetHandler("PutStates", OnlyAFIP, generic.PutStatesHandler)
+	r.SetHandler("DelStates", OnlyAFIP, generic.DelStatesHandler)
 
 	cc := chaincode.New(name, r)
 
