@@ -2,7 +2,7 @@ module gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git
 
 require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
-	github.com/Masterminds/semver v1.4.2 // indirect
+	github.com/Masterminds/semver v1.4.2
 	github.com/Masterminds/sprig v2.18.0+incompatible
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmatcuk/doublestar v1.1.1
@@ -18,12 +18,17 @@ require (
 	github.com/lalloni/go-archiver v0.0.0-20190403175244-e10b574c02e4
 	github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505
 	github.com/magefile/mage v1.8.1-0.20190314142316-8dce728c572d
+	github.com/mattn/go-colorable v0.1.1 // indirect
+	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
+	github.com/onsi/ginkgo v1.8.0 // indirect
+	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.0
 	github.com/stretchr/testify v1.3.0
+	github.com/x-cray/logrus-prefixed-formatter v0.5.2
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c // indirect
-	golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223 // indirect
+	gopkg.in/src-d/go-git.v4 v4.11.0
 	gopkg.in/yaml.v2 v2.2.2
 )

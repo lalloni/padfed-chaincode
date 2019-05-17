@@ -1,6 +1,8 @@
 package validator
 
 import (
+	"strings"
+
 	"github.com/lalloni/gojsonschema"
 	"github.com/pkg/errors"
 
@@ -18,10 +20,12 @@ func ValidateJSON(schema *gojsonschema.Schema, json []byte) (*ValidationResult, 
 	}
 	vr := ValidationResult{}
 	for _, e := range res.Errors() {
-		vr.Errors = append(vr.Errors, ValidationError{
-			Field:       e.Field(),
-			Description: e.Description(),
-		})
+		if !strings.HasSuffix(e.Description(), "(x)") {
+			vr.Errors = append(vr.Errors, ValidationError{
+				Field:       e.Field(),
+				Description: e.Description(),
+			})
+		}
 	}
 	return &vr, nil
 }

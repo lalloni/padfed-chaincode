@@ -6,19 +6,23 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/Masterminds/semver"
+
 	"github.com/lalloni/go-archiver"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	prefix "github.com/x-cray/logrus-prefixed-formatter"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/build"
 )
 
 func init() {
-	log.SetFormatter(&log.TextFormatter{
+	log.SetFormatter(&prefix.TextFormatter{
 		FullTimestamp: true,
 	})
+	log.Info("magefile initialized")
 }
 
 // Limpia directorio de proyecto de artefactos temporales generados
@@ -51,6 +55,11 @@ func Test() error {
 // Ejecuta análisis estático de código fuente
 func Check() error {
 	return build.RunLinter("run")
+}
+
+// Ejecuta análisis estático de código fuente y tests
+func Verify() {
+	mg.Deps(Check, Test)
 }
 
 // Ejecuta compilación de librería de validación
@@ -127,16 +136,49 @@ func Convey() error {
 
 // Ejecuta el proceso de release
 func Release() error {
-	version := os.Getenv("version")
+	log.Info("checking parameters")
+	version := os.Getenv("ver")
 	if version == "" {
 		return errors.New(`Version is required for release.
-You must set the version to be released using the environment variable 'version'.
+You must set the version to be released using the environment variable 'ver'.
 On unix-like shells you could do something like:
-    env version=1.2.3 mage release`)
+    env ver=1.2.3 mage release`)
 	}
-	log.Infof("Releasing version: %s", version)
-	mg.SerialDeps(Genall, Check, Compile, Test)
-	return errors.New("still not implemented")
+	if _, err := semver.NewVersion(version); err != nil {
+		return errors.Wrapf(err, "checking syntax of version %q", version)
+	}
+
+	tag := "v" + version
+	log.Infof("releasing version %s with tag %s", version, tag)
+
+	if err := build.GitTagNotExist(".", tag); err != nil {
+		return err
+	}
+
+	log.Info("updating generated resources")
+	mg.SerialDeps(Genall)
+
+	log.Info("checking working tree is not dirty")
+	if err := build.GitWorktreeNotDirty("."); err != nil {
+		return err
+	}
+
+	log.Info("running linter, compiler & tests")
+	mg.Deps(Compile, Check, Test)
+
+	log.Infof("creating tag %s", tag)
+	if err := build.RunGit("tag", "-s", "-m", "Release "+version, tag); err != nil {
+		return err
+	}
+
+	log.Infof("pushing tag %s to 'origin' remote", tag)
+	if err := build.RunGit("push", "origin", tag); err != nil {
+		return err
+	}
+
+	log.Info("release successfuly completed")
+
+	return nil
 }
 
 // Construye un binario estático de este build
