@@ -3,6 +3,7 @@ module gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible // indirect
 	github.com/Shopify/sarama v1.21.0 // indirect
+	github.com/bitly/go-simplejson v0.5.0
 	github.com/fsouza/go-dockerclient v1.3.6 // indirect
 	github.com/gobuffalo/packr/v2 v2.1.0 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect

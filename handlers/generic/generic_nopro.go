@@ -99,8 +99,56 @@ func DelStatesHandler(ctx *context.Context) *response.Response {
 	return response.OK(nil)
 }
 
+// GetStatesHistoryHandler es un handler que puede recibir como argumento un raw
+// string (no JSON) o bien un JSON array de strings.
+//
+// En caso de recibir un raw string se retorna un array de JSON objects que
+// describen cada modificación de la key recibida.
+//
+// En caso de recibir un JSON array de strings retorna un JSON array de objetos que
+// contienen los atributos "key" y "history" donde este último es un array de
+// JSON objects que describen cada modificación de la key.
+//
+// En ambos casos los objetos que describen las modificaciones contienen los
+// atributos "txid", "time", "delete", "content" Y "encoding".
+//
+// "txid" es una string con el identificador de la transacción que incluyó la
+// modificación.
+//
+// "time" es una string con fecha y hora local correspondiente a la transacción.
+//
+// "delete" es un boolean que indica si en la transacción se eliminó la key.
+//
+// "content" es una string con el contenido que adoptó el state en la modificación.
+//
+// "encoding" es una string que tendrá el valor "base64" si "content" no se
+// puede representar como una string UTF-8 y se codificó en Base64. En caso
+// contrario estará ausente.
 func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
-	return response.NotImplemented()
+	arg, err := ctx.ArgBytes(1)
+	if err != nil {
+		return response.BadRequest("getting argument: %v", err)
+	}
+	keys := []string{}
+	err = json.Unmarshal(arg, &keys)
+	if err != nil {
+		// interpretar arg como una raw string
+		key := string(arg)
+		mods, res := khget(ctx, key)
+		if res != nil {
+			return res
+		}
+		return response.OK(mods)
+	}
+	result := []*statehistory{}
+	for _, key := range keys {
+		mods, res := khget(ctx, key)
+		if res != nil {
+			return res
+		}
+		result = append(result, &statehistory{Key: key, History: mods})
+	}
+	return response.OK(result)
 }
 
 func GetStatesRangeHandler(ctx *context.Context) *response.Response {
@@ -134,7 +182,24 @@ func kvput(ctx *context.Context, key string, value []byte) *response.Response {
 func kvget(ctx *context.Context, key string) ([]byte, *response.Response) {
 	bs, err := ctx.Stub.GetState(key)
 	if err != nil {
-		return nil, response.Error("getting key state: %v", err)
+		return nil, response.Error("getting key: %v", err)
 	}
 	return bs, nil
+}
+
+func khget(ctx *context.Context, key string) ([]*statemod, *response.Response) {
+	hi, err := ctx.Stub.GetHistoryForKey(key)
+	if err != nil {
+		return nil, response.Error("getting key history: %v", err)
+	}
+	defer hi.Close()
+	mods := []*statemod{}
+	for hi.HasNext() {
+		km, err := hi.Next()
+		if err != nil {
+			return nil, response.Error("getting key modification: %v", err)
+		}
+		mods = append(mods, newstatemod(km))
+	}
+	return mods, nil
 }
