@@ -249,6 +249,10 @@ gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha1 
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha1/go.mod h1:UuesUieGCHav/HPRoKrVskgEIBowBfz3HxZyNoGfXlg=
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha2 h1:RRspvXriLLLQURGIPbuldinLJddvUM4iHgH0+OXDI3A=
 gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha2/go.mod h1:UuesUieGCHav/HPRoKrVskgEIBowBfz3HxZyNoGfXlg=
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha3 h1:LJcNAL85tC4q/H4JBxfsawozfyY38+uOH5vZyVN2i6M=
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha3/go.mod h1:UuesUieGCHav/HPRoKrVskgEIBowBfz3HxZyNoGfXlg=
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha4 h1:gazyqAyjjA+Vqo+gcbPZSgemcA2JYF0Afq59SRwyAYc=
+gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0-alpha4/go.mod h1:UuesUieGCHav/HPRoKrVskgEIBowBfz3HxZyNoGfXlg=
 go.uber.org/atomic v1.3.2 h1:2Oa65PReHzfn29GpvgsYwloV9AVFHPDk8tYxt2c2tr4=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/multierr v1.1.0 h1:HoEmRHQPVSqub6w2z2d2EOVs2fjyFRGyofhKuyDq0QI=

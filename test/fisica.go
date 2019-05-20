@@ -464,6 +464,22 @@ var fist = template.Must(template.New("personafisica").Parse(`
             "ds":"2008-02-19"
         }
     },
+    "domisroles":{
+        "906.3.1.1":{
+           "org":906,
+           "tipo":3,
+           "orden":1,
+           "rol":1,
+           "ds":"2019-05-15"
+        },
+        "906.3.1.4":{
+           "org":906,
+           "tipo":3,
+           "orden":1,
+           "rol":4,
+           "ds":"2019-05-15"
+        }
+    },
     "telefonos":{
         "1":{
             "orden":1,

@@ -24,6 +24,7 @@ var Persona = meta.MustPrepare(meta.Composite{
 		{Tag: "act", Field: "Actividades"},
 		{Tag: "imp", Field: "Impuestos"},
 		{Tag: "dom", Field: "Domicilios"},
+		{Tag: "dor", Field: "DomiciliosRoles"},
 		{Tag: "tel", Field: "Telefonos"},
 		{Tag: "jur", Field: "Jurisdicciones"},
 		{Tag: "ema", Field: "Emails"},
