@@ -21,7 +21,7 @@ func ArgToPersona(bs []byte, persona *Persona) *fabric.Response {
 }
 
 // TODO refactorizar en funcionalidades de al menos 2 capas: unmarshalling de personas y respuesta de servicio
-func ArgToPersonas(bs []byte, personas *PersonaList) *fabric.Response {
+func ArgToPersonas(bs []byte, personas *[]Persona) *fabric.Response {
 	if res := validatePersonaListJSON(bs); res != nil {
 		return res
 	}

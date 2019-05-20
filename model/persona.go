@@ -90,6 +90,7 @@ type PersonaActividad struct {
 type PersonaDomicilio struct {
 	Nombre      string     `json:"nombre,omitempty"`
 	Orden       uint       `json:"orden,omitempty"`
+	Org         *Organismo `json:"org,omitempty"`
 	Tipo        uint       `json:"tipo,omitempty"`
 	Estado      uint       `json:"estado,omitempty"`
 	Calle       string     `json:"calle,omitempty"`

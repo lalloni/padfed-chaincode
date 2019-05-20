@@ -98,6 +98,7 @@ func samplePersonaDomicilio() *model.PersonaDomicilio {
 	return &model.PersonaDomicilio{
 		Nombre:      "pedro",
 		Orden:       10,
+		Org:         model.OrganismoCódigo(1),
 		Tipo:        1,
 		Estado:      0,
 		Calle:       "desconocida",
