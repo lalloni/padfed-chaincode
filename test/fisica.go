@@ -56,12 +56,14 @@ var fist = template.Must(template.New("personafisica").Parse(`
     "actividades":{
         "883-120091":{
             "actividad":"883-120091",
+            "org": 900,
             "orden":1,
             "desde":201311,
             "ds":"2014-10-02"
         },
         "883-120099":{
             "actividad":"883-120099",
+            "org": 900,
             "orden":2,
             "desde":201311,
             "ds":"2014-10-02"

@@ -80,11 +80,13 @@ type Documento struct {
 }
 
 type PersonaActividad struct {
-	Actividad string `json:"actividad,omitempty"`
-	Orden     uint   `json:"orden,omitempty"`
-	Desde     uint   `json:"desde,omitempty"`
-	Hasta     uint   `json:"hasta,omitempty"`
-	DS        *Fecha `json:"ds,omitempty"`
+	Org       *Organismo `json:"org,omitempty"`
+	Actividad string     `json:"actividad,omitempty"`
+	Orden     uint       `json:"orden,omitempty"`
+	Articulo  uint       `json:"articulo,omitempty"`
+	Desde     uint       `json:"desde,omitempty"`
+	Hasta     uint       `json:"hasta,omitempty"`
+	DS        *Fecha     `json:"ds,omitempty"`
 }
 
 type PersonaDomicilio struct {
