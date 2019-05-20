@@ -58,3 +58,7 @@ func CheckInstallGoConvey() error {
 		return sh.Run("go", "get", "github.com/smartystreets/goconvey")
 	})
 }
+
+func RunGit(args ...string) error {
+	return sh.RunV("git", args...)
+}

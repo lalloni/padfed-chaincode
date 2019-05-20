@@ -37,7 +37,7 @@ func TestPutPersona(t *testing.T) {
 
 func TestPutPersonas(t *testing.T) {
 	stub := test.SetInitTests(t)
-	bs := []byte(`{"personas":[` + string(test.GetPersonaJSON(20255438795)) + "," + string(test.GetPersonaJSON(30679638943)) + "]}")
+	bs := []byte(`[` + string(test.GetPersonaJSON(20255438795)) + "," + string(test.GetPersonaJSON(30679638943)) + "]")
 	res := stub.MockInvoke("1", [][]byte{[]byte("putPersonas"), bs})
 	if res.Status != shim.OK {
 		fmt.Println("putPersonas", res.Message)

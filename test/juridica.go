@@ -56,15 +56,17 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
     "actividades": {
         "1": {
             "actividad": "883-941100",
+            "org": 900,
             "orden": 1,
-            "hasta": 201504,
-            "desde": 201311
+            "hasta": "2015-04-30",
+            "desde": "2013-11-01"
         }
     },
     "domicilios": {
         "1": {
             "tipo": 1,
             "orden": 1,
+            "org": 900,
             "estado": 11,
             "nomenclador": "401084021",
             "cp": "1084",
@@ -76,6 +78,7 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
         "2": {
             "tipo": 2,
             "orden": 1,
+            "org": 900,
             "estado": 11,
             "nomenclador": "401084021",
             "cp": "1084",

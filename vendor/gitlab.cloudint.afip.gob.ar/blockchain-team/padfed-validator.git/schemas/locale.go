@@ -11,19 +11,19 @@ func (l locale) InvalidType() string {
 }
 
 func (l locale) NumberAnyOf() string {
-	return `Debe cumplir al menos un sub esquema{{ if .subtitles }} {{ range $i, $e := .subtitles }}{{ if $i }}, {{ end}}"{{ . }}"{{ end }}{{ else }} (oneOf){{ end }}`
+	return `Debe cumplir al menos un sub esquema{{ if .subtitles }} {{ range $i, $e := .subtitles }}{{ if $i }}, {{ end}}"{{ . }}"{{ end }}{{ else }} (x){{ end }}`
 }
 
 func (l locale) NumberOneOf() string {
-	return `Debe cumplir un y sólo un sub esquema{{ if .subtitles }} {{ range $i, $e := .subtitles }}{{ if $i }}, {{ end}}"{{ . }}"{{ end }}{{ else }} (oneOf){{ end }}`
+	return `Debe cumplir un y sólo un sub esquema{{ if .subtitles }} {{ range $i, $e := .subtitles }}{{ if $i }}, {{ end}}"{{ . }}"{{ end }}{{ else }} (x){{ end }}`
 }
 
 func (l locale) NumberAllOf() string {
-	return `Debe cumplir todos los sub esquemas{{ if .subtitles }} {{ range $i, $e := .subtitles }}{{ if $i }}, {{ end}}"{{ . }}"{{ end }}{{ else }} (oneOf){{ end }}`
+	return `Debe cumplir todos los sub esquemas{{ if .subtitles }} {{ range $i, $e := .subtitles }}{{ if $i }}, {{ end}}"{{ . }}"{{ end }}{{ else }} (x){{ end }}`
 }
 
 func (l locale) NumberNot() string {
-	return `No debe cumplir el sub esquema {{ if .subtitle }}"{{ .subtitle }}"{{ else }}(not){{ end }}`
+	return `No debe cumplir el sub esquema {{ if .subtitle }}"{{ .subtitle }}"{{ else }}(x){{ end }}`
 }
 
 func (l locale) MissingDependency() string {
@@ -95,11 +95,11 @@ func (l locale) StringLTE() string {
 }
 
 func (l locale) DoesNotMatchPattern() string {
-	return `No coincide con el patrón '{{.pattern}}'`
+	return `No coincide con el patrón "{{.pattern}}"`
 }
 
 func (l locale) DoesNotMatchFormat() string {
-	return `No coincide con el formato '{{.format}}'`
+	return `No coincide con el formato {{.format}}`
 }
 
 func (l locale) MultipleOf() string {
@@ -200,9 +200,9 @@ func (l locale) ParseError() string {
 }
 
 func (l locale) ConditionThen() string {
-	return `Debe cumplir "{{ if .thentitle }}{{ .thentitle }}{{ else }}then{{ end }}" dado que "{{ if .iftitle }}{{ .iftitle }}{{ else }}if{{ end }}" se cumplió`
+	return `Debe cumplir "{{ if .thentitle }}{{ .thentitle }}{{ else }}then{{ end }}" dado que se cumple "{{ if .iftitle }}{{ .iftitle }}{{ else }}if (x){{ end }}"`
 }
 
 func (l locale) ConditionElse() string {
-	return `Debe cumplir "{{ if .elsetitle }}{{ .elsetitle }}{{ else }}else{{ end }}" dado que "{{ if .iftitle }}{{ .iftitle }}{{ else }}if{{ end }}" no se cumplió`
+	return `Debe cumplir "{{ if .elsetitle }}{{ .elsetitle }}{{ else }}else{{ end }}" dado que no se cumple "{{ if .iftitle }}{{ .iftitle }}{{ else }}if (x){{ end }}"`
 }

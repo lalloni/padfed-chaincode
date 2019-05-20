@@ -39,7 +39,9 @@ var fist = template.Must(template.New("personafisica").Parse(`
             "periodo":198903,
             "estado":"AC",
             "dia":1,
-            "motivo":44,
+            "motivo": {
+                "id": 44
+            },
             "inscripcion":"1989-03-01",
             "ds":"2003-06-07"
         },
@@ -48,7 +50,9 @@ var fist = template.Must(template.New("personafisica").Parse(`
             "periodo":198010,
             "estado":"AC",
             "dia":1,
-            "motivo":44,
+            "motivo": {
+                "id": 44
+            },
             "inscripcion":"1980-10-01",
             "ds":"2003-06-07"
         }
@@ -56,14 +60,16 @@ var fist = template.Must(template.New("personafisica").Parse(`
     "actividades":{
         "883-120091":{
             "actividad":"883-120091",
-            "orden":1,
-            "desde":201311,
+            "org": 900,
+            "orden": 1,
+            "desde": "2013-11-01",
             "ds":"2014-10-02"
         },
         "883-120099":{
             "actividad":"883-120099",
+            "org": 900,
             "orden":2,
-            "desde":201311,
+            "desde": "2013-11-01",
             "ds":"2014-10-02"
         }
     },
@@ -71,6 +77,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "1.1":{
             "tipo":1,
             "orden":1,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -83,6 +90,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "2.1":{
             "tipo":2,
             "orden":1,
+            "org": 900,
             "estado":2,
             "provincia":1,
             "localidad":"MERLO",
@@ -94,6 +102,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.1":{
             "tipo":3,
             "orden":1,
+            "org": 900,
             "estado":6,
             "provincia":7,
             "localidad":"MAIPU",
@@ -110,6 +119,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.2":{
             "tipo":3,
             "orden":2,
+            "org": 900,
             "estado":6,
             "provincia":16,
             "localidad":"RESISTENCIA",
@@ -125,6 +135,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.3":{
             "tipo":3,
             "orden":3,
+            "org": 900,
             "estado":6,
             "provincia":14,
             "localidad":"BANDA DEL RIO SALI",
@@ -140,6 +151,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.4":{
             "tipo":3,
             "orden":4,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -156,6 +168,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.5":{
             "tipo":3,
             "orden":5,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -172,6 +185,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.6":{
             "tipo":3,
             "orden":6,
+            "org": 900,
             "estado":6,
             "provincia":4,
             "localidad":"GOYA",
@@ -188,6 +202,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.7":{
             "tipo":3,
             "orden":7,
+            "org": 900,
             "estado":6,
             "provincia":19,
             "localidad":"LEANDRO N. ALEM",
@@ -204,6 +219,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.8":{
             "tipo":3,
             "orden":8,
+            "org": 900,
             "estado":6,
             "provincia":9,
             "localidad":"ROSARIO DE LERMA",
@@ -220,6 +236,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.9":{
             "tipo":3,
             "orden":9,
+            "org": 900,
             "estado":6,
             "provincia":6,
             "localidad":"PERICO",
@@ -235,6 +252,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.10":{
             "tipo":3,
             "orden":10,
+            "org": 900,
             "estado":6,
             "provincia":14,
             "localidad":"LA COCHA",
@@ -250,6 +268,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.11":{
             "tipo":3,
             "orden":11,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -266,6 +285,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.12":{
             "tipo":3,
             "orden":12,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -282,6 +302,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.13":{
             "tipo":3,
             "orden":13,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -298,6 +319,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.14":{
             "tipo":3,
             "orden":14,
+            "org": 900,
             "estado":2,
             "provincia":1,
             "localidad":"MERLO",
@@ -312,6 +334,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.15":{
             "tipo":3,
             "orden":15,
+            "org": 900,
             "estado":2,
             "provincia":4,
             "localidad":"GOYA",
@@ -326,6 +349,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.16":{
             "tipo":3,
             "orden":16,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MAR DEL PLATA SUR",
@@ -342,6 +366,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.17":{
             "tipo":3,
             "orden":17,
+            "org": 900,
             "estado":6,
             "provincia":3,
             "localidad":"CIUDAD DE CORDOBA SUR (NO DISTRIBUIDOS)",
@@ -358,6 +383,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.18":{
             "tipo":3,
             "orden":18,
+            "org": 900,
             "estado":6,
             "provincia":22,
             "localidad":"CIPOLLETTI",
@@ -374,6 +400,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.19":{
             "tipo":3,
             "orden":19,
+            "org": 900,
             "estado":6,
             "provincia":0,
             "cp":"1003",
@@ -389,6 +416,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.20":{
             "tipo":3,
             "orden":20,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"MERLO",
@@ -405,6 +433,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.21":{
             "tipo":3,
             "orden":21,
+            "org": 900,
             "estado":6,
             "provincia":1,
             "localidad":"JOSE CLEMENTE PAZ",
@@ -420,6 +449,7 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "3.22":{
             "tipo":3,
             "orden":22,
+            "org": 900,
             "estado":6,
             "provincia":12,
             "localidad":"ROSARIO SUD",
@@ -432,6 +462,22 @@ var fist = template.Must(template.New("personafisica").Parse(`
                 "dato":"XXXXXXXX XXXXXXXXX"
             },
             "ds":"2008-02-19"
+        }
+    },
+    "domisroles":{
+        "906.3.1.1":{
+           "org":906,
+           "tipo":3,
+           "orden":1,
+           "rol":1,
+           "ds":"2019-05-15"
+        },
+        "906.3.1.4":{
+           "org":906,
+           "tipo":3,
+           "orden":1,
+           "rol":4,
+           "ds":"2019-05-15"
         }
     },
     "telefonos":{

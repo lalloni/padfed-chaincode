@@ -25,13 +25,13 @@ func PutPersonas(stub shim.ChaincodeStubInterface, args []string) *fabric.Respon
 	if len(args) != 1 {
 		return fabric.ClientErrorResponse("Número incorrecto de argumentos. Se espera 1 (PERSONAS)")
 	}
-	newPersonas := &model.PersonaList{}
-	if err := model.ArgToPersonas([]byte(args[0]), newPersonas); !err.IsOK() {
+	newPersonas := []model.Persona{}
+	if err := model.ArgToPersonas([]byte(args[0]), &newPersonas); !err.IsOK() {
 		return err
 	}
 
 	rows := 0
-	for _, p := range newPersonas.Personas {
+	for _, p := range newPersonas {
 		p := p
 		log.Printf("Grabando persona %d", p.ID)
 		res := SavePersona(stub, &p)

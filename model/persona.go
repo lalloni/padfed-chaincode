@@ -26,18 +26,19 @@ type Persona struct {
 	Persona *PersonaBasica `json:"persona,omitempty"`
 
 	// colecciones
-	Actividades    map[string]*PersonaActividad    `json:"actividades,omitempty"`
-	Impuestos      map[string]*PersonaImpuesto     `json:"impuestos,omitempty"`
-	Domicilios     map[string]*PersonaDomicilio    `json:"domicilios,omitempty"`
-	Telefonos      map[string]*PersonaTelefono     `json:"telefonos,omitempty"`
-	Jurisdicciones map[string]*PersonaJurisdiccion `json:"jurisdicciones,omitempty"`
-	Emails         map[string]*PersonaEmail        `json:"emails,omitempty"`
-	Archivos       map[string]*PersonaArchivo      `json:"archivos,omitempty"`
-	Categorias     map[string]*PersonaCategoria    `json:"categorias,omitempty"`
-	Etiquetas      map[string]*PersonaEtiqueta     `json:"etiquetas,omitempty"`
-	Contribuciones map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
-	Relaciones     map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
-	CMSedes        map[string]*PersonaCMSede       `json:"cmsedes,omitempty"`
+	Actividades     map[string]*PersonaActividad    `json:"actividades,omitempty"`
+	Impuestos       map[string]*PersonaImpuesto     `json:"impuestos,omitempty"`
+	Domicilios      map[string]*PersonaDomicilio    `json:"domicilios,omitempty"`
+	DomiciliosRoles map[string]*PersonaDomicilioRol `json:"domisroles,omitempty"`
+	Telefonos       map[string]*PersonaTelefono     `json:"telefonos,omitempty"`
+	Jurisdicciones  map[string]*PersonaJurisdiccion `json:"jurisdicciones,omitempty"`
+	Emails          map[string]*PersonaEmail        `json:"emails,omitempty"`
+	Archivos        map[string]*PersonaArchivo      `json:"archivos,omitempty"`
+	Categorias      map[string]*PersonaCategoria    `json:"categorias,omitempty"`
+	Etiquetas       map[string]*PersonaEtiqueta     `json:"etiquetas,omitempty"`
+	Contribuciones  map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
+	Relaciones      map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
+	CMSedes         map[string]*PersonaCMSede       `json:"cmsedes,omitempty"`
 }
 
 type PersonaBasica struct {
@@ -80,16 +81,19 @@ type Documento struct {
 }
 
 type PersonaActividad struct {
+	Org       uint   `json:"org,omitempty"`
 	Actividad string `json:"actividad,omitempty"`
 	Orden     uint   `json:"orden,omitempty"`
-	Desde     uint   `json:"desde,omitempty"`
-	Hasta     uint   `json:"hasta,omitempty"`
+	Articulo  uint   `json:"articulo,omitempty"`
+	Desde     *Fecha `json:"desde,omitempty"`
+	Hasta     *Fecha `json:"hasta,omitempty"`
 	DS        *Fecha `json:"ds,omitempty"`
 }
 
 type PersonaDomicilio struct {
 	Nombre      string     `json:"nombre,omitempty"`
 	Orden       uint       `json:"orden,omitempty"`
+	Org         uint       `json:"org,omitempty"`
 	Tipo        uint       `json:"tipo,omitempty"`
 	Estado      uint       `json:"estado,omitempty"`
 	Calle       string     `json:"calle,omitempty"`
@@ -106,6 +110,14 @@ type PersonaDomicilio struct {
 	Adicional   *Adicional `json:"adicional,omitempty"`
 	Baja        *Fecha     `json:"baja,omitempty"`
 	DS          *Fecha     `json:"ds,omitempty"`
+}
+
+type PersonaDomicilioRol struct {
+	Orden uint   `json:"orden,omitempty"`
+	Org   uint   `json:"org,omitempty"`
+	Tipo  uint   `json:"tipo,omitempty"`
+	Rol   uint   `json:"estado,omitempty"`
+	DS    *Fecha `json:"ds,omitempty"`
 }
 
 type Adicional struct {
@@ -133,13 +145,13 @@ type PersonaJurisdiccion struct {
 }
 
 type PersonaImpuesto struct {
-	Impuesto    uint   `json:"impuesto,omitempty"`
-	Inscripcion *Fecha `json:"inscripcion,omitempty"`
-	Estado      string `json:"estado,omitempty"`
-	Dia         uint   `json:"dia,omitempty"`
-	Periodo     uint   `json:"periodo,omitempty"`
-	Motivo      uint   `json:"motivo,omitempty"`
-	DS          *Fecha `json:"ds,omitempty"`
+	Impuesto    uint    `json:"impuesto,omitempty"`
+	Inscripcion *Fecha  `json:"inscripcion,omitempty"`
+	Estado      string  `json:"estado,omitempty"`
+	Dia         uint    `json:"dia,omitempty"`
+	Periodo     uint    `json:"periodo,omitempty"`
+	Motivo      *Motivo `json:"motivo,omitempty"`
+	DS          *Fecha  `json:"ds,omitempty"`
 }
 
 type PersonaEmail struct {
