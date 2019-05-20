@@ -2,6 +2,9 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
+	"testing"
 
 	"github.com/google/uuid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -16,13 +19,15 @@ func NewMock(name string, r router.Router) *shim.MockStub {
 	return shim.NewMockStub(name, chaincode.New(name, r))
 }
 
-func MockInvoke(stub *shim.MockStub, function string, args ...interface{}) (*peer.Response, *response.Payload, error) {
+func MockInvoke(t *testing.T, stub *shim.MockStub, function string, args ...interface{}) (*peer.Response, *response.Payload, error) {
 	aa := append([]interface{}{function}, args...)
 	bs, err := arguments(aa)
 	if err != nil {
 		return nil, nil, err
 	}
-	return result(stub.MockInvoke(uuid.New().String(), bs))
+	res, payload, err := result(stub.MockInvoke(uuid.New().String(), bs))
+	t.Logf("\n→ call function %q arguments: %s\n← response status: %v message: %q payload: %v error: %v", function, format(bs[1:]), res.Status, res.Message, strings.Trim(string(res.Payload), "\n"), err)
+	return res, payload, err
 }
 
 func MockInit(stub *shim.MockStub, args ...interface{}) (*peer.Response, *response.Payload, error) {
@@ -59,4 +64,12 @@ func arguments(args []interface{}) ([][]byte, error) {
 		}
 	}
 	return bs, nil
+}
+
+func format(bss [][]byte) string {
+	ss := []string{}
+	for _, bs := range bss {
+		ss = append(ss, fmt.Sprintf("%#v", string(bs)))
+	}
+	return strings.Join(ss, ",")
 }

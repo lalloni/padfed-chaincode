@@ -77,7 +77,9 @@ func (c *cc) response(ctx *context.Context, logger *shim.ChaincodeLogger, r *res
 			subject = cert.Subject.String()
 			issuer = cert.Issuer.String()
 		}
-		r.Payload.Client = &response.Client{MSPID: mspid, Subject: subject, Issuer: issuer}
+		if mspid != "" || subject != "" || issuer != "" {
+			r.Payload.Client = &response.Client{MSPID: mspid, Subject: subject, Issuer: issuer}
+		}
 	}
 	if r.Payload != nil {
 		if bs, ok := r.Payload.Content.([]byte); ok {
