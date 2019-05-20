@@ -73,6 +73,7 @@ func samplePersonaDomicilioBytes() []byte {
 	return []byte(`{
   "nombre": "pedro",
   "orden": 10,
+  "org": 1,
   "tipo": 1,
   "calle": "desconocida",
   "numero": 20,
@@ -98,7 +99,7 @@ func samplePersonaDomicilio() *model.PersonaDomicilio {
 	return &model.PersonaDomicilio{
 		Nombre:      "pedro",
 		Orden:       10,
-		Org:         model.OrganismoCódigo(1),
+		Org:         1,
 		Tipo:        1,
 		Estado:      0,
 		Calle:       "desconocida",

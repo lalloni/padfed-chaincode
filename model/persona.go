@@ -80,19 +80,19 @@ type Documento struct {
 }
 
 type PersonaActividad struct {
-	Org       *Organismo `json:"org,omitempty"`
-	Actividad string     `json:"actividad,omitempty"`
-	Orden     uint       `json:"orden,omitempty"`
-	Articulo  uint       `json:"articulo,omitempty"`
-	Desde     uint       `json:"desde,omitempty"`
-	Hasta     uint       `json:"hasta,omitempty"`
-	DS        *Fecha     `json:"ds,omitempty"`
+	Org       uint   `json:"org,omitempty"`
+	Actividad string `json:"actividad,omitempty"`
+	Orden     uint   `json:"orden,omitempty"`
+	Articulo  uint   `json:"articulo,omitempty"`
+	Desde     *Fecha `json:"desde,omitempty"`
+	Hasta     *Fecha `json:"hasta,omitempty"`
+	DS        *Fecha `json:"ds,omitempty"`
 }
 
 type PersonaDomicilio struct {
 	Nombre      string     `json:"nombre,omitempty"`
 	Orden       uint       `json:"orden,omitempty"`
-	Org         *Organismo `json:"org,omitempty"`
+	Org         uint       `json:"org,omitempty"`
 	Tipo        uint       `json:"tipo,omitempty"`
 	Estado      uint       `json:"estado,omitempty"`
 	Calle       string     `json:"calle,omitempty"`
@@ -136,13 +136,13 @@ type PersonaJurisdiccion struct {
 }
 
 type PersonaImpuesto struct {
-	Impuesto    uint   `json:"impuesto,omitempty"`
-	Inscripcion *Fecha `json:"inscripcion,omitempty"`
-	Estado      string `json:"estado,omitempty"`
-	Dia         uint   `json:"dia,omitempty"`
-	Periodo     uint   `json:"periodo,omitempty"`
-	Motivo      uint   `json:"motivo,omitempty"`
-	DS          *Fecha `json:"ds,omitempty"`
+	Impuesto    uint    `json:"impuesto,omitempty"`
+	Inscripcion *Fecha  `json:"inscripcion,omitempty"`
+	Estado      string  `json:"estado,omitempty"`
+	Dia         uint    `json:"dia,omitempty"`
+	Periodo     uint    `json:"periodo,omitempty"`
+	Motivo      *Motivo `json:"motivo,omitempty"`
+	DS          *Fecha  `json:"ds,omitempty"`
 }
 
 type PersonaEmail struct {

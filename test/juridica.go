@@ -58,8 +58,8 @@ var jurt = template.Must(template.New("personajuridica").Parse(`
             "actividad": "883-941100",
             "org": 900,
             "orden": 1,
-            "hasta": 201504,
-            "desde": 201311
+            "hasta": "2015-04-30",
+            "desde": "2013-11-01"
         }
     },
     "domicilios": {

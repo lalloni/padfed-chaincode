@@ -39,7 +39,9 @@ var fist = template.Must(template.New("personafisica").Parse(`
             "periodo":198903,
             "estado":"AC",
             "dia":1,
-            "motivo":44,
+            "motivo": {
+                "id": 44
+            },
             "inscripcion":"1989-03-01",
             "ds":"2003-06-07"
         },
@@ -48,7 +50,9 @@ var fist = template.Must(template.New("personafisica").Parse(`
             "periodo":198010,
             "estado":"AC",
             "dia":1,
-            "motivo":44,
+            "motivo": {
+                "id": 44
+            },
             "inscripcion":"1980-10-01",
             "ds":"2003-06-07"
         }
@@ -57,15 +61,15 @@ var fist = template.Must(template.New("personafisica").Parse(`
         "883-120091":{
             "actividad":"883-120091",
             "org": 900,
-            "orden":1,
-            "desde":201311,
+            "orden": 1,
+            "desde": "2013-11-01",
             "ds":"2014-10-02"
         },
         "883-120099":{
             "actividad":"883-120099",
             "org": 900,
             "orden":2,
-            "desde":201311,
+            "desde": "2013-11-01",
             "ds":"2014-10-02"
         }
     },
