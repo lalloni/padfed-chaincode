@@ -114,10 +114,10 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 			member := com.Collection(statekey)
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
-			if err != nil {
-				return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
+			if err == nil {
+				//return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
+				member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
 			}
-			member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
 		case com.Singleton(statekey) != nil:
 			member := com.Singleton(statekey)
 			itemval := member.Creator()
