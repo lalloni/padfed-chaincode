@@ -62,9 +62,17 @@ func (s *simplestore) DelValue(k *key.Key) error {
 
 func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{}) error {
 	we := com.ValueWitness(val)
-	if err := s.internalPutValue(we.Key, we.Value); err != nil {
-		return errors.Wrapf(err, "putting composite %q witness", com.Name)
+
+	exist, err := s.internalHasValue(we.Key)
+	if err != nil {
+		return errors.Wrapf(err, "checking composite %q witness existence", com.Name)
 	}
+	if !exist {
+		if err := s.internalPutValue(we.Key, we.Value); err != nil {
+			return errors.Wrapf(err, "putting composite %q witness", com.Name)
+		}
+	}
+
 	for _, entry := range com.SingletonsEntries(val) {
 		if !reflect.ValueOf(entry.Value).IsNil() {
 			if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
