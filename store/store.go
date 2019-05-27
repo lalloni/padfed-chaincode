@@ -30,6 +30,7 @@ func New(stub shim.ChaincodeStubInterface, opts ...Option) Store {
 		marshaling: DefaultMarshaling,
 		filtering:  DefaultFiltering,
 		sep:        key.DefaultSep,
+		log:        shim.NewLogger("store"),
 	}
 	for _, opt := range opts {
 		opt(s)
@@ -39,9 +40,12 @@ func New(stub shim.ChaincodeStubInterface, opts ...Option) Store {
 
 type simplestore struct {
 	stub       shim.ChaincodeStubInterface
+	log        *shim.ChaincodeLogger
 	marshaling marshaling.Marshaling
 	filtering  filtering.Filtering
 	sep        *key.Sep
+	lenient    bool
+	seterrs    bool
 }
 
 func (s *simplestore) PutValue(k *key.Key, value interface{}) error {
@@ -107,6 +111,7 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 	if err != nil {
 		return nil, errors.Wrapf(err, "getting composite %q with key %q states iterator", com.Name, valkey)
 	}
+	merrs := []meta.MemberError{}
 	defer states.Close()
 	for states.HasNext() {
 		state, err := states.Next()
@@ -122,19 +127,45 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 			member := com.Collection(statekey)
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
-			if err == nil {
-				//return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
-				member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
+			if err != nil {
+				if !s.lenient {
+					return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
+				}
+				s.log.Errorf("parsing composite %q with key %q collection item %q value in tx %s: %v", com.Name, valkey, statekey, s.stub.GetTxID(), err)
+				if s.seterrs {
+					seterr(itemval, err)
+				}
+				merrs = append(merrs, meta.MemberError{
+					Kind:  "collection",
+					Tag:   member.Tag,
+					ID:    statekey.Tag.Value,
+					Error: err.Error(),
+				})
 			}
+			member.Collector(val, meta.Item{Identifier: statekey.Tag.Value, Value: itemval})
 		case com.Singleton(statekey) != nil:
 			member := com.Singleton(statekey)
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
 			if err != nil {
-				return nil, errors.Wrapf(err, "parsing composite %q with key %q singleton item %q value", com.Name, valkey, statekey)
+				if !s.lenient {
+					return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
+				}
+				s.log.Errorf("parsing composite %q with key %q collection item %q value in tx %s: %v", com.Name, valkey, statekey, s.stub.GetTxID(), err)
+				if s.seterrs {
+					seterr(itemval, err)
+				}
+				merrs = append(merrs, meta.MemberError{
+					Kind:  "singleton",
+					Tag:   member.Tag,
+					Error: err.Error(),
+				})
 			}
 			member.Setter(val, itemval)
 		}
+	}
+	if s.seterrs && len(merrs) > 0 {
+		seterrs(val, merrs)
 	}
 	return val, nil
 }
@@ -217,4 +248,30 @@ func (s *simplestore) internalParseValue(bs []byte, value interface{}) error {
 		return errors.Wrap(err, "unmarshaling value")
 	}
 	return nil
+}
+
+func seterr(val interface{}, e error) {
+	v := reflect.ValueOf(val)
+	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+		v = v.Elem()
+	}
+	if v.Kind() == reflect.Struct {
+		f := v.FieldByName("Error")
+		if f.Kind() == reflect.String {
+			f.SetString(e.Error())
+		}
+	}
+}
+
+func seterrs(val interface{}, merrs []meta.MemberError) {
+	v := reflect.ValueOf(val)
+	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+		v = v.Elem()
+	}
+	if v.Kind() == reflect.Struct {
+		f := v.FieldByName("Errors")
+		if f.Kind() == reflect.Interface {
+			f.Set(reflect.ValueOf(merrs))
+		}
+	}
 }

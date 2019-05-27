@@ -25,3 +25,15 @@ func SetFiltering(f filtering.Filtering) Option {
 		s.filtering = f
 	}
 }
+
+func SetLenient(b bool) Option {
+	return func(s *simplestore) {
+		s.lenient = b
+	}
+}
+
+func SetErrors(b bool) Option {
+	return func(s *simplestore) {
+		s.seterrs = b
+	}
+}

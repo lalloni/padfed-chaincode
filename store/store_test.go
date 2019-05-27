@@ -23,6 +23,7 @@ type Thing struct {
 	Name     string   `json:"name,omitempty"`
 	Age      uint8    `json:"age,omitempty"`
 	Thingies []Thingy `json:"thingies,omitempty"`
+	Error    string   `json:"error,omitempty"`
 }
 
 type Other struct {
@@ -31,8 +32,9 @@ type Other struct {
 }
 
 type Foo struct {
-	Some string `json:"some,omitempty"`
-	Num  int    `json:"num,omitempty"`
+	Some  string `json:"some,omitempty"`
+	Num   int    `json:"num,omitempty"`
+	Error string `json:"error,omitempty"`
 }
 
 type Item struct {
@@ -41,10 +43,11 @@ type Item struct {
 }
 
 type Compo struct {
-	Thing *Thing           `json:"thing,omitempty"`
-	Other *Other           `json:"other,omitempty"`
-	Items map[string]*Item `json:"items,omitempty"`
-	Foos  map[string]*Foo  `json:"foos,omitempty"`
+	Thing  *Thing           `json:"thing,omitempty"`
+	Other  *Other           `json:"other,omitempty"`
+	Items  map[string]*Item `json:"items,omitempty"`
+	Foos   map[string]*Foo  `json:"foos,omitempty"`
+	Errors interface{}      `json:"errors,omitempty"`
 }
 
 var cc = meta.MustPrepare(meta.Composite{
@@ -100,13 +103,13 @@ func TestPutAndGetValue(t *testing.T) {
 
 	stub.MockTransactionStart("x")
 
-	t1 := &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}}
+	t1 := &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}, ""}
 	err := st.PutValue(key, t1)
 	a.NoError(err)
 
 	stub.MockTransactionEnd("x")
 
-	t2 := &Thing{1234, "AA", 100, []Thingy{}}
+	t2 := &Thing{1234, "AA", 100, []Thingy{}, ""}
 	_, err = st.GetValue(key, t2)
 	a.NoError(err)
 	a.Equal(t1, t2)
@@ -122,7 +125,7 @@ func TestPutAndGet(t *testing.T) {
 	st := store.New(stub)
 
 	c1 := &Compo{
-		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}, ""},
 		Other: &Other{"TT", 2123},
 		Items: map[string]*Item{
 			"a": {Name: "Pedro", Quantity: 10.0},
@@ -156,7 +159,7 @@ func TestPutAndDelete(t *testing.T) {
 	st := store.New(stub)
 
 	c1 := &Compo{
-		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Thing: &Thing{1234, "PP", 16, []Thingy{{"A"}, {"B"}}, ""},
 		Items: map[string]*Item{
 			"a": {
 				Name:     "Pedro",
@@ -200,7 +203,7 @@ func TestPutPartial(t *testing.T) {
 	id := uint64(1234)
 
 	c1 := &Compo{
-		Thing: &Thing{id, "PP", 16, []Thingy{{"A"}, {"B"}}},
+		Thing: &Thing{id, "PP", 16, []Thingy{{"A"}, {"B"}}, ""},
 		Other: &Other{"TT", 2123},
 		Items: map[string]*Item{
 			"a": {Name: "Pedro", Quantity: 10.0},
@@ -236,6 +239,44 @@ func TestPutPartial(t *testing.T) {
 	t.Logf("get: %s", mustMarshal(c2))
 	a.Equal(c1, c2)
 	a.NotNil(c2.(*Compo).Other)
+
+}
+
+func TestMemberError(t *testing.T) {
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+	logging.SetLevel(logging.DEBUG, "mock")
+
+	stub := shim.NewMockStub("test", nil)
+
+	id := uint64(1)
+
+	stub.MockTransactionStart("x")
+
+	err := stub.PutState("compo:1#thing", []byte(`{"id":1,"age":"un montón","name":"pedro"}`))
+	a.NoError(err)
+	err = stub.PutState("compo:1#foos:1", []byte(`{"some":"bla bla","num":"cuarenta y dos"}`))
+	a.NoError(err)
+	err = stub.PutState("compo:1#item:a", []byte(`{"name":"algo","quantity":1.23}`))
+	a.NoError(err)
+	err = stub.PutState("compo:1#wit", []byte(`1`))
+	a.NoError(err)
+	stub.MockTransactionEnd("x")
+
+	st1 := store.New(stub)
+	_, err = st1.GetComposite(cc, id)
+	a.Error(err)
+
+	st2 := store.New(stub, store.SetLenient(true), store.SetErrors(true))
+	c2, err := st2.GetComposite(cc, id)
+	a.NoError(err)
+	t.Logf("got: %s", mustMarshal(c2))
+	c := c2.(*Compo)
+	a.NotEmpty(c.Thing.Error)
+	a.NotEmpty(c.Foos)
+	a.NotEmpty(c.Foos["1"].Error)
+	a.NotEmpty(c.Errors)
 
 }
 
