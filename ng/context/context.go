@@ -110,3 +110,15 @@ func (ctx *Context) ArgUint64(n int) (uint64, error) {
 	}
 	return strconv.ParseUint(string(bs), 10, 64)
 }
+
+func (ctx *Context) ArgKV(pos int) (string, []byte, error) {
+	key, err := ctx.ArgString(pos)
+	if err != nil {
+		return "", nil, err
+	}
+	val, err := ctx.ArgBytes(pos + 1)
+	if err != nil {
+		return "", nil, err
+	}
+	return key, val, nil
+}

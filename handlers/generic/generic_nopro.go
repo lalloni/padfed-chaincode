@@ -20,11 +20,11 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 	}
 	count := 0
 	for i := 1; i < len(args); i += 2 {
-		key, value, res := kvarg(ctx, i)
-		if res != nil {
-			return res
+		key, value, err := ctx.ArgKV(i)
+		if err != nil {
+			return response.BadRequest("getting key-value argument at %d: %v", i, err)
 		}
-		res = kvput(ctx, key, value)
+		res := kvput(ctx, key, value)
 		if res != nil {
 			return res
 		}
@@ -34,47 +34,75 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 }
 
 // GetStatesHandler es un handler que puede recibir como argumento un raw string
-// (no JSON) o bien un JSON array de strings.
+// (no JSON) o bien un JSON array.
 //
 // En caso de recibir un raw string se retorna un array de bytes con el contenido
 // recuperado de la key. En caso de no existir la key retorna un status code not
 // found.
 //
-// En caso de recibir un JSON array de strings retorna un JSON array de objetos que
-// contienen los atributos "key", "content" y opcionalmente "encoding". Si la key
-// no existe no incluye el atributo "content" en la respuesta.
+// En caso de recibir un JSON array, sus elementos pueden ser strings que
+// representan keys cuyos values se desea obtener, o bien arrays que contienen:
 //
-// Si "content" no pudiera ser representado como una string codificada en UTF-8,
-// será codificado en Base64 y se asignará el valor "base64" al atributo
-// "encoding", caso contrario no se incluye.
+//     - Un par [string1,string2] que será interpretado como un rango desde-hasta
+//       de keys.
+//       Si la primer string es "" (string vacía) significa leer desde el principio.
+//       Si la segunda string es "" (string vacía) significa leer hasta el final.
+//     - Una única string [string] que será interpretada como el prefijo del rango
+//       de keys.
+//       Si la string es "" (string vacía) equivale a la lectura completa.
+//
+// En caso de recibir un JSON array, retorna un JSON array de objetos que
+// contienen los atributos "key", "content" y opcionalmente "encoding".
+//
+// Si en el arreglo se especificó una key puntual inexistente entonces el objeto
+// correspondiente no incluirá el atributo "content" en la respuesta.
+//
+// Si los bytes de "content" no pudieran ser representados como una string
+// codificada en UTF-8, será codificado en Base64 y se asignará el valor "base64"
+// al atributo "encoding", caso contrario no se incluye.
 func GetStatesHandler(ctx *context.Context) *response.Response {
 	arg, err := ctx.ArgBytes(1)
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	keys := []string{}
-	err = json.Unmarshal(arg, &keys)
+	q, err := queryParse(arg)
 	if err != nil {
-		// interpretar arg como una raw string
-		key := string(arg)
-		bs, res := kvget(ctx, key)
+		return response.BadRequest("invalid query argument: %v", err)
+	}
+	switch q := q.(type) {
+	case queryPoint:
+		s, res := kvget(ctx, q.key)
 		if res != nil {
 			return res
 		}
-		if bs == nil {
+		if s.Nil {
 			return response.NotFound()
 		}
-		return response.OK(bs)
-	}
-	result := []*state{}
-	for _, key := range keys {
-		bs, res := kvget(ctx, key)
-		if res != nil {
-			return res
+		return response.OK(s.Content)
+	case []interface{}:
+		result := []interface{}{}
+		for _, q := range q {
+			switch q := q.(type) {
+			case queryPoint:
+				s, res := kvget(ctx, q.key)
+				if res != nil {
+					return res
+				}
+				result = append(result, s)
+			case queryRange:
+				ss, res := krget(ctx, q.begin, q.until)
+				if res != nil {
+					return res
+				}
+				result = append(result, ss)
+			default:
+				return response.Error("internal error")
+			}
 		}
-		result = append(result, newstate(key, bs))
+		return response.OK(result)
+	default:
+		return response.Error("internal error")
 	}
-	return response.OK(result)
 }
 
 // DelStatesHandler es un handler que puede recibir como argumento un raw string
@@ -149,57 +177,4 @@ func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
 		result = append(result, &statehistory{Key: key, History: mods})
 	}
 	return response.OK(result)
-}
-
-func GetStatesRangeHandler(ctx *context.Context) *response.Response {
-	return response.NotImplemented()
-}
-
-func DelStatesRangeHandler(ctx *context.Context) *response.Response {
-	return response.NotImplemented()
-}
-
-func kvarg(ctx *context.Context, pos int) (string, []byte, *response.Response) {
-	key, err := ctx.ArgString(pos)
-	if err != nil {
-		return "", nil, response.BadRequest("getting key argument: %v", err)
-	}
-	value, err := ctx.ArgBytes(pos + 1)
-	if err != nil {
-		return "", nil, response.BadRequest("getting value argument: %v", err)
-	}
-	return key, value, nil
-}
-
-func kvput(ctx *context.Context, key string, value []byte) *response.Response {
-	err := ctx.Stub.PutState(key, value)
-	if err != nil {
-		return response.Error("putting state: %v", err)
-	}
-	return nil
-}
-
-func kvget(ctx *context.Context, key string) ([]byte, *response.Response) {
-	bs, err := ctx.Stub.GetState(key)
-	if err != nil {
-		return nil, response.Error("getting key: %v", err)
-	}
-	return bs, nil
-}
-
-func khget(ctx *context.Context, key string) ([]*statemod, *response.Response) {
-	hi, err := ctx.Stub.GetHistoryForKey(key)
-	if err != nil {
-		return nil, response.Error("getting key history: %v", err)
-	}
-	defer hi.Close()
-	mods := []*statemod{}
-	for hi.HasNext() {
-		km, err := hi.Next()
-		if err != nil {
-			return nil, response.Error("getting key modification: %v", err)
-		}
-		mods = append(mods, newstatemod(km))
-	}
-	return mods, nil
 }

@@ -11,19 +11,20 @@ type state struct {
 	Key      string      `json:"key,omitempty"`
 	Content  interface{} `json:"content,omitempty"`
 	Encoding string      `json:"encoding,omitempty"`
+	Nil      bool        `json:"-"`
 }
 
-func newstate(key string, content interface{}) *state {
-	s := &state{
-		Key:     key,
-		Content: content,
+func newstate(key string, content []byte) *state {
+	s := &state{Key: key}
+	if content == nil {
+		s.Nil = true
+		return s
 	}
-	if bs, ok := content.([]byte); ok {
-		if utf8.Valid(bs) {
-			s.Content = string(bs)
-		} else {
-			s.Encoding = "base64"
-		}
+	if utf8.Valid(content) {
+		s.Content = string(content)
+	} else {
+		s.Encoding = "base64"
+		s.Content = content
 	}
 	return s
 }
