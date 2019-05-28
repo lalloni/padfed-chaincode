@@ -23,6 +23,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a // indirect
 	github.com/spf13/viper v1.3.2 // indirect
+	github.com/spyzhov/ajson v0.0.1
 	github.com/stretchr/testify v1.3.0
 	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0
 	go.uber.org/atomic v1.3.2 // indirect
