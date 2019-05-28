@@ -229,4 +229,7 @@ tasks:
 
   verify:
     desc: 'Verifica que el proyecto esté en buen estado compilando el chaincode, ejecutando los tests y el análisis estático de código'
-    deps: [ compile, test, check ]
+    deps: [ check ]
+    cmds:
+      - task: compile
+      - task: test
