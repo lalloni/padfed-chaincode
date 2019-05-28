@@ -3,7 +3,6 @@ module gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git
 require (
 	github.com/Knetic/govaluate v3.0.0+incompatible // indirect
 	github.com/Shopify/sarama v1.21.0 // indirect
-	github.com/bitly/go-simplejson v0.5.0
 	github.com/fsouza/go-dockerclient v1.3.6 // indirect
 	github.com/gobuffalo/packr/v2 v2.1.0 // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
@@ -25,6 +24,9 @@ require (
 	github.com/spf13/viper v1.3.2 // indirect
 	github.com/spyzhov/ajson v0.0.1
 	github.com/stretchr/testify v1.3.0
+	github.com/tidwall/gjson v1.2.1
+	github.com/tidwall/match v1.0.1 // indirect
+	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
 	gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git v0.11.0
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect

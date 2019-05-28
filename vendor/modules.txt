@@ -243,6 +243,12 @@ github.com/src-d/gcfg/token
 github.com/src-d/gcfg/types
 # github.com/stretchr/testify v1.3.0
 github.com/stretchr/testify/assert
+# github.com/tidwall/gjson v1.2.1
+github.com/tidwall/gjson
+# github.com/tidwall/match v1.0.1
+github.com/tidwall/match
+# github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65
+github.com/tidwall/pretty
 # github.com/ulikunitz/xz v0.5.6
 github.com/ulikunitz/xz
 github.com/ulikunitz/xz/internal/xlog
