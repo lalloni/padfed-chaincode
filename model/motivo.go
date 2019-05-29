@@ -1,7 +1,7 @@
 package model
 
 type Motivo struct {
-	ID    uint   `json:"id"`
-	Desde *Fecha `json:"desde"`
-	Hasta *Fecha `json:"hasta"`
+	ID    uint   `json:"id,omitempty"`
+	Desde *Fecha `json:"desde,omitempty"`
+	Hasta *Fecha `json:"hasta,omitempty"`
 }
