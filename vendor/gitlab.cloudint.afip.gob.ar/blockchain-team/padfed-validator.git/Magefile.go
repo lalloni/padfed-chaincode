@@ -3,11 +3,12 @@
 package main
 
 import (
+	"bufio"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Masterminds/semver"
-
 	"github.com/lalloni/go-archiver"
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
@@ -54,6 +55,7 @@ func Test() error {
 
 // Ejecuta análisis estático de código fuente
 func Check() error {
+	mg.Deps(Genall)
 	return build.RunLinter("run")
 }
 
@@ -151,29 +153,46 @@ On unix-like shells you could do something like:
 	tag := "v" + version
 	log.Infof("releasing version %s with tag %s", version, tag)
 
-	if err := build.GitTagNotExist(".", tag); err != nil {
-		return err
+	log.Info("checking release tag does not exist")
+	out, err := sh.Output("git", "tag")
+	if err != nil {
+		return errors.Wrap(err, "getting git tags")
+	}
+	s := bufio.NewScanner(strings.NewReader(out))
+	for s.Scan() {
+		if tag == s.Text() {
+			return errors.Errorf("release tag %q already exists", tag)
+		}
 	}
 
 	log.Info("updating generated resources")
 	mg.SerialDeps(Genall)
 
 	log.Info("checking working tree is not dirty")
-	if err := build.GitWorktreeNotDirty("."); err != nil {
-		return err
+	out, err = sh.Output("git", "status", "-s")
+	if err != nil {
+		return errors.Wrap(err, "getting git status")
+	}
+	if len(out) > 0 {
+		return errors.Errorf("working directory is dirty")
 	}
 
 	log.Info("running linter, compiler & tests")
 	mg.Deps(Compile, Check, Test)
 
 	log.Infof("creating tag %s", tag)
-	if err := build.RunGit("tag", "-s", "-m", "Release "+version, tag); err != nil {
-		return err
+	if err := sh.RunV("git", "tag", "-s", "-m", "Release "+version, tag); err != nil {
+		return errors.Wrap(err, "creating git tag")
 	}
 
 	log.Infof("pushing tag %s to 'origin' remote", tag)
-	if err := build.RunGit("push", "origin", tag); err != nil {
-		return err
+	if err := sh.RunV("git", "push", "origin", tag); err != nil {
+		return errors.Wrap(err, "pushing tag to origin remote")
+	}
+
+	log.Infof("pushing current branch to 'origin' remote", tag)
+	if err := sh.RunV("git", "push", "origin"); err != nil {
+		return errors.Wrap(err, "pushing current branch to origin remote")
 	}
 
 	log.Info("release successfuly completed")
