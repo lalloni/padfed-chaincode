@@ -65,7 +65,8 @@ func (c *cc) response(ctx *context.Context, logger *shim.ChaincodeLogger, r *res
 		return r.Payload.Content.(peer.Response)
 	}
 	var payload []byte
-	if r.Status >= shim.ERRORTHRESHOLD {
+	_, debug := ctx.Option("debug")
+	if debug {
 		if r.Payload == nil {
 			r.Payload = &response.Payload{}
 		}
