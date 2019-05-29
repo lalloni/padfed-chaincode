@@ -266,9 +266,9 @@ func TestMemberError(t *testing.T) {
 
 	st1 := store.New(stub)
 	_, err = st1.GetComposite(cc, id)
-	a.Error(err)
+	a.NoError(err)
 
-	st2 := store.New(stub, store.SetLenient(true), store.SetErrors(true))
+	st2 := store.New(stub, store.SetErrors(true))
 	c2, err := st2.GetComposite(cc, id)
 	a.NoError(err)
 	t.Logf("got: %s", mustMarshal(c2))

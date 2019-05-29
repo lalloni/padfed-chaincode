@@ -44,7 +44,6 @@ type simplestore struct {
 	marshaling marshaling.Marshaling
 	filtering  filtering.Filtering
 	sep        *key.Sep
-	lenient    bool
 	seterrs    bool
 }
 
@@ -128,9 +127,6 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
 			if err != nil {
-				if !s.lenient {
-					return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
-				}
 				s.log.Errorf("parsing composite %q with key %q collection item %q value in tx %s: %v", com.Name, valkey, statekey, s.stub.GetTxID(), err)
 				if s.seterrs {
 					seterr(itemval, err)
@@ -148,9 +144,6 @@ func (s *simplestore) GetComposite(com *meta.PreparedComposite, id interface{}) 
 			itemval := member.Creator()
 			err := s.internalParseValue(state.GetValue(), itemval)
 			if err != nil {
-				if !s.lenient {
-					return nil, errors.Wrapf(err, "parsing composite %q with key %q collection item %q value", com.Name, valkey, statekey)
-				}
 				s.log.Errorf("parsing composite %q with key %q collection item %q value in tx %s: %v", com.Name, valkey, statekey, s.stub.GetTxID(), err)
 				if s.seterrs {
 					seterr(itemval, err)

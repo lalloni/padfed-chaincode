@@ -18,13 +18,8 @@ func Options(stub shim.ChaincodeStubInterface) ([]Option, error) {
 		return nil, errors.Wrap(err, "parsing function options")
 	}
 	oo := []Option{}
-	for k := range q {
-		switch k {
-		case "lenientread":
-			oo = append(oo, SetLenient(true))
-		case "embederrors":
-			oo = append(oo, SetErrors(true))
-		}
+	if _, ok := q["embederrors"]; ok {
+		oo = append(oo, SetErrors(true))
 	}
 	return oo, nil
 }
