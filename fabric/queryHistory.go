@@ -36,7 +36,7 @@ func QueryHistory(stub shim.ChaincodeStubInterface, args []string) *Response {
 		}
 		buffer.WriteString("{\"Key\":")
 		buffer.WriteString("\"")
-		buffer.WriteString(pKey + "." + strconv.Itoa(count))
+		buffer.WriteString(pKey + " [v" + strconv.Itoa(count) + "]")
 		buffer.WriteString("\"")
 
 		buffer.WriteString(", \"Record\":")
