@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-	"strings"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
@@ -13,7 +12,7 @@ import (
 type Name string
 
 func (n *Name) String() string {
-	return strings.ToLower(string(*n)) // para que los nombres de las funciones sean case-insensitive
+	return string(*n)
 }
 
 type Router interface {

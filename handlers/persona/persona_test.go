@@ -10,6 +10,7 @@ import (
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	mtest "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/test"
 	r "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
@@ -25,7 +26,7 @@ func TestGetPutDelPersonaHandler(t *testing.T) {
 		r.R("delp", nil, persona.DelPersonaHandler),
 	)))
 
-	for _, per := range test.RandomPersonas(10, nil) {
+	for _, per := range mtest.RandomPersonas(10, nil) {
 		per := per
 
 		res, _, err := test.MockInvoke(t, mock, "getp", per.ID)
@@ -69,9 +70,9 @@ func TestPutPersonaListHandler(t *testing.T) {
 
 	q := 50 // cantidad de personas a incluir en lista
 
-	pers := test.RandomPersonas(q, nil)
+	pers := mtest.RandomPersonas(q, nil)
 
-	min, max, pi, _ := test.SummaryPersonasID(pers)
+	min, max, pi, _ := mtest.SummaryPersonasID(pers)
 
 	mock := test.NewMock("test", r.New(r.C(nil,
 		r.R("putpl", nil, persona.PutPersonaListHandler),

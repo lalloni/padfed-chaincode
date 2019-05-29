@@ -10,6 +10,7 @@ import (
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	mtest "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/test"
 	r "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
@@ -25,7 +26,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 		r.R("getp", nil, persona.GetPersonaHandler),
 	)))
 
-	pers := test.RandomPersonas(100, nil)
+	pers := mtest.RandomPersonas(100, nil)
 
 	for _, per := range pers {
 		per := per
@@ -34,7 +35,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 		a.EqualValues(http.StatusOK, res.Status)
 	}
 
-	min, max, index, ids := test.SummaryPersonasID(pers)
+	min, max, index, ids := mtest.SummaryPersonasID(pers)
 
 	res, payload, err := test.MockInvoke(t, mock, "delpr", min+1, max-1)
 	a.NoError(err)
@@ -79,8 +80,8 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 		r.R("getpr", nil, persona.GetPersonaRangeHandler),
 	)))
 
-	pers := test.RandomPersonas(100, nil)
-	min, max, index, ids := test.SummaryPersonasID(pers)
+	pers := mtest.RandomPersonas(100, nil)
+	min, max, index, ids := mtest.SummaryPersonasID(pers)
 
 	for _, per := range pers {
 		per := per
@@ -96,7 +97,7 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers)-2, len(rpers))
-	_, _, rindex, rids := test.SummaryPersonasID(rpers)
+	_, _, rindex, rids := mtest.SummaryPersonasID(rpers)
 	_, ok := rindex[min]
 	a.False(ok)
 	_, ok = rindex[max]
@@ -112,7 +113,7 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers), len(rpers))
-	rmin, rmax, _, rids := test.SummaryPersonasID(rpers)
+	rmin, rmax, _, rids := mtest.SummaryPersonasID(rpers)
 	a.EqualValues(ids, rids)
 	a.EqualValues(min, rmin)
 	a.EqualValues(max, rmax)
@@ -130,8 +131,8 @@ func TestGetPersonaAllHandler(t *testing.T) {
 		r.R("getpa", nil, persona.GetPersonaAllHandler),
 	)))
 
-	pers := test.RandomPersonas(100, nil)
-	min, max, _, ids := test.SummaryPersonasID(pers)
+	pers := mtest.RandomPersonas(100, nil)
+	min, max, _, ids := mtest.SummaryPersonasID(pers)
 
 	for _, per := range pers {
 		per := per
@@ -147,7 +148,7 @@ func TestGetPersonaAllHandler(t *testing.T) {
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers), len(rpers))
-	rmin, rmax, _, rids := test.SummaryPersonasID(rpers)
+	rmin, rmax, _, rids := mtest.SummaryPersonasID(rpers)
 	a.EqualValues(ids, rids)
 	a.EqualValues(min, rmin)
 	a.EqualValues(max, rmax)

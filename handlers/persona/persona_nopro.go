@@ -3,7 +3,7 @@ package persona
 import (
 	"github.com/pkg/errors"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/meta"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
@@ -14,7 +14,7 @@ func DelPersonaRangeHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("invalid persona range: %v", err)
 	}
-	ids, err := ctx.Store.DelCompositeRange(cast.Persona, r)
+	ids, err := ctx.Store.DelCompositeRange(meta.Persona, r)
 	if err != nil {
 		return response.Error("deleting persona range [%v,%v]: %v", first, last, err)
 	}
@@ -26,7 +26,7 @@ func GetPersonaRangeHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("invalid persona range: %v", err)
 	}
-	ps, err := ctx.Store.GetCompositeRange(cast.Persona, r)
+	ps, err := ctx.Store.GetCompositeRange(meta.Persona, r)
 	if err != nil {
 		return response.Error("getting persona range [%v,%v]: %v", first, last, err)
 	}
@@ -34,7 +34,7 @@ func GetPersonaRangeHandler(ctx *context.Context) *response.Response {
 }
 
 func GetPersonaAllHandler(ctx *context.Context) *response.Response {
-	ps, err := ctx.Store.GetCompositeAll(cast.Persona)
+	ps, err := ctx.Store.GetCompositeAll(meta.Persona)
 	if err != nil {
 		return response.Error("getting persona all: %v", err)
 	}

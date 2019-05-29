@@ -12,22 +12,30 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 )
 
-func New(stub shim.ChaincodeStubInterface, path ...string) *Context {
+func New(stub shim.ChaincodeStubInterface, name, version string, path ...string) *Context {
 	return &Context{
-		path:  path,
-		Stub:  stub,
-		Store: store.New(stub),
+		name:    name,
+		version: version,
+		path:    append([]string{name, version}, path...),
+		Stub:    stub,
+		Store:   store.New(stub),
 	}
 }
 
 type Context struct {
 	Stub        shim.ChaincodeStubInterface
 	Store       store.Store
+	name        string
+	version     string
 	path        []string
 	clientid    cid.ClientIdentity
 	clientcrt   *x509.Certificate
 	clientmspid string
 	function    string
+}
+
+func (ctx *Context) Version() string {
+	return ctx.version
 }
 
 func (ctx *Context) Logger(path ...string) *shim.ChaincodeLogger {

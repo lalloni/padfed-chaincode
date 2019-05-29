@@ -54,3 +54,20 @@ func khget(ctx *context.Context, key string) ([]*statemod, *response.Response) {
 	}
 	return mods, nil
 }
+
+func rangekeys(ctx *context.Context, key1, key2 string) ([]string, *response.Response) {
+	it, err := ctx.Stub.GetStateByRange(key1, key2)
+	if err != nil {
+		return nil, response.Error("getting key range: %v", err)
+	}
+	defer it.Close()
+	ss := []string{}
+	for it.HasNext() {
+		kv, err := it.Next()
+		if err != nil {
+			return nil, response.Error("getting next key in range: %v", err)
+		}
+		ss = append(ss, kv.Key)
+	}
+	return ss, nil
+}

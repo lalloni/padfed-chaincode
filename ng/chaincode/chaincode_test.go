@@ -50,7 +50,7 @@ func TestInvokeHandler(t *testing.T) {
 		return response.OK("bleh!") // never invoked
 	})
 
-	mock := shim.NewMockStub("cc", chaincode.New("cc", r))
+	mock := shim.NewMockStub("cc", chaincode.New("cc", "test", r))
 
 	call = false
 	p = response.Payload{}

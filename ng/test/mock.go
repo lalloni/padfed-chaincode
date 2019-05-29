@@ -16,7 +16,7 @@ import (
 )
 
 func NewMock(name string, r router.Router) *shim.MockStub {
-	return shim.NewMockStub(name, chaincode.New(name, r))
+	return shim.NewMockStub(name, chaincode.New(name, "test", r))
 }
 
 func MockInvoke(t *testing.T, stub *shim.MockStub, function string, args ...interface{}) (*peer.Response, *response.Payload, error) {

@@ -15,25 +15,27 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
 
-func New(name string, r router.Router) shim.Chaincode {
+func New(name string, version string, r router.Router) shim.Chaincode {
 	log := logging.ChaincodeLogger(name)
 	log.Info("created")
 	res := &cc{
-		name:   name,
-		router: r,
-		log:    log,
+		name:    name,
+		version: version,
+		router:  r,
+		log:     log,
 	}
 	return res
 }
 
 type cc struct {
-	name   string
-	router router.Router
-	log    *shim.ChaincodeLogger
+	name    string
+	version string
+	router  router.Router
+	log     *shim.ChaincodeLogger
 }
 
 func (c *cc) Init(stub shim.ChaincodeStubInterface) peer.Response {
-	ctx := context.New(stub, c.name, "init")
+	ctx := context.New(stub, c.name, c.version, "init")
 	logger := ctx.Logger()
 	logger.Debug("begin request processing")
 	handle := c.router.InitHandler()
@@ -46,7 +48,7 @@ func (c *cc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 }
 
 func (c *cc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
-	ctx := context.New(stub, "cc", c.name, "invoke", stub.GetTxID())
+	ctx := context.New(stub, c.name, c.version, "invoke", stub.GetTxID())
 	logger := ctx.Logger(ctx.Function())
 	logger.Debug("begin request processing")
 	handle := c.router.Handler(router.Name(ctx.Function()))
@@ -59,6 +61,9 @@ func (c *cc) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 }
 
 func (c *cc) response(ctx *context.Context, logger *shim.ChaincodeLogger, r *response.Response) peer.Response {
+	if r.Status < 0 {
+		return r.Payload.Content.(peer.Response)
+	}
 	var payload []byte
 	if r.Status >= shim.ERRORTHRESHOLD {
 		if r.Payload == nil {
