@@ -46,6 +46,9 @@ func MockInit(stub *shim.MockStub, args ...interface{}) (*peer.Response, *respon
 
 func result(r peer.Response) (*peer.Response, *response.Payload, error) {
 	p := response.Payload{}
+	if len(r.Payload) == 0 {
+		return &r, &p, nil
+	}
 	err := json.Unmarshal(r.Payload, &p)
 	if err != nil {
 		return nil, nil, err

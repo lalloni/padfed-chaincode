@@ -13,13 +13,23 @@ import (
 )
 
 func New(stub shim.ChaincodeStubInterface, name, version string, path ...string) *Context {
-	return &Context{
+	c := &Context{
 		name:    name,
 		version: version,
 		path:    append([]string{name, version}, path...),
 		Stub:    stub,
 		Store:   store.New(stub),
 	}
+	args := stub.GetArgs()
+	if len(args) > 0 {
+		fun, opts, err := ParseFunction(args[0])
+		if err != nil {
+			c.Logger().Warningf("parsing function call options: %v", err)
+		}
+		c.function = fun
+		c.options = opts
+	}
+	return c
 }
 
 type Context struct {
@@ -27,11 +37,12 @@ type Context struct {
 	Store       store.Store
 	name        string
 	version     string
+	function    string
+	options     map[string]string
 	path        []string
 	clientid    cid.ClientIdentity
 	clientcrt   *x509.Certificate
 	clientmspid string
-	function    string
 }
 
 func (ctx *Context) Version() string {
@@ -84,10 +95,12 @@ func (ctx *Context) ClientMSPID() (string, error) {
 }
 
 func (ctx *Context) Function() string {
-	if ctx.function == "" {
-		ctx.function = string(ctx.Stub.GetArgs()[0])
-	}
 	return ctx.function
+}
+
+func (ctx *Context) Option(name string) (string, bool) {
+	v, present := ctx.options[name]
+	return v, present
 }
 
 func (ctx *Context) ArgBytes(n int) ([]byte, error) {
