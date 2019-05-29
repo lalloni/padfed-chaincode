@@ -7,14 +7,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/op/go-logging"
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
@@ -57,8 +53,9 @@ type Compo struct {
 }
 
 var cc = meta.MustPrepare(meta.Composite{
-	Name:    "compo",
-	Creator: func() interface{} { return &Compo{Items: map[string]*Item{}, Foos: map[string]*Foo{}} },
+	Name:        "compo",
+	Creator:     func() interface{} { return &Compo{Items: map[string]*Item{}, Foos: map[string]*Foo{}} },
+	KeyBaseName: "compo",
 	IdentifierGetter: func(v interface{}) interface{} {
 		return v.(*Compo).Thing.ID
 	},
@@ -410,25 +407,17 @@ func TestGetCompositeAll(t *testing.T) {
 		a.NoError(err)
 	}
 
-	pers := test.RandomPersonas(10, nil)
-	_, _, index, _ := test.SummaryPersonasID(pers)
-	for _, per := range pers {
-		per := per
-		txid := uuid.New().String()
-		stub.MockTransactionStart(txid)
-		err := st.PutComposite(cast.Persona, &per)
-		stub.MockTransactionEnd(txid)
-		a.NoError(err)
-	}
-
-	rpers, err := st.GetCompositeAll(cast.Persona)
+	rs, err := st.GetCompositeAll(cc)
 	a.NoError(err)
-	a.Len(rpers, 10)
-	for _, rper := range rpers {
-		p := rper.(*model.Persona)
-		a.EqualValues(index[p.ID], *p)
+	idx := map[uint64]*Compo{}
+	for _, r := range rs {
+		c := r.(*Compo)
+		idx[c.Thing.ID] = c
 	}
-
+	a.Len(idx, 10)
+	for id := 100; id < 110; id++ {
+		a.NotNil(idx[uint64(id)])
+	}
 }
 
 func mustMarshal(v interface{}) string {

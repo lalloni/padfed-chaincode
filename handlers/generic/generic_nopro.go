@@ -67,7 +67,7 @@ func GetStatesHandler(ctx *context.Context) *response.Response {
 	}
 	q, err := queryParse(arg)
 	if err != nil {
-		return response.BadRequest("invalid query argument: %v", err)
+		return response.BadRequest("invalid argument: %v", err)
 	}
 	switch q := q.(type) {
 	case queryPoint:
@@ -112,19 +112,47 @@ func DelStatesHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	keys := []string{}
-	err = json.Unmarshal(arg, &keys)
+	q, err := queryParse(arg)
 	if err != nil {
-		// interpretar arg como una raw string
-		keys = []string{string(arg)}
+		return response.BadRequest("invalid argument: %v", err)
 	}
-	for _, key := range keys {
-		err := ctx.Stub.DelState(key)
+	switch q := q.(type) {
+	case queryPoint:
+		err := ctx.Stub.DelState(q.key)
 		if err != nil {
-			return response.Error("deleting key: %v", err)
+			return response.Error("deleting state: %v", err)
 		}
+		return response.OK(q.key)
+	case []interface{}:
+		result := []string{}
+		for _, q := range q {
+			switch q := q.(type) {
+			case queryPoint:
+				err := ctx.Stub.DelState(q.key)
+				if err != nil {
+					return response.Error("deleting state: %v", err)
+				}
+				result = append(result, q.key)
+			case queryRange:
+				ks, res := rangekeys(ctx, q.begin, q.until)
+				if res != nil {
+					return res
+				}
+				for _, k := range ks {
+					err := ctx.Stub.DelState(k)
+					if err != nil {
+						return response.Error("deleting state: %v", err)
+					}
+					result = append(result, k)
+				}
+			default:
+				return response.Error("internal error")
+			}
+		}
+		return response.OK(result)
+	default:
+		return response.Error("internal error")
 	}
-	return response.OK(nil)
 }
 
 // GetStatesHistoryHandler es un handler que puede recibir como argumento un raw
@@ -177,4 +205,9 @@ func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
 		result = append(result, &statehistory{Key: key, History: mods})
 	}
 	return response.OK(result)
+}
+
+// GetAllHandler devuelve todos los states
+func GetAllHandler(ctx *context.Context) *response.Response {
+	return response.NotImplemented()
 }

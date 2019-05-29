@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/cast"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/meta"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
@@ -18,7 +18,7 @@ func GetPersonaHandler(ctx *context.Context) *response.Response {
 		return response.BadRequest("invalid persona id: %v", err)
 	}
 
-	per, err := ctx.Store.GetComposite(cast.Persona, cuit)
+	per, err := ctx.Store.GetComposite(meta.Persona, cuit)
 	if err != nil {
 		return response.Error("getting persona: %v", err)
 	}
@@ -37,7 +37,7 @@ func DelPersonaHandler(ctx *context.Context) *response.Response {
 		return response.BadRequest("invalid persona id: %v", err)
 	}
 
-	exist, err := ctx.Store.HasComposite(cast.Persona, id)
+	exist, err := ctx.Store.HasComposite(meta.Persona, id)
 	if err != nil {
 		return response.Error("checking persona existence: %v", err)
 	}
@@ -45,7 +45,7 @@ func DelPersonaHandler(ctx *context.Context) *response.Response {
 		return response.NotFound()
 	}
 
-	err = ctx.Store.DelComposite(cast.Persona, id)
+	err = ctx.Store.DelComposite(meta.Persona, id)
 	if err != nil {
 		return response.Error("deleting persona: %v", err)
 	}
@@ -122,7 +122,7 @@ func save(ctx *context.Context, per *model.Persona) *response.Response {
 		return response.BadRequest("id %q and persona.id %q must be equal", per.ID, per.Persona.ID)
 	}
 
-	exist, err := ctx.Store.HasComposite(cast.Persona, per.ID)
+	exist, err := ctx.Store.HasComposite(meta.Persona, per.ID)
 	if err != nil {
 		return response.Error("checking persona existence: %v", err)
 	}
@@ -130,7 +130,7 @@ func save(ctx *context.Context, per *model.Persona) *response.Response {
 		return response.BadRequest("persona is required when putting a new instance")
 	}
 
-	err = ctx.Store.PutComposite(cast.Persona, per)
+	err = ctx.Store.PutComposite(meta.Persona, per)
 	if err != nil {
 		return response.Error("putting persona: %v", err)
 	}
