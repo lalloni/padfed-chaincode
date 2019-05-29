@@ -32,5 +32,5 @@ func DelPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric
 	}
 	start, _ := sk.Range()
 	_, end := ek.Range()
-	return fabric.DeleteByKeyRange(stub, start, end)
+	return fabric.DeleteByKeyRange(stub, []string{start, end})
 }

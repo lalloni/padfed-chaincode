@@ -4,7 +4,6 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated"
-	dech "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/chaincode"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/generic"
@@ -63,13 +62,13 @@ func main() {
 	r.SetHandler("getPersona", nil, deprecated.Adapter(personas.GetPersonaAPI, "GetPersona"))
 	r.SetHandler("putPersonas", OnlyAFIP, deprecated.Adapter(personas.PutPersonas, "PutPersonaList"))
 	r.SetHandler("delPersonasByRange", OnlyAFIP, deprecated.Adapter(personas.DelPersonasByRange, "DelPersonaRange"))
-	r.SetHandler("deleteAll", OnlyAFIP, deprecated.Adapter(dech.AdaptNoArg(fabric.DeleteAll), "DelStates"))
-	r.SetHandler("deleteByKeyRange", OnlyAFIP, deprecated.Adapter(dech.AdaptString2(fabric.DeleteByKeyRange), "DelStates"))
+	r.SetHandler("deleteAll", OnlyAFIP, deprecated.Adapter(fabric.DeleteAll, "DelStates"))
+	r.SetHandler("deleteByKeyRange", OnlyAFIP, deprecated.Adapter(fabric.DeleteByKeyRange, "DelStates"))
 	r.SetHandler("queryPersona", OnlyAFIP, deprecated.Adapter(personas.QueryPersona, "GetStates"))
 	r.SetHandler("queryAllPersona", OnlyAFIP, deprecated.Adapter(personas.QueryAllPersona, "GetStates"))
 	r.SetHandler("queryHistory", OnlyAFIP, deprecated.Adapter(fabric.QueryHistory, "GetStatesHistory"))
-	r.SetHandler("queryByKey", OnlyAFIP, deprecated.Adapter(dech.AdaptString1(fabric.QueryByKey), "GetStates"))
-	r.SetHandler("queryByKeyRange", OnlyAFIP, deprecated.Adapter(dech.AdaptString2(fabric.QueryByKeyRange), "GetStates"))
+	r.SetHandler("queryByKey", OnlyAFIP, deprecated.Adapter(fabric.QueryByKey, "GetStates"))
+	r.SetHandler("queryByKeyRange", OnlyAFIP, deprecated.Adapter(fabric.QueryByKeyRange, "GetStates"))
 	//
 	// =========================================================================
 

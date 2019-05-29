@@ -11,11 +11,13 @@ import (
 
 var per11d = regexp.MustCompile(`(^PER_)(\d{11})`)
 
-func DeleteAll(stub shim.ChaincodeStubInterface) *Response {
-	return DeleteByKeyRange(stub, "", "")
+func DeleteAll(stub shim.ChaincodeStubInterface, args []string) *Response {
+	return DeleteByKeyRange(stub, []string{"", ""})
 }
 
-func DeleteByKeyRange(stub shim.ChaincodeStubInterface, startKey, endKey string) *Response {
+func DeleteByKeyRange(stub shim.ChaincodeStubInterface, args []string) *Response {
+	startKey := args[0]
+	endKey := args[1]
 	var firstDeleted, lastDeleted, partialMsj string
 	log.Println("Se eliminaran los primeros 100 elementos para evitar un timeout")
 	total := 100

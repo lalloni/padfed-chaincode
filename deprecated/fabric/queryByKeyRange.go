@@ -8,12 +8,9 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/helpers"
 )
 
-func QueryByKeyRangeArgs(stub shim.ChaincodeStubInterface, args []string) *Response {
-	return QueryByKeyRange(stub, args[0], args[1])
-}
-
-func QueryByKeyRange(stub shim.ChaincodeStubInterface, startKey, endKey string) *Response {
-	endKey += "z" // TODO esto parece un bug: el llamador debería decidir la end key!
+func QueryByKeyRange(stub shim.ChaincodeStubInterface, args []string) *Response {
+	startKey := args[0]
+	endKey := args[1] + "z"
 
 	Log.Info("Getting from: " + startKey + " to: " + endKey)
 	resultsIterator, err := stub.GetStateByRange(startKey, endKey)

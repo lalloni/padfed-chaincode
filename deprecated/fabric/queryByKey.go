@@ -9,11 +9,8 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/helpers"
 )
 
-func QueryByKeyArgs(stub shim.ChaincodeStubInterface, args []string) *Response {
-	return QueryByKey(stub, args[0])
-}
-
-func QueryByKey(stub shim.ChaincodeStubInterface, key string) *Response {
+func QueryByKey(stub shim.ChaincodeStubInterface, args []string) *Response {
+	key := args[0]
 	registerAsBytes, err := stub.GetState(key)
 	if err != nil {
 		return SystemErrorResponse(err.Error())

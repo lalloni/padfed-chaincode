@@ -33,36 +33,18 @@ func BuildHandlers(version string, testing bool) Handlers {
 
 	// Internas / development / testing
 	h["delPersonasByRange"] = onlyAFIP(testing, personas.DelPersonasByRange)
-	h["deleteAll"] = onlyAFIP(testing, AdaptNoArg(fabric.DeleteAll))
-	h["deleteByKeyRange"] = onlyAFIP(testing, AdaptString2(fabric.DeleteByKeyRange))
+	h["deleteAll"] = onlyAFIP(testing, fabric.DeleteAll)
+	h["deleteByKeyRange"] = onlyAFIP(testing, fabric.DeleteByKeyRange)
 
 	// API Bajo Nivel
 	h["queryPersona"] = personas.QueryPersona
 	h["queryAllPersona"] = personas.QueryAllPersona
 	h["queryHistory"] = fabric.QueryHistory
-	h["queryByKey"] = AdaptString1(fabric.QueryByKey)
-	h["queryByKeyRange"] = AdaptString2(fabric.QueryByKeyRange)
+	h["queryByKey"] = fabric.QueryByKey
+	h["queryByKeyRange"] = fabric.QueryByKeyRange
 
 	return h
 
-}
-
-func AdaptNoArg(h func(shim.ChaincodeStubInterface) *fabric.Response) Handler {
-	return func(s shim.ChaincodeStubInterface, _ []string) *fabric.Response {
-		return h(s)
-	}
-}
-
-func AdaptString1(h func(shim.ChaincodeStubInterface, string) *fabric.Response) Handler {
-	return func(s shim.ChaincodeStubInterface, args []string) *fabric.Response {
-		return h(s, args[0])
-	}
-}
-
-func AdaptString2(h func(shim.ChaincodeStubInterface, string, string) *fabric.Response) Handler {
-	return func(s shim.ChaincodeStubInterface, args []string) *fabric.Response {
-		return h(s, args[0], args[1])
-	}
 }
 
 func onlyAFIP(testing bool, h Handler) Handler {
