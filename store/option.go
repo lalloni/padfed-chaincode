@@ -25,3 +25,9 @@ func SetFiltering(f filtering.Filtering) Option {
 		s.filtering = f
 	}
 }
+
+func SetErrors(b bool) Option {
+	return func(s *simplestore) {
+		s.seterrs = b
+	}
+}

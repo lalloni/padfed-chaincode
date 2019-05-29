@@ -2,7 +2,9 @@ package chaincode
 
 import (
 	"encoding/json"
-	"regexp"
+	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/lib/cid"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -40,8 +42,6 @@ type padfedcc struct {
 	version  string
 	handlers Handlers
 }
-
-var verboseRegexp = regexp.MustCompile(`^(.*)(\?verbose=)(true|false)$`)
 
 func (s *padfedcc) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	ctx, r := setContext(stub, s.version, s.testing)
@@ -81,17 +81,16 @@ func setContext(stub shim.ChaincodeStubInterface, version string, testing bool) 
 	ctx.txid = stub.GetTxID()
 	ctx.version = version
 	ctx.function, ctx.args = stub.GetFunctionAndParameters()
-	// Check for verbose mode
-	res := verboseRegexp.FindStringSubmatch(ctx.function)
-	if len(res) != 0 {
-		ctx.function = res[1]
-		if res[3] == "true" {
-			ctx.verboseMode = true
-		} else {
-			ctx.verboseMode = false
+	ff := strings.SplitN(ctx.function, "?", 2)
+	if len(ff) > 1 {
+		ctx.function = ff[0]
+		qry, err := url.ParseQuery(ff[1])
+		if err != nil {
+			return &Ctx{}, fabric.SystemErrorResponse(fmt.Sprintf("Error parsing function options: %v", err))
 		}
-	} else {
-		ctx.verboseMode = false
+		if qry.Get("verbose") == "true" {
+			ctx.verboseMode = true
+		}
 	}
 	if !testing {
 		// Get the client ID object

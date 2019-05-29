@@ -40,6 +40,9 @@ type Persona struct {
 	Contribuciones  map[string]*PersonaContribucion `json:"contribmunis,omitempty"`
 	Relaciones      map[string]*PersonaRelacion     `json:"relaciones,omitempty"`
 	CMSedes         map[string]*PersonaCMSede       `json:"cmsedes,omitempty"`
+
+	// errores de lectura de singletons y collections si el store está en modo lenient
+	Errors interface{} `json:"errors,omitempty"`
 }
 
 type PersonaBasica struct {

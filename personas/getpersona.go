@@ -17,7 +17,11 @@ func GetPersonaAPI(stub shim.ChaincodeStubInterface, args []string) *fabric.Resp
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("cuit inválido: %v", args[0]))
 	}
-	st := store.New(stub)
+	opts, err := store.Options(stub)
+	if err != nil {
+		return fabric.ClientErrorResponse(fmt.Sprintf("sintaxis de función inválida: %v", err))
+	}
+	st := store.New(stub, opts...)
 	p, err := st.GetComposite(Persona, cuit)
 	if err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("obteniendo persona: %v", err))
