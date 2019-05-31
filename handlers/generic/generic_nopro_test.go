@@ -32,28 +32,28 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	bs64 := base64.StdEncoding.EncodeToString(bs)
 
 	t.Run("single put", func(t *testing.T) {
-		res, payload, err := test.MockInvoke(t, mock, "puts", "key1", "foobarbaz")
+		_, res, payload, err := test.MockInvoke(t, mock, "puts", "key1", "foobarbaz")
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		a.EqualValues(1, payload.Content)
 	})
 
 	t.Run("double put", func(t *testing.T) {
-		res, payload, err := test.MockInvoke(t, mock, "puts", "key1", "foobarbaz", "key2", bs)
+		_, res, payload, err := test.MockInvoke(t, mock, "puts", "key1", "foobarbaz", "key2", bs)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		a.EqualValues(2, payload.Content)
 	})
 
 	t.Run("single point query", func(t *testing.T) {
-		res, payload, err := test.MockInvoke(t, mock, "gets", "key1")
+		_, res, payload, err := test.MockInvoke(t, mock, "gets", "key1")
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		a.EqualValues("foobarbaz", payload.Content)
 	})
 
 	t.Run("multiple point query", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", `["key1","key2"]`)
+		_, res, _, err := test.MockInvoke(t, mock, "gets", `["key1","key2"]`)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
@@ -69,7 +69,7 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 
 	//nolint:dupl
 	t.Run("single prefix range query", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", `[["key"]]`)
+		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key"]]`)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
@@ -87,7 +87,7 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 
 	//nolint:dupl
 	t.Run("single range query", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", `[["key0","key3"]]`)
+		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key0","key3"]]`)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
@@ -104,7 +104,7 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("single left open range query", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", `[["","key2"]]`)
+		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["","key2"]]`)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
@@ -135,7 +135,7 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("multiple mixed queries", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", `[["key1","key2"],"key1",["key"],"key3"]`)
+		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key1","key2"],"key1",["key"],"key3"]`)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 
@@ -168,31 +168,31 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("del key1", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "dels", "key1")
+		_, res, _, err := test.MockInvoke(t, mock, "dels", "key1")
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 	})
 
 	t.Run("get key1 missing", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", "key1")
+		_, res, _, err := test.MockInvoke(t, mock, "gets", "key1")
 		a.NoError(err)
 		a.EqualValues(http.StatusNotFound, res.Status)
 	})
 
 	t.Run("get key2", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", "key2")
+		_, res, _, err := test.MockInvoke(t, mock, "gets", "key2")
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 	})
 
 	t.Run("del key2", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "dels", "key2")
+		_, res, _, err := test.MockInvoke(t, mock, "dels", "key2")
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 	})
 
 	t.Run("get key2 missing", func(t *testing.T) {
-		res, _, err := test.MockInvoke(t, mock, "gets", "key2")
+		_, res, _, err := test.MockInvoke(t, mock, "gets", "key2")
 		a.NoError(err)
 		a.EqualValues(http.StatusNotFound, res.Status)
 	})
@@ -210,7 +210,7 @@ func TestGetStatesHistoryHandler(t *testing.T) {
 	)))
 
 	puts := func(key string, val string) {
-		res, payload, err := test.MockInvoke(t, mock, "puts", key, val)
+		_, res, payload, err := test.MockInvoke(t, mock, "puts", key, val)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 		a.EqualValues(1, payload.Content)
@@ -221,7 +221,7 @@ func TestGetStatesHistoryHandler(t *testing.T) {
 	puts("key1", "baz")
 
 	// get state history not implemented in shim.MockStub so... :'(
-	res, payload, err := test.MockInvoke(t, mock, "geth", "key1")
+	_, res, payload, err := test.MockInvoke(t, mock, "geth", "key1")
 	a.NoError(err)
 	a.Regexp("getting key history: not implemented", res.Message)
 	a.EqualValues(http.StatusInternalServerError, res.Status)

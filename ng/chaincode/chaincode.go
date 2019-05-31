@@ -69,6 +69,7 @@ func (c *cc) response(ctx *context.Context, logger *shim.ChaincodeLogger, r *res
 		if r.Payload == nil {
 			r.Payload = &response.Payload{}
 		}
+		r.Payload.Chaincode = &response.Chaincode{Version: ctx.Version()}
 		r.Payload.Transaction = &response.Transaction{ID: ctx.Stub.GetTxID(), Function: ctx.Function()}
 		mspid, err := ctx.ClientMSPID()
 		if err != nil {

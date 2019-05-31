@@ -11,6 +11,7 @@ import (
 	"github.com/hyperledger/fabric/protos/peer"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/chaincode"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
@@ -19,15 +20,20 @@ func NewMock(name string, r router.Router) *shim.MockStub {
 	return shim.NewMockStub(name, chaincode.New(name, "test", r))
 }
 
-func MockInvoke(t *testing.T, stub *shim.MockStub, function string, args ...interface{}) (*peer.Response, *response.Payload, error) {
+func MockInvoke(t *testing.T, stub *shim.MockStub, function string, args ...interface{}) (string, *peer.Response, *response.Payload, error) {
+	tx := uuid.New().String()
 	aa := append([]interface{}{function}, args...)
 	bs, err := arguments(aa)
 	if err != nil {
-		return nil, nil, err
+		return "", nil, nil, err
 	}
-	res, payload, err := result(stub.MockInvoke(uuid.New().String(), bs))
-	t.Logf("\n→ call function %q arguments: %s\n← response status: %v message: %q payload: %v error: %v", function, format(bs[1:]), res.Status, res.Message, strings.Trim(string(res.Payload), "\n"), err)
-	return res, payload, err
+	f, _, err := context.ParseFunction([]byte(function))
+	if err != nil {
+		return "", nil, nil, err
+	}
+	res, payload, err := result(stub.MockInvoke(tx, bs))
+	t.Logf("\n→ call function %q arguments: %s\n← response status: %v message: %q payload: %v error: %v", f, format(bs[1:]), res.Status, res.Message, strings.Trim(string(res.Payload), "\n"), err)
+	return tx, res, payload, err
 }
 
 func MockInit(stub *shim.MockStub, args ...interface{}) (*peer.Response, *response.Payload, error) {

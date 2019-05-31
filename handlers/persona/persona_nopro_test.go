@@ -30,14 +30,14 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 
 	for _, per := range pers {
 		per := per
-		res, _, err := test.MockInvoke(t, mock, "putp", &per)
+		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 	}
 
 	min, max, index, ids := mtest.SummaryPersonasID(pers)
 
-	res, payload, err := test.MockInvoke(t, mock, "delpr", min+1, max-1)
+	_, res, payload, err := test.MockInvoke(t, mock, "delpr", min+1, max-1)
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rids := []uint64{}
@@ -46,7 +46,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.EqualValues(len(pers)-2, len(rids))
 	a.ElementsMatch(ids[1:len(ids)-1], rids)
 
-	res, payload, err = test.MockInvoke(t, mock, "getp", min)
+	_, res, payload, err = test.MockInvoke(t, mock, "getp", min)
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	per := model.Persona{}
@@ -54,7 +54,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(index[min], per)
 
-	res, payload, err = test.MockInvoke(t, mock, "getp", max)
+	_, res, payload, err = test.MockInvoke(t, mock, "getp", max)
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	per = model.Persona{}
@@ -63,7 +63,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.EqualValues(index[max], per)
 
 	for _, id := range ids[1 : len(ids)-1] {
-		res, _, err = test.MockInvoke(t, mock, "getp", id)
+		_, res, _, err = test.MockInvoke(t, mock, "getp", id)
 		a.NoError(err)
 		a.EqualValues(http.StatusNotFound, res.Status)
 	}
@@ -85,12 +85,12 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 
 	for _, per := range pers {
 		per := per
-		res, _, err := test.MockInvoke(t, mock, "putp", &per)
+		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 	}
 
-	res, payload, err := test.MockInvoke(t, mock, "getpr", min+1, max-1)
+	_, res, payload, err := test.MockInvoke(t, mock, "getpr", min+1, max-1)
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rpers := []model.Persona{}
@@ -106,7 +106,7 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 		a.EqualValues(index[id], rindex[id])
 	}
 
-	res, payload, err = test.MockInvoke(t, mock, "getpr", 0, 99999999999)
+	_, res, payload, err = test.MockInvoke(t, mock, "getpr", 0, 99999999999)
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rpers = []model.Persona{}
@@ -136,12 +136,12 @@ func TestGetPersonaAllHandler(t *testing.T) {
 
 	for _, per := range pers {
 		per := per
-		res, _, err := test.MockInvoke(t, mock, "putp", &per)
+		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
 		a.NoError(err)
 		a.EqualValues(http.StatusOK, res.Status)
 	}
 
-	res, payload, err := test.MockInvoke(t, mock, "getpa")
+	_, res, payload, err := test.MockInvoke(t, mock, "getpa")
 	a.NoError(err)
 	a.EqualValues(http.StatusOK, res.Status)
 	rpers := []model.Persona{}

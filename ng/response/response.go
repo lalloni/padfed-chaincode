@@ -12,6 +12,7 @@ type Response struct {
 
 type Payload struct {
 	Client          *Client      `json:"client,omitempty"`
+	Chaincode       *Chaincode   `json:"chaincode,omitempty"`
 	Transaction     *Transaction `json:"transaction,omitempty"`
 	Content         interface{}  `json:"content,omitempty"`
 	ContentEncoding string       `json:"content-encoding,omitempty"`
@@ -22,6 +23,10 @@ type Client struct {
 	MSPID   string `json:"mspid,omitempty"`
 	Subject string `json:"subject,omitempty"`
 	Issuer  string `json:"issuer,omitempty"`
+}
+
+type Chaincode struct {
+	Version string `json:"version,omitempty"`
 }
 
 type Transaction struct {
