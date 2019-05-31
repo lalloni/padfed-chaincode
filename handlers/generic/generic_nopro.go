@@ -1,8 +1,6 @@
 package generic
 
 import (
-	"encoding/json"
-
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
@@ -65,44 +63,19 @@ func GetStatesHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	q, err := queryParse(arg)
-	if err != nil {
-		return response.BadRequest("invalid argument: %v", err)
-	}
-	switch q := q.(type) {
-	case queryPoint:
-		s, res := kvget(ctx, q.key)
+	return processRanges(ctx, arg, func(single bool, key string) (interface{}, error) {
+		s, res := kvget(ctx, key)
 		if res != nil {
-			return res
+			return res, nil
 		}
-		if s.Nil {
-			return response.NotFound()
+		if single && s.Nil {
+			return response.NotFound(), nil
 		}
-		return response.OK(s.Content)
-	case []interface{}:
-		result := []interface{}{}
-		for _, q := range q {
-			switch q := q.(type) {
-			case queryPoint:
-				s, res := kvget(ctx, q.key)
-				if res != nil {
-					return res
-				}
-				result = append(result, s)
-			case queryRange:
-				ss, res := krget(ctx, q.begin, q.until)
-				if res != nil {
-					return res
-				}
-				result = append(result, ss)
-			default:
-				return response.Error("internal error")
-			}
+		if single {
+			return s.Content, nil
 		}
-		return response.OK(result)
-	default:
-		return response.Error("internal error")
-	}
+		return s, nil
+	})
 }
 
 // DelStatesHandler es un handler que puede recibir como argumento un raw string
@@ -112,47 +85,13 @@ func DelStatesHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	q, err := queryParse(arg)
-	if err != nil {
-		return response.BadRequest("invalid argument: %v", err)
-	}
-	switch q := q.(type) {
-	case queryPoint:
-		err := ctx.Stub.DelState(q.key)
+	return processRanges(ctx, arg, func(single bool, key string) (interface{}, error) {
+		err := ctx.Stub.DelState(key)
 		if err != nil {
-			return response.Error("deleting state: %v", err)
+			return response.Error("deleting state: %v", err), nil
 		}
-		return response.OK(q.key)
-	case []interface{}:
-		result := []string{}
-		for _, q := range q {
-			switch q := q.(type) {
-			case queryPoint:
-				err := ctx.Stub.DelState(q.key)
-				if err != nil {
-					return response.Error("deleting state: %v", err)
-				}
-				result = append(result, q.key)
-			case queryRange:
-				ks, res := rangekeys(ctx, q.begin, q.until)
-				if res != nil {
-					return res
-				}
-				for _, k := range ks {
-					err := ctx.Stub.DelState(k)
-					if err != nil {
-						return response.Error("deleting state: %v", err)
-					}
-					result = append(result, k)
-				}
-			default:
-				return response.Error("internal error")
-			}
-		}
-		return response.OK(result)
-	default:
-		return response.Error("internal error")
-	}
+		return key, nil
+	})
 }
 
 // GetStatesHistoryHandler es un handler que puede recibir como argumento un raw
@@ -185,26 +124,13 @@ func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	keys := []string{}
-	err = json.Unmarshal(arg, &keys)
-	if err != nil {
-		// interpretar arg como una raw string
-		key := string(arg)
+	return processRanges(ctx, arg, func(single bool, key string) (interface{}, error) {
 		mods, res := khget(ctx, key)
 		if res != nil {
-			return res
+			return res, nil
 		}
-		return response.OK(mods)
-	}
-	result := []*statehistory{}
-	for _, key := range keys {
-		mods, res := khget(ctx, key)
-		if res != nil {
-			return res
-		}
-		result = append(result, &statehistory{Key: key, History: mods})
-	}
-	return response.OK(result)
+		return &statehistory{Key: key, History: mods}, nil
+	})
 }
 
 // GetAllHandler devuelve todos los states

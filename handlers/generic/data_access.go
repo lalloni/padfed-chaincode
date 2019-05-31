@@ -21,6 +21,8 @@ func kvget(ctx *context.Context, key string) (*state, *response.Response) {
 	return newstate(key, bs), nil
 }
 
+// TODO utilizar esta para implementar lectura de ranges
+//nolint:deadcode,unused
 func krget(ctx *context.Context, key1, key2 string) ([]*state, *response.Response) {
 	it, err := ctx.Stub.GetStateByRange(key1, key2)
 	if err != nil {

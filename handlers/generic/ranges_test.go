@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestQueryParse(t *testing.T) {
+func TestParseRanges(t *testing.T) {
 	tests := []struct {
 		name   string
 		bs     string
@@ -67,7 +67,7 @@ func TestQueryParse(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			a := assert.New(t)
-			r, err := queryParse([]byte(test.bs))
+			r, err := parseRanges([]byte(test.bs))
 			a.EqualValues(test.expect, r)
 			if test.err {
 				a.Error(err)
