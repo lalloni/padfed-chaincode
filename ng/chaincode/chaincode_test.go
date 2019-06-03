@@ -20,7 +20,7 @@ func TestInitHandler(t *testing.T) {
 		init = true
 		return response.OK("blah!")
 	}))))
-	res, p, err := test.MockInit(mock)
+	_, res, p, err := test.MockInit(t, mock)
 	a.NoError(err)
 	a.True(init)
 	a.EqualValues(http.StatusOK, res.Status)
