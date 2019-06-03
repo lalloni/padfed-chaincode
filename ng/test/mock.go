@@ -32,16 +32,19 @@ func MockInvoke(t *testing.T, stub *shim.MockStub, function string, args ...inte
 		return "", nil, nil, err
 	}
 	res, payload, err := result(stub.MockInvoke(tx, bs))
-	t.Logf("\n→ call function %q arguments: %s\n← response status: %v message: %q payload: %v error: %v", f, format(bs[1:]), res.Status, res.Message, strings.Trim(string(res.Payload), "\n"), err)
+	t.Logf("\n→ call function %q arguments: %s\n← response status: %v message: %q payload: %v error: %v", f, format(skip(1, bs)), res.Status, res.Message, strings.Trim(string(res.Payload), "\n"), err)
 	return tx, res, payload, err
 }
 
-func MockInit(stub *shim.MockStub, args ...interface{}) (*peer.Response, *response.Payload, error) {
+func MockInit(t *testing.T, stub *shim.MockStub, args ...interface{}) (string, *peer.Response, *response.Payload, error) {
+	tx := uuid.New().String()
 	bs, err := arguments(args)
 	if err != nil {
-		return nil, nil, err
+		return "", nil, nil, err
 	}
-	return result(stub.MockInit(uuid.New().String(), bs))
+	res, payload, err := result(stub.MockInit(tx, bs))
+	t.Logf("\n→ call init arguments: %s\n← response status: %v message: %q payload: %v error: %v", format(skip(1, bs)), res.Status, res.Message, strings.Trim(string(res.Payload), "\n"), err)
+	return tx, res, payload, err
 }
 
 func result(r peer.Response) (*peer.Response, *response.Payload, error) {
@@ -73,6 +76,13 @@ func arguments(args []interface{}) ([][]byte, error) {
 		}
 	}
 	return bs, nil
+}
+
+func skip(n int, bss [][]byte) [][]byte {
+	if len(bss) >= n {
+		return bss[n:]
+	}
+	return bss
 }
 
 func format(bss [][]byte) string {
