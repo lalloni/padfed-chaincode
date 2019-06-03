@@ -11,6 +11,7 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/chaincode"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/logging"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
@@ -18,7 +19,10 @@ import (
 
 const name = "padfedcc"
 
-var OnlyAFIP = authorization.MSPID("AFIP")
+var (
+	OnlyAFIP = authorization.MSPID("AFIP")
+	Free     = authorization.Allowed
+)
 
 func main() {
 
@@ -26,14 +30,14 @@ func main() {
 
 	r := router.New(nil)
 
-	r.SetInitHandler(OnlyAFIP, nil)
+	r.SetInitHandler(OnlyAFIP, handler.SuccessHandler)
 
 	// Meta
-	r.SetHandler("GetVersion", nil, VersionHandler)
-	r.SetHandler("GetFunctions", nil, r.FunctionsHandler())
+	r.SetHandler("GetVersion", Free, VersionHandler)
+	r.SetHandler("GetFunctions", Free, r.FunctionsHandler())
 
 	// Business
-	r.SetHandler("GetPersona", nil, persona.GetPersonaHandler)
+	r.SetHandler("GetPersona", Free, persona.GetPersonaHandler)
 	r.SetHandler("DelPersona", OnlyAFIP, persona.DelPersonaHandler)
 	r.SetHandler("PutPersona", OnlyAFIP, persona.PutPersonaHandler)
 	r.SetHandler("PutPersonaList", OnlyAFIP, persona.PutPersonaListHandler)
