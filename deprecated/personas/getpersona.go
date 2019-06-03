@@ -14,6 +14,9 @@ import (
 )
 
 func GetPersonaAPI(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
+	if len(args) < 1 {
+		return fabric.ClientErrorResponse("se requiere un argumento con el cuit de la persona a obtener")
+	}
 	cuit, err := strconv.ParseUint(args[0], 10, 64)
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("cuit inválido: %v", args[0]))
