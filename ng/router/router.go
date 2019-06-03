@@ -60,6 +60,9 @@ func (r *router) InitHandler() handler.Handler {
 }
 
 func (r *router) SetInitHandler(ch authorization.Check, h handler.Handler) {
+	if h == nil {
+		h = handler.SuccessHandler
+	}
 	if ch != nil {
 		r.initHandler = authorization.Handler("init", ch, h)
 	} else {
@@ -72,6 +75,9 @@ func (r *router) Handler(n Name) handler.Handler {
 }
 
 func (r *router) SetHandler(n Name, ch authorization.Check, h handler.Handler) {
+	if h == nil {
+		h = handler.SuccessHandler
+	}
 	if ch != nil {
 		r.functionHandlers[n.String()] = authorization.Handler(fmt.Sprintf("invoke function %q", n), ch, h)
 	} else {
