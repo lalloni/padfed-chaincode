@@ -1,6 +1,8 @@
 package generic
 
 import (
+	"github.com/pkg/errors"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
@@ -22,9 +24,9 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 		if err != nil {
 			return response.BadRequest("getting key-value argument at %d: %v", i, err)
 		}
-		res := kvput(ctx, key, value)
-		if res != nil {
-			return res
+		err = kvput(ctx, key, value)
+		if err != nil {
+			return response.Error(err.Error())
 		}
 		count++
 	}
@@ -63,19 +65,18 @@ func GetStatesHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	return processRanges(ctx, arg, func(single bool, key string) (interface{}, error) {
-		s, res := kvget(ctx, key)
-		if res != nil {
-			return res, nil
-		}
-		if single && s.Nil {
-			return response.NotFound(), nil
-		}
-		if single {
-			return s.Content, nil
-		}
-		return s, nil
-	})
+	q, err := parseRanges(arg)
+	if err != nil {
+		return response.BadRequest("invalid argument: %v", err)
+	}
+	r, err := queryRanges(ctx, q)
+	if err != nil {
+		return response.Error(err.Error())
+	}
+	if r == nil {
+		return response.NotFound()
+	}
+	return response.OK(r)
 }
 
 // DelStatesHandler es un handler que puede recibir como argumento un raw string
@@ -85,13 +86,21 @@ func DelStatesHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	return processRanges(ctx, arg, func(single bool, key string) (interface{}, error) {
+	q, err := parseRanges(arg)
+	if err != nil {
+		return response.BadRequest("invalid argument: %v", err)
+	}
+	r, err := processKeyRanges(ctx, q, func(key string) (interface{}, error) {
 		err := ctx.Stub.DelState(key)
 		if err != nil {
-			return response.Error("deleting state: %v", err), nil
+			return nil, errors.Wrapf(err, "deleting state %q", key)
 		}
 		return key, nil
 	})
+	if err != nil {
+		return response.Error(err.Error())
+	}
+	return response.OK(r)
 }
 
 // GetStatesHistoryHandler es un handler que puede recibir como argumento un raw
@@ -124,13 +133,21 @@ func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.BadRequest("getting argument: %v", err)
 	}
-	return processRanges(ctx, arg, func(single bool, key string) (interface{}, error) {
-		mods, res := khget(ctx, key)
-		if res != nil {
-			return res, nil
+	q, err := parseRanges(arg)
+	if err != nil {
+		return response.BadRequest("invalid argument: %v", err)
+	}
+	r, err := processKeyRanges(ctx, q, func(key string) (interface{}, error) {
+		mods, err := khget(ctx, key)
+		if err != nil {
+			return nil, errors.Wrap(err, "reading key history")
 		}
 		return &statehistory{Key: key, History: mods}, nil
 	})
+	if err != nil {
+		return response.Error(err.Error())
+	}
+	return response.OK(r)
 }
 
 // GetAllHandler devuelve todos los states

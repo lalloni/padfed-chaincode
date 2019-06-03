@@ -7,61 +7,84 @@ import (
 	"github.com/spyzhov/ajson"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
 
-func processRanges(ctx *context.Context, ranges []byte, processor func(single bool, key string) (interface{}, error)) *response.Response {
-	q, err := parseRanges(ranges)
-	if err != nil {
-		return response.BadRequest("invalid argument: %v", err)
-	}
-	switch q := q.(type) {
+func queryRanges(ctx *context.Context, query interface{}) (interface{}, error) {
+	switch q := query.(type) {
 	case queryPoint:
-		v, err := processor(true, q.key)
+		s, err := kvget(ctx, q.key)
 		if err != nil {
-			return response.Error("processing range key: %v", err)
+			return nil, errors.Wrap(err, "executing single point query")
 		}
-		if res, ok := v.(*response.Response); ok {
-			return res
+		if s.Nil {
+			return nil, nil
 		}
-		return response.OK(v)
+		return s.Content, nil
 	case []interface{}:
 		result := []interface{}{}
 		for _, q := range q {
 			switch q := q.(type) {
 			case queryPoint:
-				v, err := processor(false, q.key)
+				s, err := kvget(ctx, q.key)
 				if err != nil {
-					return response.Error("processing range key: %v", err)
+					return nil, errors.Wrap(err, "executing ranges point query")
 				}
-				if res, ok := v.(*response.Response); ok {
-					return res
-				}
-				result = append(result, v)
+				result = append(result, s)
 			case queryRange:
-				ks, res := rangekeys(ctx, q.begin, q.until)
-				if res != nil {
-					return res
+				ss, err := krget(ctx, q.begin, q.until)
+				if err != nil {
+					return nil, errors.Wrap(err, "executing ranges range query")
+				}
+				result = append(result, ss)
+			default:
+				return nil, errors.New("internal error")
+			}
+		}
+		return result, nil
+	default:
+		return nil, errors.New("internal error")
+	}
+}
+
+func processKeyRanges(ctx *context.Context, query interface{}, process func(key string) (interface{}, error)) (interface{}, error) {
+	switch q := query.(type) {
+	case queryPoint:
+		r, err := process(q.key)
+		if err != nil {
+			return nil, errors.Wrap(err, "processing single point key")
+		}
+		return r, nil
+	case []interface{}:
+		result := []interface{}{}
+		for _, q := range q {
+			switch q := q.(type) {
+			case queryPoint:
+				r, err := process(q.key)
+				if err != nil {
+					return nil, errors.Wrap(err, "processing ranges point key")
+				}
+				result = append(result, r)
+			case queryRange:
+				ss, err := krget(ctx, q.begin, q.until)
+				if err != nil {
+					return nil, errors.Wrap(err, "executing ranges range query")
 				}
 				rr := []interface{}{}
-				for _, k := range ks {
-					v, err := processor(false, k)
+				for _, s := range ss {
+					r, err := process(s.Key)
 					if err != nil {
-						return response.Error("processing range key: %v", err)
+						return nil, errors.Wrap(err, "processing ranges range key")
 					}
-					if res, ok := v.(*response.Response); ok {
-						return res
-					}
-					rr = append(rr, v)
+					rr = append(rr, r)
 				}
 				result = append(result, rr)
 			default:
-				return response.Error("internal error")
+				return nil, errors.New("internal error")
 			}
 		}
-		return response.OK(result)
+		return result, nil
 	default:
-		return response.Error("internal error")
+		return nil, errors.New("internal error")
 	}
 }
 
