@@ -136,7 +136,6 @@ tasks:
     cmds:
       - echo 'Uploading {{ .file }} to https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/'
       - curl --progress-bar --fail --noproxy "*" --cacert ca.crt --netrc-file "{{ .credentials }}" --upload-file "{{ .file }}" "https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/"
-      - echo "Uploaded URL: https://nexus.cloudint.afip.gob.ar/nexus/repository/{{ .repository}}/{{ .system }}/{{ .application }}/{{ .version }}/{{ .file }}"
 
   publish:
     desc: Publica el archivo de fuentes empaquetados a Nexus (ver salida de "task --summary publish" para mayores detalles)
