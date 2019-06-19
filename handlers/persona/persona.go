@@ -1,48 +1,42 @@
 package persona
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/meta"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
-	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
-func GetPersonaHandler(ctx *context.Context) *response.Response {
+var GetPersonaHandler = handler.MustFunc(getPersona, persona.CUITParam)
 
-	cuit, err := ctx.ArgUint64(1)
-	if err != nil {
-		return response.BadRequest("invalid persona id: %v", err)
-	}
+func getPersona(ctx *context.Context, id uint64) *response.Response {
 
-	per, err := ctx.Store.GetComposite(meta.Persona, cuit)
+	per, err := ctx.Store.GetComposite(meta.Persona, id)
 	if err != nil {
 		return response.Error("getting persona: %v", err)
 	}
 	if per == nil {
-		return response.NotFound()
+		return notFoundResponse(id)
 	}
 
 	return response.OK(per)
 
 }
 
-func DelPersonaHandler(ctx *context.Context) *response.Response {
+var DelPersonaHandler = handler.MustFunc(delPersona, persona.CUITParam)
 
-	id, err := ctx.ArgUint64(1)
-	if err != nil {
-		return response.BadRequest("invalid persona id: %v", err)
-	}
+func delPersona(ctx *context.Context, id uint64) *response.Response {
 
 	exist, err := ctx.Store.HasComposite(meta.Persona, id)
 	if err != nil {
 		return response.Error("checking persona existence: %v", err)
 	}
 	if !exist {
-		return response.NotFound()
+		return notFoundResponse(id)
 	}
 
 	err = ctx.Store.DelComposite(meta.Persona, id)
@@ -54,51 +48,17 @@ func DelPersonaHandler(ctx *context.Context) *response.Response {
 
 }
 
-func PutPersonaHandler(ctx *context.Context) *response.Response {
+var PutPersonaHandler = handler.MustFunc(putPersona, persona.PersonaParam)
 
-	bs, err := ctx.ArgBytes(1)
-	if err != nil {
-		return response.BadRequest("invalid persona: %v", err)
-	}
-
-	res, err := validator.ValidatePersonaJSON(bs)
-	if err != nil {
-		return response.Error("validating persona: %v", err)
-	}
-	if !res.Valid() {
-		return response.BadRequestWithFault(res)
-	}
-
-	per := &model.Persona{}
-	err = json.Unmarshal(bs, per)
-	if err != nil {
-		return response.Error("unmarshalling persona: %v", err)
-	}
+func putPersona(ctx *context.Context, per *model.Persona) *response.Response {
 
 	return save(ctx, per)
 
 }
 
-func PutPersonaListHandler(ctx *context.Context) *response.Response {
+var PutPersonaListHandler = handler.MustFunc(putPersonaList, persona.PersonaListParam)
 
-	bs, err := ctx.ArgBytes(1)
-	if err != nil {
-		return response.BadRequest("invalid persona list: %v", err)
-	}
-
-	res, err := validator.ValidatePersonaListJSON(bs)
-	if err != nil {
-		return response.Error("validating persona list: %v", err)
-	}
-	if !res.Valid() {
-		return response.BadRequestWithFault(res)
-	}
-
-	pers := []model.Persona{}
-	err = json.Unmarshal(bs, &pers)
-	if err != nil {
-		return response.Error("unmarshalling persona list: %v", err)
-	}
+func putPersonaList(ctx *context.Context, pers []model.Persona) *response.Response {
 
 	for n, per := range pers {
 		per := per
@@ -137,4 +97,8 @@ func save(ctx *context.Context, per *model.Persona) *response.Response {
 
 	return response.OK(nil)
 
+}
+
+func notFoundResponse(id uint64) *response.Response {
+	return response.NotFoundWithMessage("persona with id %d not found", id)
 }

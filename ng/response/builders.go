@@ -2,35 +2,40 @@ package response
 
 import (
 	"fmt"
-	"net/http"
+
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
 )
 
 func OK(result interface{}) *Response {
-	return StatusWithResult(http.StatusOK, result)
+	return StatusWithResult(status.OK, result)
 }
 
 func NotFound() *Response {
-	return Status(http.StatusNotFound)
+	return Status(status.NotFound)
+}
+
+func NotFoundWithMessage(msg string, args ...interface{}) *Response {
+	return StatusWithMessage(status.NotFound, msg, args...)
 }
 
 func Forbidden(msg string, args ...interface{}) *Response {
-	return StatusWithMessage(http.StatusForbidden, msg, args...)
+	return StatusWithMessage(status.Forbidden, msg, args...)
 }
 
 func BadRequest(msg string, args ...interface{}) *Response {
-	return StatusWithMessage(http.StatusBadRequest, msg, args...)
+	return StatusWithMessage(status.BadRequest, msg, args...)
 }
 
 func BadRequestWithFault(fault interface{}) *Response {
-	return StatusWithFault(http.StatusBadRequest, fault)
+	return StatusWithFault(status.BadRequest, fault)
 }
 
 func Error(msg string, args ...interface{}) *Response {
-	return StatusWithMessage(http.StatusInternalServerError, msg, args...)
+	return StatusWithMessage(status.Error, msg, args...)
 }
 
-func NotImplemented() *Response {
-	return Status(http.StatusNotImplemented)
+func NotImplemented(function string) *Response {
+	return StatusWithMessage(status.BadRequest, "function '%s' is not implemented", function)
 }
 
 func StatusWithResult(status int32, result interface{}) *Response {

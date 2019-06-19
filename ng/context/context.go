@@ -106,7 +106,7 @@ func (ctx *Context) Option(name string) (string, bool) {
 func (ctx *Context) ArgBytes(n int) ([]byte, error) {
 	args := ctx.Stub.GetArgs()
 	if len(args) < n+1 {
-		return nil, errors.Errorf("argument %d required", n)
+		return nil, errors.Errorf("argument %d is required", n)
 	}
 	return args[n], nil
 }
@@ -121,7 +121,11 @@ func (ctx *Context) ArgInt64(n int) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return strconv.ParseInt(string(bs), 10, 64)
+	r, err := strconv.ParseInt(string(bs), 10, 64)
+	if err != nil {
+		return 0, errors.Wrapf(err, "argument %d must be an integer", n)
+	}
+	return r, nil
 }
 
 func (ctx *Context) ArgUint64(n int) (uint64, error) {
@@ -129,7 +133,11 @@ func (ctx *Context) ArgUint64(n int) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return strconv.ParseUint(string(bs), 10, 64)
+	r, err := strconv.ParseUint(string(bs), 10, 64)
+	if err != nil {
+		return 0, errors.Wrapf(err, "argument %d must be a natural integer", n)
+	}
+	return r, nil
 }
 
 func (ctx *Context) ArgKV(pos int) (string, []byte, error) {

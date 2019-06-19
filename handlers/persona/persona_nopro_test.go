@@ -1,7 +1,6 @@
 package persona_test
 
 import (
-	"net/http"
 	"testing"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -11,7 +10,8 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 	mtest "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/test"
-	r "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
 
@@ -20,11 +20,12 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
 
-	mock := test.NewMock("test", r.New(r.C(nil,
-		r.R("delpr", nil, persona.DelPersonaRangeHandler),
-		r.R("putp", nil, persona.PutPersonaHandler),
-		r.R("getp", nil, persona.GetPersonaHandler),
-	)))
+	r := router.New()
+	r.SetHandler("getp", nil, persona.GetPersonaHandler)
+	r.SetHandler("putp", nil, persona.PutPersonaHandler)
+	r.SetHandler("delpr", nil, persona.DelPersonaRangeHandler)
+
+	mock := test.NewMock("test", r)
 
 	pers := mtest.RandomPersonas(100, nil)
 
@@ -32,14 +33,14 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 		per := per
 		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 	}
 
 	min, max, index, ids := mtest.SummaryPersonasID(pers)
 
 	_, res, payload, err := test.MockInvoke(t, mock, "delpr", min+1, max-1)
 	a.NoError(err)
-	a.EqualValues(http.StatusOK, res.Status)
+	a.EqualValues(status.OK, res.Status)
 	rids := []uint64{}
 	err = mapstructure.Decode(payload.Content, &rids)
 	a.NoError(err)
@@ -48,7 +49,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 
 	_, res, payload, err = test.MockInvoke(t, mock, "getp", min)
 	a.NoError(err)
-	a.EqualValues(http.StatusOK, res.Status)
+	a.EqualValues(status.OK, res.Status)
 	per := model.Persona{}
 	err = mapstructure.Decode(payload.Content, &per)
 	a.NoError(err)
@@ -56,7 +57,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 
 	_, res, payload, err = test.MockInvoke(t, mock, "getp", max)
 	a.NoError(err)
-	a.EqualValues(http.StatusOK, res.Status)
+	a.EqualValues(status.OK, res.Status)
 	per = model.Persona{}
 	err = mapstructure.Decode(payload.Content, &per)
 	a.NoError(err)
@@ -65,7 +66,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	for _, id := range ids[1 : len(ids)-1] {
 		_, res, _, err = test.MockInvoke(t, mock, "getp", id)
 		a.NoError(err)
-		a.EqualValues(http.StatusNotFound, res.Status)
+		a.EqualValues(status.NotFound, res.Status)
 	}
 
 }
@@ -75,10 +76,11 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
 
-	mock := test.NewMock("test", r.New(r.C(nil,
-		r.R("putp", nil, persona.PutPersonaHandler),
-		r.R("getpr", nil, persona.GetPersonaRangeHandler),
-	)))
+	r := router.New()
+	r.SetHandler("putp", nil, persona.PutPersonaHandler)
+	r.SetHandler("getpr", nil, persona.GetPersonaRangeHandler)
+
+	mock := test.NewMock("test", r)
 
 	pers := mtest.RandomPersonas(100, nil)
 	min, max, index, ids := mtest.SummaryPersonasID(pers)
@@ -87,12 +89,12 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 		per := per
 		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 	}
 
 	_, res, payload, err := test.MockInvoke(t, mock, "getpr", min+1, max-1)
 	a.NoError(err)
-	a.EqualValues(http.StatusOK, res.Status)
+	a.EqualValues(status.OK, res.Status)
 	rpers := []model.Persona{}
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
@@ -108,7 +110,7 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 
 	_, res, payload, err = test.MockInvoke(t, mock, "getpr", 0, 99999999999)
 	a.NoError(err)
-	a.EqualValues(http.StatusOK, res.Status)
+	a.EqualValues(status.OK, res.Status)
 	rpers = []model.Persona{}
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
@@ -126,10 +128,11 @@ func TestGetPersonaAllHandler(t *testing.T) {
 	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
 
-	mock := test.NewMock("test", r.New(r.C(nil,
-		r.R("putp", nil, persona.PutPersonaHandler),
-		r.R("getpa", nil, persona.GetPersonaAllHandler),
-	)))
+	r := router.New()
+	r.SetHandler("putp", nil, persona.PutPersonaHandler)
+	r.SetHandler("getpa", nil, persona.GetPersonaAllHandler)
+
+	mock := test.NewMock("test", r)
 
 	pers := mtest.RandomPersonas(100, nil)
 	min, max, _, ids := mtest.SummaryPersonasID(pers)
@@ -138,12 +141,12 @@ func TestGetPersonaAllHandler(t *testing.T) {
 		per := per
 		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 	}
 
 	_, res, payload, err := test.MockInvoke(t, mock, "getpa")
 	a.NoError(err)
-	a.EqualValues(http.StatusOK, res.Status)
+	a.EqualValues(status.OK, res.Status)
 	rpers := []model.Persona{}
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)

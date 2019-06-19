@@ -17,12 +17,15 @@ func EchoHandler(ctx *context.Context) *response.Response {
 	return response.OK(data)
 }
 
-func VersionHandler(version string) Handler {
+func ValueHandler(v interface{}) Handler {
 	return func(ctx *context.Context) *response.Response {
-		return response.OK(version)
+		if err := ValidateArgCount(ctx, 0); err != nil {
+			return response.BadRequest(err.Error())
+		}
+		return response.OK(v)
 	}
 }
 
 func NotImplementedHandler(ctx *context.Context) *response.Response {
-	return response.NotImplemented()
+	return response.NotImplemented(ctx.Function())
 }

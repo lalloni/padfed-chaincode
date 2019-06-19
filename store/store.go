@@ -13,11 +13,6 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
-type Range struct {
-	First interface{}
-	Last  interface{}
-}
-
 type Store interface {
 	PutValue(key *key.Key, val interface{}) error
 	GetValue(key *key.Key, val interface{}) (bool, error)

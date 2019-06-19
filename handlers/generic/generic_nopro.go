@@ -3,7 +3,9 @@ package generic
 import (
 	"github.com/pkg/errors"
 
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/ranges"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
 
@@ -60,16 +62,10 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 // Si los bytes de "content" no pudieran ser representados como una string
 // codificada en UTF-8, será codificado en Base64 y se asignará el valor "base64"
 // al atributo "encoding", caso contrario no se incluye.
-func GetStatesHandler(ctx *context.Context) *response.Response {
-	arg, err := ctx.ArgBytes(1)
-	if err != nil {
-		return response.BadRequest("getting argument: %v", err)
-	}
-	q, err := parseRanges(arg)
-	if err != nil {
-		return response.BadRequest("invalid argument: %v", err)
-	}
-	r, err := queryRanges(ctx, q)
+var GetStatesHandler = handler.MustFunc(getStates, ranges.Param)
+
+func getStates(ctx *context.Context, query *ranges.Ranges) *response.Response {
+	r, err := queryKeyRanges(ctx, query)
 	if err != nil {
 		return response.Error(err.Error())
 	}
@@ -81,16 +77,10 @@ func GetStatesHandler(ctx *context.Context) *response.Response {
 
 // DelStatesHandler es un handler que puede recibir como argumento un raw string
 // (no JSON) o bien un JSON array de strings y las marca para eliminación.
-func DelStatesHandler(ctx *context.Context) *response.Response {
-	arg, err := ctx.ArgBytes(1)
-	if err != nil {
-		return response.BadRequest("getting argument: %v", err)
-	}
-	q, err := parseRanges(arg)
-	if err != nil {
-		return response.BadRequest("invalid argument: %v", err)
-	}
-	r, err := processKeyRanges(ctx, q, func(key string) (interface{}, error) {
+var DelStatesHandler = handler.MustFunc(delStates, ranges.Param)
+
+func delStates(ctx *context.Context, query *ranges.Ranges) *response.Response {
+	r, err := processKeyRanges(ctx, query, func(key string) (interface{}, error) {
 		err := ctx.Stub.DelState(key)
 		if err != nil {
 			return nil, errors.Wrapf(err, "deleting state %q", key)
@@ -128,16 +118,10 @@ func DelStatesHandler(ctx *context.Context) *response.Response {
 // "encoding" es una string que tendrá el valor "base64" si "content" no se
 // puede representar como una string UTF-8 y se codificó en Base64. En caso
 // contrario estará ausente.
-func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
-	arg, err := ctx.ArgBytes(1)
-	if err != nil {
-		return response.BadRequest("getting argument: %v", err)
-	}
-	q, err := parseRanges(arg)
-	if err != nil {
-		return response.BadRequest("invalid argument: %v", err)
-	}
-	r, err := processKeyRanges(ctx, q, func(key string) (interface{}, error) {
+var GetStatesHistoryHandler = handler.MustFunc(getStatesHistory, ranges.Param)
+
+func getStatesHistory(ctx *context.Context, query *ranges.Ranges) *response.Response {
+	r, err := processKeyRanges(ctx, query, func(key string) (interface{}, error) {
 		mods, err := khget(ctx, key)
 		if err != nil {
 			return nil, errors.Wrap(err, "reading key history")
@@ -148,9 +132,4 @@ func GetStatesHistoryHandler(ctx *context.Context) *response.Response {
 		return response.Error(err.Error())
 	}
 	return response.OK(r)
-}
-
-// GetAllHandler devuelve todos los states
-func GetAllHandler(ctx *context.Context) *response.Response {
-	return response.NotImplemented()
 }

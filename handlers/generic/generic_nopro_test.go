@@ -3,7 +3,6 @@ package generic_test
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"net/http"
 	"testing"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -11,7 +10,8 @@ import (
 	"github.com/tidwall/gjson"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/generic"
-	r "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
 
@@ -20,11 +20,12 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
 
-	mock := test.NewMock("test", r.New(r.C(nil,
-		r.R("gets", nil, generic.GetStatesHandler),
-		r.R("puts", nil, generic.PutStatesHandler),
-		r.R("dels", nil, generic.DelStatesHandler),
-	)))
+	r := router.New()
+	r.SetHandler("gets", nil, generic.GetStatesHandler)
+	r.SetHandler("dels", nil, generic.DelStatesHandler)
+	r.SetHandler("puts", nil, generic.PutStatesHandler)
+
+	mock := test.NewMock("test", r)
 
 	bs := make([]byte, 64)
 	_, err := rand.Read(bs)
@@ -32,30 +33,34 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	bs64 := base64.StdEncoding.EncodeToString(bs)
 
 	t.Run("single put", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, payload, err := test.MockInvoke(t, mock, "puts", "key1", "foobarbaz")
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		a.EqualValues(1, payload.Content)
 	})
 
 	t.Run("double put", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, payload, err := test.MockInvoke(t, mock, "puts", "key1", "foobarbaz", "key2", bs)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		a.EqualValues(2, payload.Content)
 	})
 
 	t.Run("single point query", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, payload, err := test.MockInvoke(t, mock, "gets", "key1")
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		a.EqualValues("foobarbaz", payload.Content)
 	})
 
 	t.Run("multiple point query", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", `["key1","key2"]`)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
 		a.Len(cs, 2)
 		c0 := cs[0].Map()
@@ -69,9 +74,10 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 
 	//nolint:dupl
 	t.Run("single prefix range query", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key"]]`)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
 		a.Len(cs, 1)
 		c0 := cs[0].Array()
@@ -87,9 +93,10 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 
 	//nolint:dupl
 	t.Run("single range query", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key0","key3"]]`)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
 		a.Len(cs, 1)
 		c0 := cs[0].Array()
@@ -104,9 +111,10 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("single left open range query", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["","key2"]]`)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
 		a.Len(cs, 1)
 		c0 := cs[0].Array()
@@ -117,10 +125,11 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("single right open range query", func(t *testing.T) {
+		a := assert.New(t)
 		t.Skip("mock stub no responde como se espera (volver a probar con fabric 1.4.1)")
 		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key1",""]]`)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		cs := gjson.GetBytes(res.Payload, "content").Array()
 		a.Len(cs, 1)
 		c0 := cs[0].Array()
@@ -135,9 +144,10 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("multiple mixed queries", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", `[["key1","key2"],"key1",["key"],"key3"]`)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 
 		cs := gjson.GetBytes(res.Payload, "content").Array()
 		a.Len(cs, 4)
@@ -168,33 +178,38 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	})
 
 	t.Run("del key1", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "dels", "key1")
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 	})
 
 	t.Run("get key1 missing", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", "key1")
 		a.NoError(err)
-		a.EqualValues(http.StatusNotFound, res.Status)
+		a.EqualValues(status.NotFound, res.Status)
 	})
 
 	t.Run("get key2", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", "key2")
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 	})
 
 	t.Run("del key2", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "dels", "key2")
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 	})
 
 	t.Run("get key2 missing", func(t *testing.T) {
+		a := assert.New(t)
 		_, res, _, err := test.MockInvoke(t, mock, "gets", "key2")
 		a.NoError(err)
-		a.EqualValues(http.StatusNotFound, res.Status)
+		a.EqualValues(status.NotFound, res.Status)
 	})
 
 }
@@ -206,15 +221,16 @@ func TestGetStatesHistoryHandler(t *testing.T) {
 	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
 
-	mock := test.NewMock("test", r.New(r.C(nil,
-		r.R("geth", nil, generic.GetStatesHistoryHandler),
-		r.R("puts", nil, generic.PutStatesHandler),
-	)))
+	r := router.New()
+	r.SetHandler("geth", nil, generic.GetStatesHistoryHandler)
+	r.SetHandler("puts", nil, generic.PutStatesHandler)
+
+	mock := test.NewMock("test", r)
 
 	puts := func(key string, val string) {
 		_, res, payload, err := test.MockInvoke(t, mock, "puts", key, val)
 		a.NoError(err)
-		a.EqualValues(http.StatusOK, res.Status)
+		a.EqualValues(status.OK, res.Status)
 		a.EqualValues(1, payload.Content)
 	}
 
@@ -226,7 +242,7 @@ func TestGetStatesHistoryHandler(t *testing.T) {
 	_, res, payload, err := test.MockInvoke(t, mock, "geth", "key1")
 	a.NoError(err)
 	a.Regexp("getting key history: not implemented", res.Message)
-	a.EqualValues(http.StatusInternalServerError, res.Status)
+	a.EqualValues(status.Error, res.Status)
 	a.EqualValues(nil, payload.Content)
 
 }

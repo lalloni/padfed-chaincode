@@ -4,9 +4,7 @@ import (
 	"fmt"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 )
 
 type Name string
@@ -20,24 +18,13 @@ type Router interface {
 	SetInitHandler(authorization.Check, handler.Handler)
 	Handler(Name) handler.Handler
 	SetHandler(Name, authorization.Check, handler.Handler)
-	FunctionsHandler() handler.Handler
+	Functions() []Name
 }
 
-func New(c *Config) Router {
-	r := &router{
+func New() Router {
+	return &router{
 		functionHandlers: map[string]handler.Handler{},
 	}
-	if c != nil {
-		if c.Init != nil {
-			if c.Init.Check != nil || c.Init.Handler != nil {
-				r.SetInitHandler(c.Init.Check, HandlerDefault(c.Init.Handler, handler.SuccessHandler))
-			}
-		}
-		for _, fun := range c.Funs {
-			r.SetHandler(NameDefault(fun.Name, fun.Handler), fun.Check, fun.Handler)
-		}
-	}
-	return r
 }
 
 type router struct {
@@ -45,14 +32,12 @@ type router struct {
 	functionHandlers map[string]handler.Handler
 }
 
-func (r *router) FunctionsHandler() handler.Handler {
-	return func(ctx *context.Context) *response.Response {
-		fs := []string{}
-		for f := range r.functionHandlers {
-			fs = append(fs, f)
-		}
-		return response.OK(fs)
+func (r *router) Functions() []Name {
+	fs := []Name{}
+	for f := range r.functionHandlers {
+		fs = append(fs, Name(f))
 	}
+	return fs
 }
 
 func (r *router) InitHandler() handler.Handler {

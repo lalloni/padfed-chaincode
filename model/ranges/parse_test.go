@@ -1,4 +1,4 @@
-package generic
+package ranges
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseRanges(t *testing.T) {
+func TestParse(t *testing.T) {
 	tests := []struct {
 		name   string
 		bs     string
@@ -15,34 +15,34 @@ func TestParseRanges(t *testing.T) {
 		err    bool
 	}{
 		{"point", `bla`,
-			queryPoint{key: "bla"},
+			Single(Point("bla")),
 			false},
 		{"singleRange", `[["a","z"]]`,
-			[]interface{}{queryRange{begin: "a", until: "z"}},
+			List(Range("a", "z")),
 			false},
 		{"doubleRange", `[["a","z"],["1","9"]]`,
-			[]interface{}{queryRange{begin: "a", until: "z"}, queryRange{begin: "1", until: "9"}},
+			List(Range("a", "z"), Range("1", "9")),
 			false},
 		{"prefixRange", `[["a"]]`,
-			[]interface{}{queryRange{begin: "a", until: "a" + string(utf8.MaxRune)}},
+			List(Range("a", "a"+string(utf8.MaxRune))),
 			false},
 		{"mixedRanges", `[["a"],["b","d"]]`,
-			[]interface{}{queryRange{begin: "a", until: "a" + string(utf8.MaxRune)}, queryRange{begin: "b", until: "d"}},
+			List(Range("a", "a"+string(utf8.MaxRune)), Range("b", "d")),
 			false},
 		{"untilRange", `[["","z"]]`,
-			[]interface{}{queryRange{begin: "", until: "z"}},
+			List(Range("", "z")),
 			false},
 		{"beginRange", `[["a",""]]`,
-			[]interface{}{queryRange{begin: "a", until: ""}},
+			List(Range("a", "")),
 			false},
 		{"singlePoint", `["a"]`,
-			[]interface{}{queryPoint{key: "a"}},
+			List(Point("a")),
 			false},
 		{"doublePoint", `["a","b"]`,
-			[]interface{}{queryPoint{key: "a"}, queryPoint{key: "b"}},
+			List(Point("a"), Point("b")),
 			false},
 		{"mixedPointRange", `["a",["1","9"],"b"]`,
-			[]interface{}{queryPoint{key: "a"}, queryRange{begin: "1", until: "9"}, queryPoint{key: "b"}},
+			List(Point("a"), Range("1", "9"), Point("b")),
 			false},
 		{"nullIsNotRange", `[null]`,
 			nil,
@@ -51,27 +51,27 @@ func TestParseRanges(t *testing.T) {
 			nil,
 			true},
 		{"objectIsPoint", `{"a":1}`,
-			queryPoint{key: `{"a":1}`},
+			Single(Point(`{"a":1}`)),
 			false},
 		{"stringIsPoint", `"a"`,
-			queryPoint{key: `"a"`},
+			Single(Point(`"a"`)),
 			false},
 		{"numberIsPoint", `12`,
-			queryPoint{key: "12"},
+			Single(Point("12")),
 			false},
 		{"emptyPoint", ``,
-			queryPoint{key: ""},
+			Single(Point("")),
 			false},
 	}
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			a := assert.New(t)
-			r, err := parseRanges([]byte(test.bs))
-			a.EqualValues(test.expect, r)
+			r, err := Parse([]byte(test.bs))
 			if test.err {
 				a.Error(err)
 			} else {
+				a.EqualValues(test.expect, r)
 				a.NoError(err)
 			}
 		})
