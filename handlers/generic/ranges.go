@@ -37,14 +37,14 @@ func queryKeyRanges(ctx *context.Context, query *ranges.Ranges) (interface{}, er
 
 func queryKeyItem(ctx *context.Context, item *ranges.Item) (interface{}, error) {
 	if item.IsPoint() {
-		s, err := kvget(ctx, item.Point())
+		s, err := keyState(ctx, item.Point())
 		if err != nil {
 			return nil, errors.Wrap(err, "executing single point query")
 		}
 		return s, nil
 	}
 	begin, until := item.Range()
-	ss, err := krget(ctx, begin, until)
+	ss, err := keyRangeStates(ctx, begin, until)
 	if err != nil {
 		return nil, errors.Wrap(err, "executing ranges range query")
 	}
@@ -79,7 +79,7 @@ func processKeyItem(ctx *context.Context, item *ranges.Item, process func(key st
 		return r, nil
 	}
 	begin, until := item.Range()
-	ss, err := krget(ctx, begin, until)
+	ss, err := keyRangeStates(ctx, begin, until)
 	if err != nil {
 		return nil, errors.Wrap(err, "executing range query")
 	}

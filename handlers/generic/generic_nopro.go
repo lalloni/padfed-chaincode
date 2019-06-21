@@ -26,7 +26,7 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 		if err != nil {
 			return response.BadRequest("getting key-value argument at %d: %v", i, err)
 		}
-		err = kvput(ctx, key, value)
+		err = setKeyValue(ctx, key, value)
 		if err != nil {
 			return response.Error(err.Error())
 		}
@@ -122,7 +122,7 @@ var GetStatesHistoryHandler = handler.MustFunc(getStatesHistory, ranges.Param)
 
 func getStatesHistory(ctx *context.Context, query *ranges.Ranges) *response.Response {
 	r, err := processKeyRanges(ctx, query, func(key string) (interface{}, error) {
-		mods, err := khget(ctx, key)
+		mods, err := keyHistory(ctx, key)
 		if err != nil {
 			return nil, errors.Wrap(err, "reading key history")
 		}

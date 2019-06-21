@@ -3,10 +3,13 @@ package generic
 import (
 	"github.com/pkg/errors"
 
+	"github.com/hyperledger/fabric/protos/common"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
 )
 
-func kvput(ctx *context.Context, key string, value []byte) error {
+func setKeyValue(ctx *context.Context, key string, value []byte) error {
 	err := ctx.Stub.PutState(key, value)
 	if err != nil {
 		return errors.Wrap(err, "putting state")
@@ -14,7 +17,7 @@ func kvput(ctx *context.Context, key string, value []byte) error {
 	return nil
 }
 
-func kvget(ctx *context.Context, key string) (*state, error) {
+func keyState(ctx *context.Context, key string) (*state, error) {
 	bs, err := ctx.Stub.GetState(key)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting key")
@@ -22,7 +25,7 @@ func kvget(ctx *context.Context, key string) (*state, error) {
 	return newstate(key, bs), nil
 }
 
-func krget(ctx *context.Context, key1, key2 string) ([]*state, error) {
+func keyRangeStates(ctx *context.Context, key1, key2 string) ([]*state, error) {
 	it, err := ctx.Stub.GetStateByRange(key1, key2)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting key range")
@@ -39,7 +42,7 @@ func krget(ctx *context.Context, key1, key2 string) ([]*state, error) {
 	return ss, nil
 }
 
-func khget(ctx *context.Context, key string) ([]*statemod, error) {
+func keyHistory(ctx *context.Context, key string) ([]*statemod, error) {
 	hi, err := ctx.Stub.GetHistoryForKey(key)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting key history")
@@ -51,7 +54,29 @@ func khget(ctx *context.Context, key string) ([]*statemod, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "getting key modification")
 		}
-		mods = append(mods, newstatemod(km))
+		b, err := txBlock(ctx, km.GetTxId())
+		if err != nil {
+			return nil, err
+		}
+		mods = append(mods, newstatemod(km, b))
 	}
 	return mods, nil
+}
+
+var base [][]byte
+
+func txBlock(ctx *context.Context, txid string) (uint64, error) {
+	if len(base) == 0 {
+		base = [][]byte{[]byte("GetBlockByTxID"), []byte(ctx.Stub.GetChannelID())}
+	}
+	res := ctx.Stub.InvokeChaincode("qscc", append(base, []byte(txid)), "")
+	if res.GetStatus() != status.OK {
+		return 0, errors.Errorf("getting transaction block number: %v", res.Message)
+	}
+	b := &common.Block{}
+	err := b.XXX_Unmarshal(res.Payload)
+	if err != nil {
+		return 0, errors.Wrap(err, "parsing transaction block number")
+	}
+	return b.Header.Number, nil
 }

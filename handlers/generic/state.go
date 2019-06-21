@@ -36,13 +36,14 @@ type statehistory struct {
 
 type statemod struct {
 	TxID     string      `json:"txid,omitempty"`
+	Block    uint64      `json:"block,omitempty"`
 	Time     string      `json:"time,omitempty"`
 	Delete   bool        `json:"delete,omitempty"`
 	Content  interface{} `json:"content,omitempty"`
 	Encoding string      `json:"encoding,omitempty"`
 }
 
-func newstatemod(s *queryresult.KeyModification) *statemod {
+func newstatemod(s *queryresult.KeyModification, block uint64) *statemod {
 	var con interface{}
 	enc := ""
 	if s.Value != nil {
@@ -55,6 +56,7 @@ func newstatemod(s *queryresult.KeyModification) *statemod {
 	}
 	return &statemod{
 		TxID:     s.TxId,
+		Block:    block,
 		Time:     time.Unix(s.Timestamp.Seconds, int64(s.Timestamp.Nanos)).In(time.Local).Format(time.RFC3339Nano),
 		Delete:   s.IsDelete,
 		Content:  con,
