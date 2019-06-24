@@ -20,6 +20,16 @@ func NewMock(name string, r router.Router) *shim.MockStub {
 	return shim.NewMockStub(name, chaincode.New(name, "test", r))
 }
 
+func MockTransactionStart(t *testing.T, stub *shim.MockStub) string {
+	tx := uuid.New().String()
+	stub.MockTransactionStart(tx)
+	return tx
+}
+
+func MockTransactionEnd(t *testing.T, stub *shim.MockStub, tx string) {
+	stub.MockTransactionEnd(tx)
+}
+
 func MockInvoke(t *testing.T, stub *shim.MockStub, function string, args ...interface{}) (string, *peer.Response, *response.Payload, error) {
 	tx := uuid.New().String()
 	aa := append([]interface{}{function}, args...)
