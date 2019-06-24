@@ -25,73 +25,19 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 	members := map[string]interface{}{}
 	singletons := map[string]*Singleton{}
 	for _, singleton := range com.Singletons {
-		singleton := singleton // clone for mutation
-		if singleton.Tag == witnessTag {
-			return nil, errors.Errorf("reserved member tag: singleton %+v", singleton)
-		}
-		if _, ok := members[singleton.Tag]; ok {
-			return nil, errors.Errorf("duplicate member tag: singleton %+v", singleton)
-		}
-		if singleton.Getter == nil {
-			if singleton.Field != "" {
-				singleton.Getter = FieldGetter(singleton.Field)
-			} else {
-				return nil, errors.Errorf("composite singleton with tag %q must have a getter function or specify a field name", singleton.Tag)
-			}
-		}
-		if singleton.Setter == nil {
-			if singleton.Field != "" {
-				singleton.Setter = FieldSetter(singleton.Field)
-			} else {
-				return nil, errors.Errorf("composite singleton with tag %q must have a setter function or specify a field name", singleton.Tag)
-			}
-		}
-		if singleton.Creator == nil {
-			if singleton.Field != "" {
-				singleton.Creator = ValueCreator(FieldGetter(singleton.Field)(value))
-			} else {
-				return nil, errors.Errorf("composite singleton with tag %q must have a creator function or specify a field name", singleton.Tag)
-			}
+		singleton := singleton
+		err := prepareSingleton(&singleton, members, value)
+		if err != nil {
+			return nil, err
 		}
 		singletons[singleton.Tag] = &singleton
 	}
 	collections := map[string]*Collection{}
 	for _, collection := range com.Collections {
-		collection := collection // clone for mutation
-		if collection.Tag == "" {
-			return nil, errors.Errorf("composite collection %+v must specifify a tag name", collection)
-
-		}
-		if collection.Tag == witnessTag {
-			return nil, errors.Errorf("reserved member tag: collection %+v", collection)
-		}
-		if _, ok := members[collection.Tag]; ok {
-			return nil, errors.Errorf("duplicate member tag: collection %+v", collection)
-		}
-		if collection.Collector == nil {
-			if collection.Field != "" {
-				collection.Collector = MapCollector(FieldGetter(collection.Field), FieldSetter(collection.Field))
-			} else {
-				return nil, errors.Errorf("composite collection with tag %q must have a collector function or specify a field name", collection.Tag)
-			}
-		}
-		if collection.Enumerator == nil {
-			if collection.Field != "" {
-				collection.Enumerator = MapEnumerator(FieldGetter(collection.Field))
-			} else {
-				return nil, errors.Errorf("composite collection with tag %q must have an enumerator function or specify a field name", collection.Tag)
-			}
-		}
-		if collection.Creator == nil {
-			if collection.Field != "" {
-				field, ok := valueType.FieldByName(collection.Field)
-				if !ok {
-					return nil, errors.Errorf("composite collection with tag %q field name %q does not match any value field", collection.Tag, collection.Field)
-				}
-				collection.Creator = ValueCreator(reflect.New(field.Type.Elem()).Elem().Interface())
-			} else {
-				return nil, errors.Errorf("composite collection with tag %q must have a creator function or specify a field name", collection.Tag)
-			}
+		collection := collection
+		err := prepareCollection(&collection, members, valueType)
+		if err != nil {
+			return nil, err
 		}
 		collections[collection.Tag] = &collection
 	}
@@ -107,12 +53,101 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 			com.IdentifierSetter = FieldSetter(com.IdentifierField)
 		}
 	}
+	if com.Copier == nil {
+		com.Copier = reflectionShallowCopy
+	}
 	return &PreparedComposite{
 		name:        com.Name,
 		composite:   &com,
 		singletons:  singletons,
 		collections: collections,
 	}, nil
+}
+
+func prepareCollection(collection *Collection, members map[string]interface{}, valueType reflect.Type) error {
+	if collection.Tag == "" {
+		return errors.Errorf("composite collection %+v must specifify a tag name", collection)
+	}
+	if collection.Tag == witnessTag {
+		return errors.Errorf("reserved member tag: collection %+v", collection)
+	}
+	if _, ok := members[collection.Tag]; ok {
+		return errors.Errorf("duplicate member tag: collection %+v", collection)
+	}
+	if collection.Collector == nil {
+		if collection.Field != "" {
+			collection.Collector = MapCollector(FieldGetter(collection.Field), FieldSetter(collection.Field))
+		} else {
+			return errors.Errorf("composite collection with tag %q must have a collector function or specify a field name", collection.Tag)
+		}
+	}
+	if collection.Enumerator == nil {
+		if collection.Field != "" {
+			collection.Enumerator = MapEnumerator(FieldGetter(collection.Field))
+		} else {
+			return errors.Errorf("composite collection with tag %q must have an enumerator function or specify a field name", collection.Tag)
+		}
+	}
+	if collection.Creator == nil {
+		if collection.Field != "" {
+			field, ok := valueType.FieldByName(collection.Field)
+			if !ok {
+				return errors.Errorf("composite collection with tag %q field name %q does not match any value field", collection.Tag, collection.Field)
+			}
+			collection.Creator = ValueCreator(reflect.New(field.Type.Elem()).Elem().Interface())
+		} else {
+			return errors.Errorf("composite collection with tag %q must have a creator function or specify a field name", collection.Tag)
+		}
+	}
+	if collection.Clear == nil {
+		if collection.Field != "" {
+			collection.Clear = FieldClear(collection.Field)
+		} else {
+			return errors.Errorf("composite collection with tag %q must have a clear function or specify a field name", collection.Tag)
+		}
+	}
+	return nil
+}
+
+func prepareSingleton(singleton *Singleton, members map[string]interface{}, value interface{}) error {
+	if singleton.Tag == "" {
+		return errors.Errorf("composite singleton %+v must specifify a tag name", singleton)
+	}
+	if singleton.Tag == witnessTag {
+		return errors.Errorf("reserved member tag: singleton %+v", singleton)
+	}
+	if _, ok := members[singleton.Tag]; ok {
+		return errors.Errorf("duplicate member tag: singleton %+v", singleton)
+	}
+	if singleton.Getter == nil {
+		if singleton.Field != "" {
+			singleton.Getter = FieldGetter(singleton.Field)
+		} else {
+			return errors.Errorf("composite singleton with tag %q must have a getter function or specify a field name", singleton.Tag)
+		}
+	}
+	if singleton.Setter == nil {
+		if singleton.Field != "" {
+			singleton.Setter = FieldSetter(singleton.Field)
+		} else {
+			return errors.Errorf("composite singleton with tag %q must have a setter function or specify a field name", singleton.Tag)
+		}
+	}
+	if singleton.Creator == nil {
+		if singleton.Field != "" {
+			singleton.Creator = ValueCreator(FieldGetter(singleton.Field)(value))
+		} else {
+			return errors.Errorf("composite singleton with tag %q must have a creator function or specify a field name", singleton.Tag)
+		}
+	}
+	if singleton.Clear == nil {
+		if singleton.Field != "" {
+			singleton.Clear = FieldClear(singleton.Field)
+		} else {
+			return errors.Errorf("composite singleton with tag %q must have a clear function or specify a field name", singleton.Tag)
+		}
+	}
+	return nil
 }
 
 type PreparedComposite struct {
@@ -184,6 +219,26 @@ func (cc *PreparedComposite) IsWitnessKey(key *key.Key) bool {
 	return key.Tag.Name == witnessTag
 }
 
+func (cc *PreparedComposite) MustKeepRoot(val interface{}) bool {
+	return cc.composite.KeepRoot
+}
+
+func (cc *PreparedComposite) RootEntry(val interface{}) (entry *Entry, err error) {
+	valkey, err := cc.ValueKey(val)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		p := recover()
+		if p != nil {
+			err = errors.Errorf("getting composite %q root value: %v", cc.name, p)
+		}
+	}()
+	root := cc.Cleared(val)
+	entry = &Entry{Key: valkey, Value: root}
+	return
+}
+
 func (cc *PreparedComposite) SingletonsEntries(val interface{}) (entries []*Entry, err error) {
 	valkey, err := cc.ValueKey(val)
 	if err != nil {
@@ -229,6 +284,21 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) (entries []*Ent
 		}
 	}
 	return
+}
+
+func (cc *PreparedComposite) Cleared(v interface{}) interface{} {
+	nv := cc.Copy(v)
+	for _, singleton := range cc.singletons {
+		singleton.Clear(nv)
+	}
+	for _, collection := range cc.collections {
+		collection.Clear(nv)
+	}
+	return nv
+}
+
+func (cc *PreparedComposite) Copy(v interface{}) interface{} {
+	return cc.composite.Copier(v)
 }
 
 func (cc *PreparedComposite) Create() (v interface{}, err error) {
@@ -281,4 +351,14 @@ func NewItem(id string, value interface{}) Item {
 		Identifier: id,
 		Value:      value,
 	}
+}
+
+func reflectionShallowCopy(src interface{}) interface{} {
+	sv := reflect.ValueOf(src).Elem()
+	st := sv.Type()
+	nv := reflect.New(st).Elem()
+	for f := 0; f < st.NumField(); f++ {
+		nv.Field(f).Set(sv.Field(f))
+	}
+	return nv.Addr().Interface()
 }

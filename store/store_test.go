@@ -50,10 +50,12 @@ type Compo struct {
 	Items  map[string]*Item `json:"items,omitempty"`
 	Foos   map[string]*Foo  `json:"foos,omitempty"`
 	Errors interface{}      `json:"errors,omitempty"`
+	Name   string           `json:"name,omitempty"`
 }
 
 var cc = meta.MustPrepare(meta.Composite{
 	Name:        "compo",
+	KeepRoot:    true,
 	Creator:     func() interface{} { return &Compo{Items: map[string]*Item{}, Foos: map[string]*Foo{}} },
 	KeyBaseName: "compo",
 	IdentifierGetter: func(v interface{}) interface{} {
@@ -67,9 +69,8 @@ var cc = meta.MustPrepare(meta.Composite{
 	},
 	Singletons: []meta.Singleton{
 		{Tag: "thing",
+			Field:   "Thing",
 			Creator: func() interface{} { return &Thing{} },
-			Getter:  func(v interface{}) interface{} { return v.(*Compo).Thing },
-			Setter:  func(v interface{}, w interface{}) { v.(*Compo).Thing = w.(*Thing) },
 		},
 		{Tag: "other",
 			Field: "Other",
@@ -77,6 +78,7 @@ var cc = meta.MustPrepare(meta.Composite{
 	},
 	Collections: []meta.Collection{
 		{Tag: "item",
+			Field:     "Items",
 			Creator:   func() interface{} { return &Item{} },
 			Collector: func(v interface{}, i meta.Item) { v.(*Compo).Items[i.Identifier] = i.Value.(*Item) },
 			Enumerator: func(v interface{}) []meta.Item {
@@ -135,6 +137,7 @@ func TestPutAndGetComposite(t *testing.T) {
 			"foo1": {Some: "bar", Num: 634},
 			"foo2": {Some: "baz", Num: 634},
 		},
+		Name: "some very interesting name",
 	}
 
 	stub.MockTransactionStart("x")

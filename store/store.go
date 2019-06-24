@@ -13,6 +13,8 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
+var log = shim.NewLogger("store")
+
 type Store interface {
 	PutValue(key *key.Key, val interface{}) error
 	GetValue(key *key.Key, val interface{}) (bool, error)
@@ -81,9 +83,13 @@ func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{})
 			return errors.Wrapf(err, "putting composite %q witness", com.Name())
 		}
 	}
+	hascomps := false
 	entries, err := com.SingletonsEntries(val)
 	if err != nil {
 		return errors.WithStack(err)
+	}
+	if len(entries) > 0 {
+		hascomps = true
 	}
 	for _, entry := range entries {
 		if !reflect.ValueOf(entry.Value).IsNil() {
@@ -96,6 +102,9 @@ func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{})
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	if len(entries) > 0 {
+		hascomps = true
+	}
 	for _, entry := range entries {
 		if reflect.ValueOf(entry.Value).IsNil() {
 			if err := s.internalDelValue(entry.Key); err != nil {
@@ -105,6 +114,15 @@ func (s *simplestore) PutComposite(com *meta.PreparedComposite, val interface{})
 			if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
 				return errors.Wrapf(err, "putting composite %q collection entry %q", com.Name(), entry)
 			}
+		}
+	}
+	if !hascomps || com.MustKeepRoot(val) {
+		entry, err := com.RootEntry(val)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		if err := s.internalPutValue(entry.Key, entry.Value); err != nil {
+			return errors.Wrapf(err, "putting composite %q root entry %q", com.Name(), entry)
 		}
 	}
 	return nil
@@ -305,8 +323,14 @@ func (s *simplestore) internalPutValue(k *key.Key, value interface{}) error {
 		return errors.Wrap(err, "marshaling value")
 	} else if bs, err := s.filtering.Filter(bs); err != nil {
 		return errors.Wrap(err, "filtering value")
-	} else if err := s.stub.PutState(k.StringUsing(s.sep), bs); err != nil {
-		return errors.Wrap(err, "putting marshaled value into state")
+	} else {
+		ks := k.StringUsing(s.sep)
+		if log.IsEnabledFor(shim.LogDebug) {
+			log.Debugf("putting key '%s' with value '%s'", ks, string(bs))
+		}
+		if err := s.stub.PutState(ks, bs); err != nil {
+			return errors.Wrap(err, "putting marshaled value into state")
+		}
 	}
 	return nil
 }
@@ -350,6 +374,18 @@ func (s *simplestore) internalParseValue(bs []byte, value interface{}) error {
 func (s *simplestore) inject(com *meta.PreparedComposite, statekey *key.Key, state *queryresult.KV, valkey *key.Key, val interface{}) *meta.MemberError {
 	var merr *meta.MemberError
 	switch {
+	case statekey.Equal(valkey):
+		err := s.internalParseValue(state.GetValue(), val)
+		if err != nil {
+			s.log.Errorf("parsing composite %q with key root item %q value in tx %s: %v", com.Name, valkey, s.stub.GetTxID(), err)
+			if s.seterrs {
+				seterr(val, err)
+			}
+			merr = &meta.MemberError{
+				Kind:  "root",
+				Error: err.Error(),
+			}
+		}
 	case com.Collection(statekey) != nil:
 		member := com.Collection(statekey)
 		itemval := member.Creator()

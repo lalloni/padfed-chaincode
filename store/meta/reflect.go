@@ -4,6 +4,13 @@ import (
 	"reflect"
 )
 
+func FieldClear(name string) MutatorFunc {
+	return func(v interface{}) {
+		f := reflect.ValueOf(v).Elem().FieldByName(name)
+		f.Set(reflect.Zero(f.Type()))
+	}
+}
+
 func FieldSetter(name string) SetterFunc {
 	return func(v interface{}, w interface{}) {
 		reflect.ValueOf(v).Elem().FieldByName(name).Set(reflect.ValueOf(w))
