@@ -105,6 +105,11 @@ func (c *cc) response(ctx *context.Context, logger *shim.ChaincodeLogger, r *res
 			return c.response(ctx, logger, response.Error("encoding response payload: %v", err))
 		}
 		payload = b.Bytes()
+		// drop extra newline added by enc.Encode()
+		p := len(payload) - 1
+		if payload[p] == '\n' {
+			payload = payload[0:p]
+		}
 	}
 	return peer.Response{
 		Status:  r.Status,
