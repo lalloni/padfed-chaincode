@@ -41,16 +41,17 @@ func main() {
 	r.SetHandler("PutPersonaList", OnlyAFIP, persona.PutPersonaListHandler)
 
 	// Business (debugging)
-	r.SetHandler("GetPersonaRange", OnlyAFIP, persona.GetPersonaRangeHandler)
+	r.SetHandler("GetPersonaRange", Free, persona.GetPersonaRangeHandler)
 	r.SetHandler("DelPersonaRange", OnlyAFIP, persona.DelPersonaRangeHandler)
+	r.SetHandler("GetPersonaAll", Free, persona.GetPersonaAllHandler)
 
 	// Generic
-	r.SetHandler("GetStates", OnlyAFIP, generic.GetStatesHandler)
+	r.SetHandler("GetStates", Free, generic.GetStatesHandler)
 	r.SetHandler("DelStates", OnlyAFIP, generic.DelStatesHandler)
 	r.SetHandler("PutStates", OnlyAFIP, generic.PutStatesHandler)
 
 	// History
-	r.SetHandler("GetStatesHistory", OnlyAFIP, generic.GetStatesHistoryHandler)
+	r.SetHandler("GetStatesHistory", Free, generic.GetStatesHistoryHandler)
 
 	// ======================== Deprecated handlers ============================
 	//
@@ -60,7 +61,7 @@ func main() {
 	// TODO eliminar bloque antes de 1.0.0
 	r.SetHandler("putPersona", OnlyAFIP, deprecated.Adapter(personas.PutPersona, "PutPersona"))
 	r.SetHandler("delPersona", OnlyAFIP, deprecated.Adapter(personas.DelPersona, "DelPersona"))
-	r.SetHandler("getPersona", nil, deprecated.Adapter(personas.GetPersonaAPI, "GetPersona"))
+	r.SetHandler("getPersona", Free, deprecated.Adapter(personas.GetPersonaAPI, "GetPersona"))
 	r.SetHandler("putPersonas", OnlyAFIP, deprecated.Adapter(personas.PutPersonas, "PutPersonaList"))
 	r.SetHandler("delPersonasByRange", OnlyAFIP, deprecated.Adapter(personas.DelPersonasByRange, "DelPersonaRange"))
 	r.SetHandler("deleteAll", OnlyAFIP, deprecated.Adapter(fabric.DeleteAll, "DelStates"))
