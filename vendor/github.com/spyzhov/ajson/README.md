@@ -3,8 +3,9 @@
 [![Build Status](https://travis-ci.com/spyzhov/ajson.svg?token=swf7VyTzTWuHyiC9QzT4&branch=master)](https://travis-ci.com/spyzhov/ajson)
 [![Go Report Card](https://goreportcard.com/badge/github.com/spyzhov/ajson)](https://goreportcard.com/report/github.com/spyzhov/ajson)
 [![GoDoc](https://godoc.org/github.com/spyzhov/ajson?status.svg)](https://godoc.org/github.com/spyzhov/ajson)
+[![Coverage Status](https://coveralls.io/repos/github/spyzhov/ajson/badge.svg?branch=master)](https://coveralls.io/github/spyzhov/ajson?branch=master)
 
-Abstract [JSON](https://www.json.org/) is a small golang package that provide a parser for JSON, in case when you are not sure in it's structure.
+Abstract [JSON](https://www.json.org/) is a small golang package that provide a parser for JSON with support of JSONPath, in case when you are not sure in it's structure.
 
 Method `Unmarshal` will scan all the byte slice to create a root node of JSON structure, with all it behaviors.
 
@@ -225,13 +226,13 @@ or the bracket–notation
 
 for input pathes. Internal or output pathes will always be converted to the more general bracket–notation.
 
-JSONPath allows the wildcard symbol * for member names and array indices. It borrows the descendant operator '..' from E4X and the array slice syntax proposal [start:end:step] from ECMASCRIPT 4.
+JSONPath allows the wildcard symbol `*` for member names and array indices. It borrows the descendant operator `..` from E4X and the array slice syntax proposal `[start:end:step]` from ECMASCRIPT 4.
 
-Expressions of the underlying scripting language (<expr>) can be used as an alternative to explicit names or indices as in
+Expressions of the underlying scripting language `(<expr>)` can be used as an alternative to explicit names or indices as in
 
 `$.store.book[(@.length-1)].title`
 
-using the symbol '@' for the current object. Filter expressions are supported via the syntax ?(<boolean expr>) as in
+using the symbol `@` for the current object. Filter expressions are supported via the syntax `?(<boolean expr>)` as in
 
 `$.store.book[?(@.price < 10)].title`
 
@@ -397,6 +398,6 @@ goos: linux
 goarch: amd64
 pkg: github.com/spyzhov/ajson
 BenchmarkUnmarshal_AJSON          200000              6245 ns/op            4896 B/op         95 allocs/op
-BenchmarkUnmarshal_JSON           200000             10318 ns/op             840 B/op         28 allocs/opgoos: linux
+BenchmarkUnmarshal_JSON           200000             10318 ns/op             840 B/op         28 allocs/op
 BenchmarkJSONPath_all_prices      200000             10829 ns/op            6920 B/op        161 allocs/op
 ```

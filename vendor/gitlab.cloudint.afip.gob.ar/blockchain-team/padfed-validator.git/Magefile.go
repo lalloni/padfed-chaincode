@@ -33,7 +33,7 @@ func Clean() {
 
 // Genera JSON Schema
 func Genschema() error {
-	return build.Convert("schemas/resources", "doc/schemas")
+	return build.Convert("schemas", "doc/schemas")
 }
 
 // Genera recursos embebidos en código fuente

@@ -31,6 +31,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	// Min is the minimum valid cuit
+	Min = 20000000001
+
+	// Max is the maximum valid cuit
+	Max = 34999999990
+)
+
 var (
 	legkinds = []uint64{20, 24, 27, 30, 34}
 	allkinds = []uint64{20, 23, 24, 27, 30, 33, 34}
@@ -155,4 +163,44 @@ func Random(r *rand.Rand) uint64 {
 // Please see the examples.
 func Compose(kind, id, ver uint64) uint64 {
 	return (kind%1e2)*1e9 + (id%1e8)*10 + ver%1e1
+}
+
+// Pred returns predecessor of cuit unless cuit equals Min in which
+// case it returns Min or cuit is not valid in which case it returns 0.
+func Pred(cuit uint64) uint64 {
+	if !IsValid(cuit) {
+		return 0
+	}
+	if cuit == Min {
+		return cuit
+	}
+	pre, num, _ := Parts(cuit)
+	r := pre*1e9 + num*1e1
+	for {
+		r -= 10
+		v := Verifier(r)
+		if v < 10 {
+			return r + v
+		}
+	}
+}
+
+// Succ returns the successor of cuit unless cuit equals Max in which
+// case it returns Max or cuit is not valid in which case it returns 0.
+func Succ(cuit uint64) uint64 {
+	if !IsValid(cuit) {
+		return 0
+	}
+	if cuit == Max {
+		return cuit
+	}
+	pre, num, _ := Parts(cuit)
+	r := pre*1e9 + num*1e1
+	for {
+		r += 10
+		v := Verifier(r)
+		if v < 10 {
+			return r + v
+		}
+	}
 }

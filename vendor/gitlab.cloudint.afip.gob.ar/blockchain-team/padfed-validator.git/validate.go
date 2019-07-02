@@ -9,7 +9,7 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/jsoncheck"
 )
 
-func ValidateJSON(schema *gojsonschema.Schema, json []byte) (*ValidationResult, error) {
+func Validate(schema *gojsonschema.Schema, json []byte) (*ValidationResult, error) {
 	err := jsoncheck.Check(json)
 	if err != nil {
 		return nil, errors.Wrap(err, "checking JSON syntax")
