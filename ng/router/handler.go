@@ -8,7 +8,7 @@ import (
 
 func FunctionsHandler(r Router) handler.Handler {
 	return func(ctx *context.Context) *response.Response {
-		if err := handler.ValidateArgCount(ctx, 0); err != nil {
+		if err := handler.CheckArgsCount(ctx, 0); err != nil {
 			return response.BadRequest(err.Error())
 		}
 		return response.OK(r.Functions())

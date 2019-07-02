@@ -14,7 +14,7 @@ import (
 
 var contextType = reflect.TypeOf(&context.Context{})
 
-func MustFunc(function interface{}, pars ...*param.Param) Handler {
+func MustFunc(function interface{}, pars ...param.TypedParam) Handler {
 	h, err := Func(function, pars...)
 	if err != nil {
 		panic(err)
@@ -22,7 +22,8 @@ func MustFunc(function interface{}, pars ...*param.Param) Handler {
 	return h
 }
 
-func Func(function interface{}, pars ...*param.Param) (Handler, error) {
+func Func(function interface{}, pars ...param.TypedParam) (Handler, error) {
+
 	fun := reflect.ValueOf(function)
 	funType := fun.Type()
 
@@ -52,31 +53,19 @@ func Func(function interface{}, pars ...*param.Param) (Handler, error) {
 
 	for i, par := range pars {
 		t := funType.In(i + 1)
-		if !t.AssignableTo(par.Type) {
-			return nil, errors.Errorf("function %s parameter %d must be %s (assignable to %s type) but is %s", funName, i+1, par.Name, par.Type, t)
+		if !t.AssignableTo(par.Type()) {
+			return nil, errors.Errorf("function %s parameter %d must be %s (assignable to %s type) but is %s", funName, i+1, par.Name(), par.Type(), t)
 		}
 	}
 
 	return func(ctx *context.Context) *response.Response {
-		args := ctx.Stub.GetArgs()
-		argc := len(args) - 1
-		if argc > 0 {
-			args = args[1:]
-		} else {
-			args = nil
-		}
-		if err := ValidateArgCount(ctx, cardinality); err != nil {
+		args, err := ExtractArgs(ctx.Stub.GetArgs()[1:], param.Untyped(pars...)...)
+		if err != nil {
 			return response.BadRequest(err.Error())
 		}
 		vals := []reflect.Value{reflect.ValueOf(ctx)}
-		argi := 0
-		for i, par := range pars {
-			v, c, err := par.Parse(args[argi:])
-			if err != nil {
-				return response.BadRequest("%s argument %d: %v", par.Name, i+1, err)
-			}
-			argi += c
-			vals = append(vals, reflect.ValueOf(v))
+		for _, arg := range args {
+			vals = append(vals, reflect.ValueOf(arg))
 		}
 		ret := fun.Call(vals)[0].Interface()
 		if res, ok := ret.(*response.Response); ok {
@@ -87,10 +76,10 @@ func Func(function interface{}, pars ...*param.Param) (Handler, error) {
 
 }
 
-func types(pars []*param.Param) string {
+func types(pars []param.TypedParam) string {
 	ss := []string{contextType.String()}
 	for _, par := range pars {
-		ss = append(ss, par.Type.String())
+		ss = append(ss, par.Type().String())
 	}
 	return strings.Join(ss, ", ")
 }

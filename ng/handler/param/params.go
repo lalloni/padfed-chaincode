@@ -8,30 +8,40 @@ import (
 	"github.com/pkg/errors"
 )
 
-var uint64t = reflect.TypeOf(uint64(0))
+func Uint64Var(v *uint64) TypedParam {
+	return Typed("natural integer",
+		reflect.TypeOf(uint64(0)),
+		func(arg []byte) (interface{}, error) {
+			r, err := parseuint64(arg)
+			if err != nil {
+				return nil, err
+			}
+			if v != nil {
+				*v = r
+			}
+			return r, err
+		})
+}
 
-var Uint64 = New("natural integer", uint64t, parseuint64)
+var Uint64 = Uint64Var(nil)
 
-func parseuint64(args [][]byte) (interface{}, int, error) {
-	s := string(args[0])
+func parseuint64(arg []byte) (uint64, error) {
+	s := string(arg)
 	r, err := strconv.ParseUint(s, 10, 64)
 	if err != nil {
 		if e, ok := err.(*strconv.NumError); ok {
 			err = e.Err
 		}
-		return nil, 0, errors.Errorf("invalid natural integer: %v: '%v'", err, s)
+		return 0, errors.Errorf("invalid natural integer: %v: '%v'", err, s)
 	}
-	return r, 1, nil
+	return r, nil
 }
 
-var stringt = reflect.TypeOf("")
+var String = Typed("string", reflect.TypeOf(""), parsestring)
 
-var String = New("string", stringt, parsestring)
-
-func parsestring(args [][]byte) (interface{}, int, error) {
-	bs := args[0]
-	if !utf8.Valid(bs) {
-		return nil, 0, errors.Errorf("invalid UTF-8 string")
+func parsestring(arg []byte) (interface{}, error) {
+	if !utf8.Valid(arg) {
+		return nil, errors.Errorf("invalid UTF-8 string")
 	}
-	return string(bs), 1, nil
+	return string(arg), nil
 }

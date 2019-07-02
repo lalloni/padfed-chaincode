@@ -13,7 +13,7 @@ import (
 func TestFunc(t *testing.T) {
 	type args struct {
 		function interface{}
-		pars     []*param.Param
+		pars     []param.TypedParam
 	}
 	tests := []struct {
 		name    string
@@ -26,10 +26,10 @@ func TestFunc(t *testing.T) {
 		{"return ok", args{func(*context.Context) int { return 0 }, nil}, false},
 		{"no ctx", args{func(int) int { return 0 }, nil}, true},
 		{"bad args from params 1", args{func(*context.Context, int, string) int { return 0 }, nil}, true},
-		{"1 param ok", args{func(*context.Context, int) int { return 0 }, []*param.Param{param.New("integer", reflect.TypeOf(0), nil)}}, false},
-		{"bad params 1", args{func(*context.Context, string) int { return 0 }, []*param.Param{param.New("integer", reflect.TypeOf(0), nil)}}, true},
-		{"bad params 2", args{func(*context.Context, string, int) int { return 0 }, []*param.Param{param.New("integer", reflect.TypeOf(0), nil)}}, true},
-		{"2 params ok", args{func(*context.Context, string, int) int { return 0 }, []*param.Param{param.New("string", reflect.TypeOf(""), nil), param.New("integer", reflect.TypeOf(0), nil)}}, false},
+		{"1 param ok", args{func(*context.Context, int) int { return 0 }, []param.TypedParam{param.Typed("integer", reflect.TypeOf(0), nil)}}, false},
+		{"bad params 1", args{func(*context.Context, string) int { return 0 }, []param.TypedParam{param.Typed("integer", reflect.TypeOf(0), nil)}}, true},
+		{"bad params 2", args{func(*context.Context, string, int) int { return 0 }, []param.TypedParam{param.Typed("integer", reflect.TypeOf(0), nil)}}, true},
+		{"2 params ok", args{func(*context.Context, string, int) int { return 0 }, []param.TypedParam{param.Typed("string", reflect.TypeOf(""), nil), param.Typed("integer", reflect.TypeOf(0), nil)}}, false},
 	}
 	for _, tt := range tests {
 		tt := tt
