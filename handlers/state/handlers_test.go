@@ -1,4 +1,4 @@
-package generic_test
+package state
 
 import (
 	"crypto/rand"
@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/generic"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
@@ -21,9 +20,9 @@ func TestGetPutDelStatesHandler(t *testing.T) {
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
-	r.SetHandler("gets", nil, generic.GetStatesHandler)
-	r.SetHandler("dels", nil, generic.DelStatesHandler)
-	r.SetHandler("puts", nil, generic.PutStatesHandler)
+	r.SetHandler("gets", nil, GetStatesHandler)
+	r.SetHandler("dels", nil, DelStatesHandler)
+	r.SetHandler("puts", nil, PutStatesHandler)
 
 	mock := test.NewMock("test", r)
 
@@ -222,8 +221,8 @@ func TestGetStatesHistoryHandler(t *testing.T) {
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
-	r.SetHandler("geth", nil, generic.GetStatesHistoryHandler)
-	r.SetHandler("puts", nil, generic.PutStatesHandler)
+	r.SetHandler("geth", nil, GetStatesHistoryHandler)
+	r.SetHandler("puts", nil, PutStatesHandler)
 
 	mock := test.NewMock("test", r)
 

@@ -1,15 +1,14 @@
-package persona_test
+package persona
 
 import (
 	"testing"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/afip/cuit"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
-	mtest "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/test"
+	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
@@ -21,24 +20,25 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
-	r.SetHandler("getp", nil, persona.GetPersonaHandler)
-	r.SetHandler("putp", nil, persona.PutPersonaHandler)
-	r.SetHandler("delpr", nil, persona.DelPersonaRangeHandler)
+
+	addTestingHandlers(r)
 
 	mock := test.NewMock("test", r)
 
-	pers := mtest.RandomPersonas(100, nil)
+	pers := model.RandomPersonas(10, nil)
 
 	for _, per := range pers {
 		per := per
-		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
+		_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per)
 		a.NoError(err)
 		a.EqualValues(status.OK, res.Status)
 	}
 
-	min, max, index, ids := mtest.SummaryPersonasID(pers)
+	index, ids := model.SummaryPersonasID(pers)
+	min := ids[0]
+	max := ids[len(ids)-1]
 
-	_, res, payload, err := test.MockInvoke(t, mock, "delpr", min+1, max-1)
+	_, res, payload, err := test.MockInvoke(t, mock, "DelPersonaRange", cuit.Succ(min), cuit.Pred(max))
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	rids := []uint64{}
@@ -47,7 +47,7 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.EqualValues(len(pers)-2, len(rids))
 	a.ElementsMatch(ids[1:len(ids)-1], rids)
 
-	_, res, payload, err = test.MockInvoke(t, mock, "getp", min)
+	_, res, payload, err = test.MockInvoke(t, mock, "GetPersona", min)
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	per := model.Persona{}
@@ -55,16 +55,16 @@ func TestDelPersonaRangeHandler(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(index[min], per)
 
-	_, res, payload, err = test.MockInvoke(t, mock, "getp", max)
+	_, res, payload, err = test.MockInvoke(t, mock, "GetPersona", max)
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	per = model.Persona{}
 	err = mapstructure.Decode(payload.Content, &per)
 	a.NoError(err)
-	a.EqualValues(index[max], per)
+	a.EqualValues(index[ids[len(ids)-1]], per)
 
 	for _, id := range ids[1 : len(ids)-1] {
-		_, res, _, err = test.MockInvoke(t, mock, "getp", id)
+		_, res, _, err = test.MockInvoke(t, mock, "GetPersona", id)
 		a.NoError(err)
 		a.EqualValues(status.NotFound, res.Status)
 	}
@@ -77,29 +77,31 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
-	r.SetHandler("putp", nil, persona.PutPersonaHandler)
-	r.SetHandler("getpr", nil, persona.GetPersonaRangeHandler)
+
+	addTestingHandlers(r)
 
 	mock := test.NewMock("test", r)
 
-	pers := mtest.RandomPersonas(100, nil)
-	min, max, index, ids := mtest.SummaryPersonasID(pers)
+	pers := model.RandomPersonas(100, nil)
+	index, ids := model.SummaryPersonasID(pers)
+	min := ids[0]
+	max := ids[len(ids)-1]
 
 	for _, per := range pers {
 		per := per
-		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
+		_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per)
 		a.NoError(err)
 		a.EqualValues(status.OK, res.Status)
 	}
 
-	_, res, payload, err := test.MockInvoke(t, mock, "getpr", min+1, max-1)
+	_, res, payload, err := test.MockInvoke(t, mock, "GetPersonaRange", cuit.Succ(min), cuit.Pred(max))
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	rpers := []model.Persona{}
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers)-2, len(rpers))
-	_, _, rindex, rids := mtest.SummaryPersonasID(rpers)
+	rindex, rids := model.SummaryPersonasID(rpers)
 	_, ok := rindex[min]
 	a.False(ok)
 	_, ok = rindex[max]
@@ -108,17 +110,15 @@ func TestGetPersonaRangeHandler(t *testing.T) {
 		a.EqualValues(index[id], rindex[id])
 	}
 
-	_, res, payload, err = test.MockInvoke(t, mock, "getpr", 0, 99999999999)
+	_, res, payload, err = test.MockInvoke(t, mock, "GetPersonaRange", cuit.Min, cuit.Max)
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	rpers = []model.Persona{}
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers), len(rpers))
-	rmin, rmax, _, rids := mtest.SummaryPersonasID(rpers)
+	_, rids = model.SummaryPersonasID(rpers)
 	a.EqualValues(ids, rids)
-	a.EqualValues(min, rmin)
-	a.EqualValues(max, rmax)
 	a.ElementsMatch(pers, rpers)
 
 }
@@ -129,32 +129,30 @@ func TestGetPersonaAllHandler(t *testing.T) {
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
-	r.SetHandler("putp", nil, persona.PutPersonaHandler)
-	r.SetHandler("getpa", nil, persona.GetPersonaAllHandler)
+
+	addTestingHandlers(r)
 
 	mock := test.NewMock("test", r)
 
-	pers := mtest.RandomPersonas(100, nil)
-	min, max, _, ids := mtest.SummaryPersonasID(pers)
+	pers := model.RandomPersonas(100, nil)
+	_, ids := model.SummaryPersonasID(pers)
 
 	for _, per := range pers {
 		per := per
-		_, res, _, err := test.MockInvoke(t, mock, "putp", &per)
+		_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per)
 		a.NoError(err)
 		a.EqualValues(status.OK, res.Status)
 	}
 
-	_, res, payload, err := test.MockInvoke(t, mock, "getpa")
+	_, res, payload, err := test.MockInvoke(t, mock, "GetPersonaAll")
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	rpers := []model.Persona{}
 	err = mapstructure.Decode(payload.Content, &rpers)
 	a.NoError(err)
 	a.EqualValues(len(pers), len(rpers))
-	rmin, rmax, _, rids := mtest.SummaryPersonasID(rpers)
+	_, rids := model.SummaryPersonasID(rpers)
 	a.EqualValues(ids, rids)
-	a.EqualValues(min, rmin)
-	a.EqualValues(max, rmax)
 	a.ElementsMatch(pers, rpers)
 
 }

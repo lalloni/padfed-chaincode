@@ -1,13 +1,21 @@
-package generic
+package state
 
 import (
 	"github.com/pkg/errors"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/ranges"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
+
+func AddHandlers(r router.Router) {
+	r.SetHandler("GetStates", common.AFIP, GetStatesHandler)
+	r.SetHandler("DelStates", common.AFIP, DelStatesHandler)
+	r.SetHandler("PutStates", common.AFIP, PutStatesHandler)
+	r.SetHandler("GetStatesHistory", common.AFIP, GetStatesHistoryHandler)
+}
 
 // PutStatesHandler es un handler variádico que recibe como argumentos una
 // secuencia de pares de key (raw string) y contenido (raw bytes) a guardar
@@ -62,9 +70,9 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 // Si los bytes de "content" no pudieran ser representados como una string
 // codificada en UTF-8, será codificado en Base64 y se asignará el valor "base64"
 // al atributo "encoding", caso contrario no se incluye.
-var GetStatesHandler = handler.MustFunc(getStates, ranges.Param)
+var GetStatesHandler = handler.MustFunc(getStates, RangesParam)
 
-func getStates(ctx *context.Context, query *ranges.Ranges) *response.Response {
+func getStates(ctx *context.Context, query *Ranges) *response.Response {
 	r, err := queryKeyRanges(ctx, query)
 	if err != nil {
 		return response.Error(err.Error())
@@ -77,9 +85,9 @@ func getStates(ctx *context.Context, query *ranges.Ranges) *response.Response {
 
 // DelStatesHandler es un handler que puede recibir como argumento un raw string
 // (no JSON) o bien un JSON array de strings y las marca para eliminación.
-var DelStatesHandler = handler.MustFunc(delStates, ranges.Param)
+var DelStatesHandler = handler.MustFunc(delStates, RangesParam)
 
-func delStates(ctx *context.Context, query *ranges.Ranges) *response.Response {
+func delStates(ctx *context.Context, query *Ranges) *response.Response {
 	r, err := processKeyRanges(ctx, query, func(key string) (interface{}, error) {
 		err := ctx.Stub.DelState(key)
 		if err != nil {
@@ -118,9 +126,9 @@ func delStates(ctx *context.Context, query *ranges.Ranges) *response.Response {
 // "encoding" es una string que tendrá el valor "base64" si "content" no se
 // puede representar como una string UTF-8 y se codificó en Base64. En caso
 // contrario estará ausente.
-var GetStatesHistoryHandler = handler.MustFunc(getStatesHistory, ranges.Param)
+var GetStatesHistoryHandler = handler.MustFunc(getStatesHistory, RangesParam)
 
-func getStatesHistory(ctx *context.Context, query *ranges.Ranges) *response.Response {
+func getStatesHistory(ctx *context.Context, query *Ranges) *response.Response {
 	r, err := processKeyRanges(ctx, query, func(key string) (interface{}, error) {
 		mods, err := keyHistory(ctx, key)
 		if err != nil {

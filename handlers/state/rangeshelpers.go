@@ -1,13 +1,12 @@
-package generic
+package state
 
 import (
 	"github.com/pkg/errors"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/ranges"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 )
 
-func queryKeyRanges(ctx *context.Context, query *ranges.Ranges) (interface{}, error) {
+func queryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {
 	if query.IsSingle() {
 		s, err := queryKeyItem(ctx, query.Single())
 		if err != nil {
@@ -35,7 +34,7 @@ func queryKeyRanges(ctx *context.Context, query *ranges.Ranges) (interface{}, er
 	return result, nil
 }
 
-func queryKeyItem(ctx *context.Context, item *ranges.Item) (interface{}, error) {
+func queryKeyItem(ctx *context.Context, item *Item) (interface{}, error) {
 	if item.IsPoint() {
 		s, err := keyState(ctx, item.Point())
 		if err != nil {
@@ -51,7 +50,7 @@ func queryKeyItem(ctx *context.Context, item *ranges.Item) (interface{}, error) 
 	return ss, nil
 }
 
-func processKeyRanges(ctx *context.Context, query *ranges.Ranges, process func(key string) (interface{}, error)) (interface{}, error) {
+func processKeyRanges(ctx *context.Context, query *Ranges, process func(key string) (interface{}, error)) (interface{}, error) {
 	if query.IsSingle() {
 		r, err := processKeyItem(ctx, query.Single(), process)
 		if err != nil {
@@ -70,7 +69,7 @@ func processKeyRanges(ctx *context.Context, query *ranges.Ranges, process func(k
 	return rr, nil
 }
 
-func processKeyItem(ctx *context.Context, item *ranges.Item, process func(key string) (interface{}, error)) (interface{}, error) {
+func processKeyItem(ctx *context.Context, item *Item, process func(key string) (interface{}, error)) (interface{}, error) {
 	if item.IsPoint() {
 		r, err := process(item.Point())
 		if err != nil {
