@@ -7,7 +7,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/meta"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 )
 
@@ -22,13 +22,13 @@ func DelPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Respons
 
 	st := store.New(stub)
 
-	if exist, err := st.HasComposite(meta.Persona, cuit); err != nil {
+	if exist, err := st.HasComposite(persona.Schema, cuit); err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("Error obteniendo existencia de persona: %v", err))
 	} else if !exist {
 		return fabric.NotFoundErrorResponse()
 	}
 
-	err = st.DelComposite(meta.Persona, cuit)
+	err = st.DelComposite(persona.Schema, cuit)
 	if err != nil {
 		return fabric.SystemErrorResponse(fmt.Sprintf("eliminando persona: %v", err))
 	}

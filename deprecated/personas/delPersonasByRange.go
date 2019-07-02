@@ -7,7 +7,7 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/meta"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func DelPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
@@ -22,11 +22,11 @@ func DelPersonasByRange(stub shim.ChaincodeStubInterface, args []string) *fabric
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("Parámetro 2 incorrecto: %q: %v", args[1], err))
 	}
-	sk, err := meta.Persona.IdentifierKey(sid)
+	sk, err := persona.Schema.IdentifierKey(sid)
 	if err != nil {
 		return fabric.SystemErrorResponse(err.Error())
 	}
-	ek, err := meta.Persona.IdentifierKey(eid)
+	ek, err := persona.Schema.IdentifierKey(eid)
 	if err != nil {
 		return fabric.SystemErrorResponse(err.Error())
 	}

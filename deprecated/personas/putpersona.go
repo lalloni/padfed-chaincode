@@ -8,14 +8,14 @@ import (
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/validation"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func PutPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
 	if len(args) != 1 {
 		return fabric.ClientErrorResponse("Número incorrecto de argumentos. Se espera 1 (PERSONA).")
 	}
-	newPersona := &model.Persona{}
+	newPersona := &persona.Persona{}
 	if res := validation.ArgToPersona([]byte(args[0]), newPersona); !res.IsOK() {
 		return res
 	}
@@ -26,7 +26,7 @@ func PutPersonas(stub shim.ChaincodeStubInterface, args []string) *fabric.Respon
 	if len(args) != 1 {
 		return fabric.ClientErrorResponse("Número incorrecto de argumentos. Se espera 1 (PERSONAS)")
 	}
-	newPersonas := []model.Persona{}
+	newPersonas := []persona.Persona{}
 	if err := validation.ArgToPersonas([]byte(args[0]), &newPersonas); !err.IsOK() {
 		return err
 	}

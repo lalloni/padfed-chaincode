@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
@@ -32,8 +32,10 @@ func ArgToPersonas(bs []byte, personas *[]model.Persona) *fabric.Response {
 	return &fabric.Response{}
 }
 
+var personaSchema = validator.MustLoadSchema("persona")
+
 func validatePersonaJSON(bs []byte) *fabric.Response {
-	res, err := validator.ValidatePersonaJSON(bs)
+	res, err := validator.Validate(personaSchema, bs)
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("JSON de persona mal formado: %s", err))
 	}
@@ -43,8 +45,10 @@ func validatePersonaJSON(bs []byte) *fabric.Response {
 	return nil
 }
 
+var personaListSchema = validator.MustLoadSchema("persona-list")
+
 func validatePersonaListJSON(bs []byte) *fabric.Response {
-	res, err := validator.ValidatePersonaListJSON(bs)
+	res, err := validator.Validate(personaListSchema, bs)
 	if err != nil {
 		return fabric.ClientErrorResponse(fmt.Sprintf("JSON de lista de personas mal formado: %s", err))
 	}

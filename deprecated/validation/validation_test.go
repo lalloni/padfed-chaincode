@@ -5,7 +5,7 @@ import (
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/test"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/validation"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func TestValidPersona(t *testing.T) {
