@@ -33,7 +33,6 @@ func main() {
 	// Business
 	persona.AddHandlers(r)
 	impuesto.AddHandlers(r)
-	r.SetHandler("GetPersonaAll", Free, persona.GetPersonaAllHandler)
 
 	// States
 	state.AddHandlers(r)
@@ -46,16 +45,16 @@ func main() {
 	// TODO eliminar bloque antes de 1.0.0
 	r.SetHandler("putPersona", common.AFIP, deprecated.Adapter(personas.PutPersona, "PutPersona"))
 	r.SetHandler("delPersona", common.AFIP, deprecated.Adapter(personas.DelPersona, "DelPersona"))
-	r.SetHandler("getPersona", Free, deprecated.Adapter(personas.GetPersonaAPI, "GetPersona"))
+	r.SetHandler("getPersona", common.Free, deprecated.Adapter(personas.GetPersonaAPI, "GetPersona"))
 	r.SetHandler("putPersonas", common.AFIP, deprecated.Adapter(personas.PutPersonas, "PutPersonaList"))
 	r.SetHandler("delPersonasByRange", common.AFIP, deprecated.Adapter(personas.DelPersonasByRange, "DelPersonaRange"))
 	r.SetHandler("deleteAll", common.AFIP, deprecated.Adapter(fabric.DeleteAll, "DelStates"))
 	r.SetHandler("deleteByKeyRange", common.AFIP, deprecated.Adapter(fabric.DeleteByKeyRange, "DelStates"))
-	r.SetHandler("queryPersona", common.AFIP, deprecated.Adapter(personas.QueryPersona, "GetStates"))
-	r.SetHandler("queryAllPersona", common.AFIP, deprecated.Adapter(personas.QueryAllPersona, "GetStates"))
-	r.SetHandler("queryHistory", common.AFIP, deprecated.Adapter(fabric.QueryHistory, "GetStatesHistory"))
-	r.SetHandler("queryByKey", common.AFIP, deprecated.Adapter(fabric.QueryByKey, "GetStates"))
-	r.SetHandler("queryByKeyRange", common.AFIP, deprecated.Adapter(fabric.QueryByKeyRange, "GetStates"))
+	r.SetHandler("queryPersona", common.Free, deprecated.Adapter(personas.QueryPersona, "GetStates"))
+	r.SetHandler("queryAllPersona", common.Free, deprecated.Adapter(personas.QueryAllPersona, "GetStates"))
+	r.SetHandler("queryHistory", common.Free, deprecated.Adapter(fabric.QueryHistory, "GetStatesHistory"))
+	r.SetHandler("queryByKey", common.Free, deprecated.Adapter(fabric.QueryByKey, "GetStates"))
+	r.SetHandler("queryByKeyRange", common.Free, deprecated.Adapter(fabric.QueryByKeyRange, "GetStates"))
 	//
 	// =========================================================================
 

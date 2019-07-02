@@ -11,10 +11,10 @@ import (
 )
 
 func AddHandlers(r router.Router) {
-	r.SetHandler("GetStates", common.AFIP, GetStatesHandler)
+	r.SetHandler("GetStates", common.Free, GetStatesHandler)
 	r.SetHandler("DelStates", common.AFIP, DelStatesHandler)
 	r.SetHandler("PutStates", common.AFIP, PutStatesHandler)
-	r.SetHandler("GetStatesHistory", common.AFIP, GetStatesHistoryHandler)
+	r.SetHandler("GetStatesHistory", common.Free, GetStatesHistoryHandler)
 }
 
 // PutStatesHandler es un handler variádico que recibe como argumentos una
