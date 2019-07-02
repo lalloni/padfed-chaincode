@@ -1,4 +1,4 @@
-package model
+package common
 
 type Motivo struct {
 	ID    uint   `json:"id,omitempty"`

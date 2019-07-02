@@ -1,4 +1,4 @@
-package model_test
+package persona
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/convert"
 )
 
@@ -18,10 +18,10 @@ func TestMarshaling(t *testing.T) {
 		v    interface{}
 		bs   []byte
 	}{
-		{&model.PersonaDomicilio{}, &model.PersonaDomicilio{}, []byte("{}")},
-		{&model.PersonaDomicilio{}, samplePersonaDomicilio(), samplePersonaDomicilioBytes()},
-		{&model.PersonaEmail{}, &model.PersonaEmail{}, []byte("{}")},
-		{&model.PersonaEmail{}, samplePersonaEmail(), samplePersonaEmailBytes()},
+		{&Domicilio{}, &Domicilio{}, []byte("{}")},
+		{&Domicilio{}, samplePersonaDomicilio(), samplePersonaDomicilioBytes()},
+		{&Email{}, &Email{}, []byte("{}")},
+		{&Email{}, samplePersonaEmail(), samplePersonaEmailBytes()},
 		// TODO completar para todos los struct Persona*
 	}
 
@@ -49,13 +49,13 @@ func TestMarshaling(t *testing.T) {
 
 }
 
-func samplePersonaEmail() *model.PersonaEmail {
-	return &model.PersonaEmail{
+func samplePersonaEmail() *Email {
+	return &Email{
 		Direccion: "aaa@nowhere.com",
 		Orden:     10,
 		Tipo:      10,
 		Estado:    1,
-		DS:        model.FechaEn(2018, 2, 3),
+		DS:        common.FechaEn(2018, 2, 3),
 	}
 }
 
@@ -95,8 +95,8 @@ func samplePersonaDomicilioBytes() []byte {
 }`)
 }
 
-func samplePersonaDomicilio() *model.PersonaDomicilio {
-	return &model.PersonaDomicilio{
+func samplePersonaDomicilio() *Domicilio {
+	return &Domicilio{
 		Nombre:      "pedro",
 		Orden:       10,
 		Org:         1,
@@ -109,15 +109,15 @@ func samplePersonaDomicilio() *model.PersonaDomicilio {
 		Manzana:     "45",
 		Torre:       "no tiene",
 		Unidad:      "alguna",
-		Provincia:   model.ProvinciaCódigo(0),
+		Provincia:   common.ProvinciaCódigo(0),
 		Localidad:   "pérez",
 		CP:          "C1428FFR",
 		Nomenclador: "10",
-		Adicional: &model.Adicional{
+		Adicional: &Adicional{
 			Tipo: 99,
 			Dato: "mmmm",
 		},
-		Baja: model.FechaEn(2019, 1, 1),
-		DS:   model.FechaEn(2019, 4, 8),
+		Baja: common.FechaEn(2019, 1, 1),
+		DS:   common.FechaEn(2019, 4, 8),
 	}
 }

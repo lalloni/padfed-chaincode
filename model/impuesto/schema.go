@@ -5,10 +5,11 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
-var Scheme = meta.MustPrepare(meta.Composite{
+var Schema = meta.MustPrepare(meta.Composite{
 	Name:            "impuesto",
 	Creator:         func() interface{} { return &Impuesto{} },
-	IdentifierField: "ID",
+	IdentifierField: "Codigo",
 	IdentifierKey:   common.Uint64Key("imp"),
 	KeyIdentifier:   common.Uint64Identifier(0),
+	KeyBaseName:     "imp",
 })

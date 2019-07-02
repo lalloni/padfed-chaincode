@@ -1,18 +1,17 @@
-package meta
+package persona
 
 import (
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
-var Persona = meta.MustPrepare(meta.Composite{
+var Schema = meta.MustPrepare(meta.Composite{
 	Name:            "persona",
 	KeyBaseName:     "per",
 	IdentifierField: "ID",
 	IdentifierKey:   common.Uint64Key("per"),
 	KeyIdentifier:   common.Uint64Identifier(0),
-	Creator:         func() interface{} { return &model.Persona{} },
+	Creator:         func() interface{} { return &Persona{} },
 	Singletons: []meta.Singleton{
 		{Tag: "per", Field: "Persona"},
 	},

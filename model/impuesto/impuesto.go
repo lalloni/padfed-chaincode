@@ -1,7 +1,7 @@
 package impuesto
 
 type Impuesto struct {
-	ID          uint64 `json:"id,omitempty"`
+	Codigo      uint64 `json:"codigo,omitempty"`
 	Org         uint64 `json:"org,omitempty"`
 	Nombre      string `json:"nombre,omitempty"`
 	Abreviatura string `json:"abreviatura,omitempty"`
