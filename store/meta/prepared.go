@@ -354,11 +354,23 @@ func NewItem(id string, value interface{}) Item {
 }
 
 func reflectionShallowCopy(src interface{}) interface{} {
-	sv := reflect.ValueOf(src).Elem()
-	st := sv.Type()
-	nv := reflect.New(st).Elem()
-	for f := 0; f < st.NumField(); f++ {
-		nv.Field(f).Set(sv.Field(f))
+	ptr := false
+	sv := reflect.ValueOf(src)
+	if sv.Kind() == reflect.Ptr {
+		sv = sv.Elem()
+		ptr = true
 	}
-	return nv.Addr().Interface()
+	st := sv.Type()
+	nv := reflect.New(st)
+	if nv.Kind() == reflect.Ptr {
+		nv = nv.Elem()
+	}
+	for f := 0; f < st.NumField(); f++ {
+		v := sv.Field(f)
+		nv.Field(f).Set(v)
+	}
+	if ptr {
+		return nv.Addr().Interface()
+	}
+	return nv.Interface()
 }

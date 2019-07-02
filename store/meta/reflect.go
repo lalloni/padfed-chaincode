@@ -6,20 +6,32 @@ import (
 
 func FieldClear(name string) MutatorFunc {
 	return func(v interface{}) {
-		f := reflect.ValueOf(v).Elem().FieldByName(name)
+		vv := reflect.ValueOf(v)
+		if vv.Kind() == reflect.Ptr {
+			vv = vv.Elem()
+		}
+		f := vv.FieldByName(name)
 		f.Set(reflect.Zero(f.Type()))
 	}
 }
 
 func FieldSetter(name string) SetterFunc {
 	return func(v interface{}, w interface{}) {
-		reflect.ValueOf(v).Elem().FieldByName(name).Set(reflect.ValueOf(w))
+		vv := reflect.ValueOf(v)
+		if vv.Kind() == reflect.Ptr {
+			vv = vv.Elem()
+		}
+		vv.FieldByName(name).Set(reflect.ValueOf(w))
 	}
 }
 
 func FieldGetter(name string) GetterFunc {
 	return func(v interface{}) interface{} {
-		return reflect.ValueOf(v).Elem().FieldByName(name).Interface()
+		vv := reflect.ValueOf(v)
+		if vv.Kind() == reflect.Ptr {
+			vv = vv.Elem()
+		}
+		return vv.FieldByName(name).Interface()
 	}
 }
 
