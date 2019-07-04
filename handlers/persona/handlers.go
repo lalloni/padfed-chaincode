@@ -3,7 +3,6 @@ package persona
 import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
-	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
@@ -28,12 +27,12 @@ func addHandlers(r router.Router, testing bool) {
 	if !testing {
 		opts = append(opts, common.WithWriteCheck(common.AFIP))
 	}
-	common.AddCRUDHandlers(r, model.Schema, opts...)
+	common.AddCRUDHandlers(r, persona.Schema, opts...)
 }
 
 func validatePersona(ctx *context.Context, v interface{}) *response.Response {
 
-	per := v.(*model.Persona)
+	per := v.(*persona.Persona)
 
 	if per.ID == 0 {
 		return response.BadRequest("id required")

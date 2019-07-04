@@ -96,7 +96,7 @@ var Defaults = []Option{
 	WithDefaultCheck(Free),
 }
 
-func AddCRUDHandlers(r router.Router, s *meta.PreparedComposite, opts ...Option) {
+func AddCRUDHandlers(r router.Router, s *meta.Schema, opts ...Option) {
 	o := &opt{}
 	for _, opt := range opts {
 		opt(o)
@@ -149,7 +149,7 @@ func add(r router.Router, name string, c auth.Check, h handler.Handler) {
 	r.SetHandler(router.Name(name), c, h)
 }
 
-func GetHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
+func GetHandler(s *meta.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id)
 		if err != nil {
@@ -166,7 +166,7 @@ func GetHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
 	}
 }
 
-func GetAllHandler(s *meta.PreparedComposite) handler.Handler {
+func GetAllHandler(s *meta.Schema) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		v, err := c.Store.GetCompositeAll(s)
 		if err != nil {
@@ -176,7 +176,7 @@ func GetAllHandler(s *meta.PreparedComposite) handler.Handler {
 	}
 }
 
-func GetRangeHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
+func GetRangeHandler(s *meta.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id, id)
 		if err != nil {
@@ -190,7 +190,7 @@ func GetRangeHandler(s *meta.PreparedComposite, id param.Param) handler.Handler 
 	}
 }
 
-func PutHandler(s *meta.PreparedComposite, val param.Param, valid Validator) handler.Handler {
+func PutHandler(s *meta.Schema, val param.Param, valid Validator) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], val)
 		if err != nil {
@@ -210,7 +210,7 @@ func PutHandler(s *meta.PreparedComposite, val param.Param, valid Validator) han
 	}
 }
 
-func DelHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
+func DelHandler(s *meta.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id)
 		if err != nil {
@@ -231,7 +231,7 @@ func DelHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
 	}
 }
 
-func DelRangeHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
+func DelRangeHandler(s *meta.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id, id)
 		if err != nil {
@@ -245,7 +245,7 @@ func DelRangeHandler(s *meta.PreparedComposite, id param.Param) handler.Handler 
 	}
 }
 
-func HasHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
+func HasHandler(s *meta.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id)
 		if err != nil {
@@ -259,7 +259,7 @@ func HasHandler(s *meta.PreparedComposite, id param.Param) handler.Handler {
 	}
 }
 
-func PutListHandler(s *meta.PreparedComposite, list param.Param, valid Validator) handler.Handler {
+func PutListHandler(s *meta.Schema, list param.Param, valid Validator) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], list)
 		if err != nil {

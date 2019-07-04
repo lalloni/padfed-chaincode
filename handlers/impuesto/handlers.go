@@ -15,7 +15,8 @@ func addTestHandlers(r router.Router) {
 }
 
 func addHandlers(r router.Router, testing bool) {
-	opts := append(common.Defaults,
+	opts := append(
+		common.Defaults, // i.e. get, getrange, has, put, putlist, del, delrange
 		common.WithIDParam(CodigoImpuestoParam),
 		common.WithItemParam(ImpuestoParam),
 		common.WithListParam(ImpuestoListParam),

@@ -11,7 +11,7 @@ import (
 
 const witnessTag = "wit"
 
-func MustPrepare(com Composite) *PreparedComposite {
+func MustPrepare(com Composite) *Schema {
 	cc, err := Prepare(com)
 	if err != nil {
 		panic(err)
@@ -19,7 +19,7 @@ func MustPrepare(com Composite) *PreparedComposite {
 	return cc
 }
 
-func Prepare(com Composite) (*PreparedComposite, error) {
+func Prepare(com Composite) (*Schema, error) {
 	value := com.Creator()
 	valueType := reflect.TypeOf(value).Elem()
 	members := map[string]interface{}{}
@@ -56,7 +56,7 @@ func Prepare(com Composite) (*PreparedComposite, error) {
 	if com.Copier == nil {
 		com.Copier = reflectionShallowCopy
 	}
-	return &PreparedComposite{
+	return &Schema{
 		name:        com.Name,
 		composite:   &com,
 		singletons:  singletons,
@@ -150,18 +150,18 @@ func prepareSingleton(singleton *Singleton, members map[string]interface{}, valu
 	return nil
 }
 
-type PreparedComposite struct {
+type Schema struct {
 	name        string
 	composite   *Composite
 	singletons  map[string]*Singleton
 	collections map[string]*Collection
 }
 
-func (cc *PreparedComposite) Name() string {
+func (cc *Schema) Name() string {
 	return cc.name
 }
 
-func (cc *PreparedComposite) IdentifierKey(id interface{}) (k *key.Key, err error) {
+func (cc *Schema) IdentifierKey(id interface{}) (k *key.Key, err error) {
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -171,7 +171,7 @@ func (cc *PreparedComposite) IdentifierKey(id interface{}) (k *key.Key, err erro
 	return cc.composite.IdentifierKey(id)
 }
 
-func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (v interface{}, err error) {
+func (cc *Schema) KeyIdentifier(k *key.Key) (v interface{}, err error) {
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -181,7 +181,7 @@ func (cc *PreparedComposite) KeyIdentifier(k *key.Key) (v interface{}, err error
 	return cc.composite.KeyIdentifier(k)
 }
 
-func (cc *PreparedComposite) ValueKey(val interface{}) (*key.Key, error) {
+func (cc *Schema) ValueKey(val interface{}) (*key.Key, error) {
 	id, err := cc.ValueIdentifier(val)
 	if err != nil {
 		return nil, err
@@ -189,7 +189,7 @@ func (cc *PreparedComposite) ValueKey(val interface{}) (*key.Key, error) {
 	return cc.IdentifierKey(id)
 }
 
-func (cc *PreparedComposite) ValueIdentifier(val interface{}) (id interface{}, err error) {
+func (cc *Schema) ValueIdentifier(val interface{}) (id interface{}, err error) {
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -200,7 +200,7 @@ func (cc *PreparedComposite) ValueIdentifier(val interface{}) (id interface{}, e
 	return
 }
 
-func (cc *PreparedComposite) ValueWitness(val interface{}) (*Entry, error) {
+func (cc *Schema) ValueWitness(val interface{}) (*Entry, error) {
 	k, err := cc.ValueKey(val)
 	if err != nil {
 		return nil, err
@@ -211,19 +211,19 @@ func (cc *PreparedComposite) ValueWitness(val interface{}) (*Entry, error) {
 	}, nil
 }
 
-func (cc *PreparedComposite) KeyWitness(key *key.Key) *key.Key {
+func (cc *Schema) KeyWitness(key *key.Key) *key.Key {
 	return key.Tagged(witnessTag)
 }
 
-func (cc *PreparedComposite) IsWitnessKey(key *key.Key) bool {
+func (cc *Schema) IsWitnessKey(key *key.Key) bool {
 	return key.Tag.Name == witnessTag
 }
 
-func (cc *PreparedComposite) MustKeepRoot(val interface{}) bool {
+func (cc *Schema) MustKeepRoot(val interface{}) bool {
 	return cc.composite.KeepRoot
 }
 
-func (cc *PreparedComposite) RootEntry(val interface{}) (entry *Entry, err error) {
+func (cc *Schema) RootEntry(val interface{}) (entry *Entry, err error) {
 	valkey, err := cc.ValueKey(val)
 	if err != nil {
 		return nil, err
@@ -239,7 +239,7 @@ func (cc *PreparedComposite) RootEntry(val interface{}) (entry *Entry, err error
 	return
 }
 
-func (cc *PreparedComposite) SingletonsEntries(val interface{}) (entries []*Entry, err error) {
+func (cc *Schema) SingletonsEntries(val interface{}) (entries []*Entry, err error) {
 	valkey, err := cc.ValueKey(val)
 	if err != nil {
 		return nil, err
@@ -261,7 +261,7 @@ func (cc *PreparedComposite) SingletonsEntries(val interface{}) (entries []*Entr
 	return
 }
 
-func (cc *PreparedComposite) CollectionsEntries(val interface{}) (entries []*Entry, err error) {
+func (cc *Schema) CollectionsEntries(val interface{}) (entries []*Entry, err error) {
 	valkey, err := cc.ValueKey(val)
 	if err != nil {
 		return nil, err
@@ -286,7 +286,7 @@ func (cc *PreparedComposite) CollectionsEntries(val interface{}) (entries []*Ent
 	return
 }
 
-func (cc *PreparedComposite) Cleared(v interface{}) interface{} {
+func (cc *Schema) Cleared(v interface{}) interface{} {
 	nv := cc.Copy(v)
 	for _, singleton := range cc.singletons {
 		singleton.Clear(nv)
@@ -297,11 +297,11 @@ func (cc *PreparedComposite) Cleared(v interface{}) interface{} {
 	return nv
 }
 
-func (cc *PreparedComposite) Copy(v interface{}) interface{} {
+func (cc *Schema) Copy(v interface{}) interface{} {
 	return cc.composite.Copier(v)
 }
 
-func (cc *PreparedComposite) Create() (v interface{}, err error) {
+func (cc *Schema) Create() (v interface{}, err error) {
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -312,7 +312,7 @@ func (cc *PreparedComposite) Create() (v interface{}, err error) {
 	return
 }
 
-func (cc *PreparedComposite) SetIdentifier(val, id interface{}) (err error) {
+func (cc *Schema) SetIdentifier(val, id interface{}) (err error) {
 	defer func() {
 		p := recover()
 		if p != nil {
@@ -325,15 +325,15 @@ func (cc *PreparedComposite) SetIdentifier(val, id interface{}) (err error) {
 	return
 }
 
-func (cc *PreparedComposite) Collection(k *key.Key) *Collection {
+func (cc *Schema) Collection(k *key.Key) *Collection {
 	return cc.collections[k.Tag.Name]
 }
 
-func (cc *PreparedComposite) Singleton(k *key.Key) *Singleton {
+func (cc *Schema) Singleton(k *key.Key) *Singleton {
 	return cc.singletons[k.Tag.Name]
 }
 
-func (cc *PreparedComposite) KeyBaseName() string {
+func (cc *Schema) KeyBaseName() string {
 	return cc.composite.KeyBaseName
 }
 
