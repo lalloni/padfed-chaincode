@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"sort"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
@@ -33,11 +34,16 @@ type router struct {
 }
 
 func (r *router) Functions() []Name {
-	fs := []Name{}
+	fs := []string(nil)
 	for f := range r.functionHandlers {
-		fs = append(fs, Name(f))
+		fs = append(fs, f)
 	}
-	return fs
+	sort.Strings(fs)
+	ns := []Name(nil)
+	for _, f := range fs {
+		ns = append(ns, Name(f))
+	}
+	return ns
 }
 
 func (r *router) InitHandler() handler.Handler {
