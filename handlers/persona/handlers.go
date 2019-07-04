@@ -38,17 +38,16 @@ func validatePersona(ctx *context.Context, v interface{}) *response.Response {
 		return response.BadRequest("id required")
 	}
 
-	if per.Persona != nil && per.ID != per.Persona.ID {
+	if per.Persona == nil {
+		exist, err := ctx.Store.HasComposite(persona.Schema, per.ID)
+		if err != nil {
+			return response.Error("checking persona existence: %v", err)
+		}
+		if !exist {
+			return response.BadRequest("persona is required when putting a new instance")
+		}
+	} else if per.Persona.ID != per.ID {
 		return response.BadRequest("id %q and persona.id %q must be equal", per.ID, per.Persona.ID)
-	}
-
-	exist, err := ctx.Store.HasComposite(persona.Schema, per.ID)
-	if err != nil {
-		return response.Error("checking persona existence: %v", err)
-	}
-
-	if !exist && per.Persona == nil {
-		return response.BadRequest("persona is required when putting a new instance")
 	}
 
 	return nil
