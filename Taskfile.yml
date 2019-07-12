@@ -114,7 +114,7 @@ tasks:
 
   test:
     desc: 'Ejecuta tests'
-    deps: [ pre, gen, vendor ]
+    deps: [ pre, vendor, gen ]
     silent: true
     cmds:
       - go test -mod=vendor ./...
@@ -127,7 +127,7 @@ tasks:
 
   compile:
     desc: 'Compila binario ejecutable'
-    deps: [ pre, gen, vendor ]
+    deps: [ pre, vendor, gen ]
     vars:
       binary: '{{ .target }}/chaincode'
     silent: true
