@@ -1,0 +1,50 @@
+name: Impuesto básico
+schema: impuesto
+document:
+  codigo: 30
+  org: 1
+  abreviatura: IVA
+  nombre: Impuesto al valor agregado
+assert:
+  match: valid
+---
+name: Impuesto sin requeridos
+schema: impuesto
+document: {}
+assert:
+  match: include
+  errors:
+    - field: "(root)"
+      description: "Se requiere codigo"
+    - field: "(root)"
+      description: "Se requiere org"
+    - field: "(root)"
+      description: "Se requiere nombre"
+    - field: "(root)"
+      description: "Se requiere abreviatura"
+---
+name: Impuesto con organismo inválido
+schema: impuesto
+document:
+  codigo: 30
+  org: 100
+  abreviatura: IVA
+  nombre: Impuesto al valor agregado
+assert:
+  match: include
+  errors:
+    - field: org
+      description: "Debe ser uno de AFIP (1), Provincia (900-924)"
+---
+name: Impuesto con código inválido
+schema: impuesto
+document:
+  codigo: 10000
+  org: 1
+  abreviatura: IVA
+  nombre: Impuesto al valor agregado
+assert:
+  match: include
+  errors:
+    - field: codigo
+      description: "Debe ser menor o igual que 9999"

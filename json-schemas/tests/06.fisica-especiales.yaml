@@ -1,0 +1,56 @@
+name: Física con duración
+schema: persona
+document:
+  id: 20242643772
+  persona:
+    tipo: F
+    id: 20242643772
+    tipoid: C
+    activoid: 20111111112
+    pais: 102
+    estado: A
+    nombre: Pablo
+    apellido: Lalloni
+    materno: Barrera
+    sexo: M
+    nacimiento: "1975-01-10"
+    fallecimiento: "2050-05-05"
+    duracion: 10
+    documento:
+      tipo: 1
+      numero: "24264377"
+    ch:
+      - pais
+      - estado
+    ds: "2019-03-25"
+assert:
+  match: include
+  errors:
+    - field: persona
+      description: "La propiedad duracion no está permitida"
+---
+name: Física sin DS
+schema: persona
+document:
+  id: 20242643772
+  persona:
+    tipo: F
+    id: 20242643772
+    tipoid: C
+    activoid: 20111111112
+    pais: 201
+    estado: A
+    nombre: Pablo
+    apellido: Lalloni
+    materno: Barrera
+    sexo: M
+    nacimiento: "1975-01-10"
+    fallecimiento: "2050-05-05"
+    documento:
+      tipo: 1
+      numero: "24264377"
+    ch:
+      - pais
+      - estado
+assert:
+  match: valid

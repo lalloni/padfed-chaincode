@@ -1,0 +1,44 @@
+name: Inscripción sin registro
+schema: persona
+document:
+  id: 33693450239
+  persona:
+    tipo: J
+    id: 33693450239
+    tipoid: C
+    activoid: 20111111112
+    estado: A
+    pais: 443
+    inscripcion:
+      numero: 1
+    razonsocial: AFIP
+    formajuridica: 2
+    duracion: 10
+    mescierre: 5
+    ds: "2019-03-25"
+assert:
+  match: valid
+---
+name: Inscripción sin número de registro
+schema: persona
+document:
+  id: 33693450239
+  persona:
+    tipo: J
+    id: 33693450239
+    tipoid: C
+    activoid: 20111111112
+    estado: A
+    pais: 343
+    inscripcion:
+      registro: 10
+    razonsocial: AFIP
+    formajuridica: 2
+    duracion: 10
+    mescierre: 5
+    ds: "2019-03-25"
+assert:
+  match: include
+  errors:
+    - field: persona.inscripcion
+      description: "Se requiere numero"

@@ -1,0 +1,154 @@
+name: Física Completa
+schema: persona
+document:
+  id: 20242643772
+  persona:
+    tipo: F
+    id: 20242643772
+    tipoid: C
+    activoid: 20111111112
+    pais: 102
+    estado: A
+    nombre: Pablo
+    apellido: Lalloni
+    materno: Barrera
+    sexo: M
+    nacimiento: "1975-01-10"
+    fallecimiento: "2050-05-05"
+    documento:
+      tipo: 1
+      numero: "24264377"
+    ch:
+      - pais
+      - estado
+    ds: "2019-03-25"
+  actividades:
+    883-12345:
+      actividad: "883-12345"
+      org: 1
+      orden: 1
+      desde: "2001-12-01"
+      hasta: "2004-04-30"
+      ds: "2001-03-11"
+    883-56789:
+      actividad: "883-56789"
+      org: 1
+      orden: 2
+      desde: "2002-05-01"
+      hasta: "2004-04-30"
+      ds: "2001-12-21"
+  impuestos:
+    20:
+      impuesto: 20
+      inscripcion: "2000-10-15"
+      estado: AC
+      periodo: 201001
+      dia: 20
+      motivo:
+        id: 1
+      ds: "2016-10-11"
+    30:
+      impuesto: 30
+      inscripcion: "2000-10-15"
+      estado: BD
+      periodo: 201009
+      dia: 20
+      motivo:
+        id: 1
+      ds: "2016-10-11"
+  domicilios:
+    1.1:
+      orden: 1
+      tipo: 1
+      org: 1
+      calle: "9 de Julio"
+      numero: 1000
+      provincia: 0
+      adicional:
+        tipo: 1
+        dato: "asda das das das dasd asd a sd"
+      baja: "2019-12-12"
+    2.2:
+      orden: 2
+      tipo: 2
+      org: 1
+      calle: "Corrientes"
+      numero: 348
+      provincia: 1
+  domisroles:
+   1.1:
+      orden: 2
+      tipo: 2
+      org: 1
+      rol: 3
+  telefonos:
+    1:
+      orden: 1
+      pais: 54
+      area: 911
+      numero: 34020264
+    2:
+      orden: 2
+      pais: 54
+      area: 11
+      numero: 47881881
+  jurisdicciones:
+    0:
+      provincia: 0
+      org: 900
+      desde: "2018-04-01"
+      ds: "2019-01-10"
+  emails:
+    1:
+      orden: 1
+      direccion: pp@nowhere.com
+      tipo: 1
+      estado: 1
+      ds: "2018-01-01"
+    2:
+      orden: 2
+      direccion: pp@nowhere.com
+      tipo: 2
+      estado: 1
+      ds: "2018-01-01"
+  archivos:
+    1:
+      orden: 1
+      tipo: 1
+      descripcion: "asdadasd asd as da sdasda sd"
+      ds: "2018-01-01"
+    2:
+      orden: 2
+      tipo: 1
+      descripcion: "asdadasd asd as da sdasda sd asd asd adas das a"
+      ds: "2018-01-01"
+  categorias:
+    1:
+      categoria: 1
+      estado: AC
+      impuesto: 20
+      periodo: 201010
+      ds: "2019-01-10"
+    2:
+      categoria: 2
+      estado: AC
+      impuesto: 20
+      periodo: 201010
+      ds: "2019-01-10"
+  contribmunis:
+    1:
+      impuesto: 20
+      municipio: 1
+      provincia: 0
+      desde: "2010-01-01"
+      hasta: "2015-01-01"
+      ds: "2019-01-31"
+    2:
+      impuesto: 20
+      municipio: 10
+      provincia: 1
+      desde: "2010-01-01"
+      hasta: "2015-01-01"
+      ds: "2019-01-31"
+assert:
+  match: valid

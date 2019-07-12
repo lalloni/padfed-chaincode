@@ -8,6 +8,7 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/handler/param"
 	"github.com/pkg/errors"
 
+	schemas "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/json-schemas"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
@@ -41,7 +42,7 @@ func parsePersona(bs []byte) (interface{}, error) {
 
 }
 
-var personaSchema = validator.MustLoadSchema("persona")
+var personaSchema = schemas.MustLoadSchema("persona")
 
 var PersonaListParam = param.Typed("Persona List JSON", reflect.TypeOf([]Persona(nil)), parsePersonaList)
 
@@ -70,4 +71,4 @@ func parsePersonaList(bs []byte) (interface{}, error) {
 
 }
 
-var personaListSchema = validator.MustLoadSchema("persona-list")
+var personaListSchema = schemas.MustLoadSchema("persona-list")

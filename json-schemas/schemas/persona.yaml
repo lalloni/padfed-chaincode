@@ -1,0 +1,722 @@
+$schema: http://json-schema.org/draft-07/schema#
+
+$id: https://metadata.afip.gob.ar/json-schemas/persona-v1.0.0#
+
+x-common-properties: &common-properties
+  tipoid:
+    type: string
+    enum: [C, E, I, L]
+  activoid:
+    $ref: "#/definitions/cuit"
+  estado:
+    type: string
+    enum: [A, I]
+  pais:
+    type: integer
+    minimum: 100
+    maximum: 999
+  ch:
+    $ref: "#/definitions/ch"
+  ds:
+    $ref: "#/definitions/fecha"
+
+x-personafisica-properties: &personafisica-properties
+  tipo:
+    const: F
+  id:
+    $ref: "#/definitions/cuitfisica"
+  documento:
+    $ref: "#/definitions/documento"
+  nombre:
+    type: string
+    minLength: 1
+    maxLength: 200
+  apellido:
+    type: string
+    minLength: 1
+    maxLength: 200
+  materno:
+    type: string
+    minLength: 1
+    maxLength: 200
+  sexo:
+    type: string
+    enum: [M, F]
+  nacimiento:
+    $ref: "#/definitions/fecha"
+  fallecimiento:
+    $ref: "#/definitions/fecha"
+
+x-personajuridica-properties: &personajuridica-properties
+  tipo:
+    const: J
+  id:
+    $ref: "#/definitions/cuitjuridica"
+  razonsocial:
+    type: string
+    minLength: 1
+    maxLength: 200
+  formajuridica:
+    type: integer
+    minimum: 1
+    maximum: 999
+  mescierre:
+    type: integer
+    minimum: 1
+    maximum: 12
+  contratosocial:
+    $ref: "#/definitions/fecha"
+  duracion:
+    type: integer
+    minimum: 1
+    maximum: 999
+  inscripcion:
+    type: object
+    properties:
+      numero:
+        type: integer
+        minimum: 1
+        maximum: 999999999999
+      registro:
+        type: integer
+        minimum: 1
+        maximum: 99
+    additionalProperties: false
+    required:
+      - numero
+
+x-common-collections: &common-collections
+  actividades:
+    type: object
+    patternProperties:
+      '^[-0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/actividad"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  impuestos:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/impuesto"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  domicilios:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/domicilio"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  domisroles:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/domirol"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  telefonos:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/telefono"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  jurisdicciones:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/jurisdiccion"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  emails:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/email"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  archivos:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/archivo"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  categorias:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/categoria"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  etiquetas:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/etiqueta"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  contribmunis:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/contribucionmunicipal"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  relaciones:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/relacion"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+  cmsedes:
+    type: object
+    patternProperties:
+      '^[0-9]+(\.[-0-9]+)*$':
+        anyOf:
+          - $ref: "#/definitions/cmsede"
+          - type: "null"
+    additionalProperties: false
+    minProperties: 1
+
+#####################
+# Esquema principal #
+#####################
+
+type: object
+additionalProperties: false
+required: [id]
+minProperties: 2
+properties:
+  id:
+    $ref: "#/definitions/cuit"
+  persona:
+    type: object
+    anyOf:
+      - type: object
+        title: personafisica
+        properties:
+          <<: *common-properties
+          <<: *personafisica-properties
+        additionalProperties: false
+        required:
+          - tipo
+          - id
+          - tipoid
+          - estado
+          - apellido
+      - type: object
+        title: personajuridica
+        properties:
+          <<: *common-properties
+          <<: *personajuridica-properties
+        additionalProperties: false
+        required:
+          - tipo
+          - id
+          - tipoid
+          - estado
+          - razonsocial
+  <<: *common-collections
+
+################################
+
+definitions:
+  cuit:
+    type: integer
+    format: cuit
+
+  cuitfisica:
+    type: integer
+    format: cuit
+    minimum: 20000000000
+    maximum: 29999999999
+
+  cuitjuridica:
+    type: integer
+    format: cuit
+    minimum: 30000000000
+    maximum: 39999999999
+
+  estado:
+    type: string
+    enum: [AC, NA, BD, BP, EX]
+
+  fecha:
+    type: string
+    format: date
+
+  provincia:
+    type: integer
+    minimum: 0
+    maximum: 24
+
+  motivo:
+    type: object
+    properties:
+      id:
+        type: integer
+        minimum: 1
+        maximum: 999999
+      desde:
+        $ref: "#/definitions/fecha"
+      hasta:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - id
+
+  periodomensual:
+    type: integer
+    minimum: 190000
+    maximum: 210012
+    format: periodomensual
+
+  periododiario:
+    type: integer
+    minimum: 19000000
+    maximum: 21001231
+    format: periododiario
+
+  actividad:
+    type: object
+    properties:
+      org:
+        $ref: "https://metadata.afip.gob.ar/json-schemas/organismo-v1.0.0#"
+      actividad:
+        type: string
+        pattern: "^[0-9]{1,3}-[0-9]{3,8}$"
+      orden:
+        type: integer
+        minimum: 1
+        maximum: 999
+      articulo:
+        type: integer
+        minimum: 1
+        maximum: 999
+      desde:
+        $ref: "#/definitions/fecha"
+      hasta:
+        $ref: "#/definitions/fecha"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - org
+      - actividad
+      - orden
+      - desde
+
+  domicilio:
+    type: object
+    properties:
+      org:
+        $ref: "https://metadata.afip.gob.ar/json-schemas/organismo-v1.0.0#"
+      nombre:
+        type: string
+        maxLength: 200
+      orden:
+        type: integer
+        minimum: 1
+        maximum: 9999
+      tipo:
+        type: integer
+        minimum: 1
+        maximum: 3
+      estado:
+        type: integer
+        minimum: 1
+        maximum: 99
+      calle:
+        type: string
+        maxLength: 200
+      numero:
+        type: integer
+        minimum: 1
+        maximum: 999999
+      piso:
+        type: string
+        maxLength: 5
+      sector:
+        type: string
+        maxLength: 200
+      manzana:
+        type: string
+        maxLength: 200
+      torre:
+        type: string
+        maxLength: 200
+      unidad:
+        type: string
+        maxLength: 5
+      provincia:
+        $ref: "#/definitions/provincia"
+      localidad:
+        type: string
+        maxLength: 200
+      cp:
+        type: string
+        maxLength: 8
+      nomenclador:
+        type: string
+        maxLength: 9
+      adicional:
+        type: object
+        properties:
+          tipo:
+            type: integer
+            minimum: 1
+            maximum: 99
+          dato:
+            type: string
+            maxLength: 200
+          additionalProperties: false
+        required:
+          - tipo
+          - dato
+      partido:
+        type: integer
+        minimum: 1
+        maximum: 999
+      partida:
+        type: integer
+        minimum: 1
+        maximum: 9999999
+      baja:
+        $ref: "#/definitions/fecha"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    minProperties: 3
+    required:
+      - orden
+      - tipo
+      - org
+
+  domirol:
+    type: object
+    properties:
+      org:
+        $ref: "https://metadata.afip.gob.ar/json-schemas/organismo-v1.0.0#"
+      orden:
+        type: integer
+        minimum: 1
+        maximum: 9999
+      tipo:
+        type: integer
+        minimum: 1
+        maximum: 3
+      rol:
+        type: integer
+        minimum: 1
+        maximum: 99
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    minProperties: 3
+    required:
+      - orden
+      - tipo
+      - org
+      - rol
+
+  impuesto:
+    type: object
+    properties:
+      impuesto:
+        $ref: "https://metadata.afip.gob.ar/json-schemas/impuesto-v1.0.0#/definitions/codigo"
+      inscripcion:
+        $ref: "#/definitions/fecha"
+      estado:
+        $ref: "#/definitions/estado"
+      dia:
+        type: integer
+        minimum: 1
+        maximum: 31
+      periodo:
+        $ref: "#/definitions/periodomensual"
+      motivo:
+        $ref: "#/definitions/motivo"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - impuesto
+      - periodo
+      - estado
+
+  telefono:
+    type: object
+    properties:
+      orden:
+        type: integer
+        minimum: 1
+        maximum: 999999
+      pais:
+        type: integer
+        minimum: 1
+        maximum: 9999
+      area:
+        type: integer
+        minimum: 1
+        maximum: 9999
+      numero:
+        type: integer
+        minimum: 1
+        maximum: 999999999999999
+      tipo:
+        type: integer
+        minimum: 1
+        maximum: 99
+      linea:
+        type: integer
+        minimum: 1
+        maximum: 999
+      estado:
+        type: integer
+        minimum: 1
+        maximum: 99
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - orden
+      - numero
+
+  documento:
+    type: object
+    properties:
+      tipo:
+        type: integer
+        minimum: 1
+        maximum: 99
+      numero:
+        type: string
+        minLength: 1
+    additionalProperties: false
+    required:
+      - tipo
+      - numero
+
+  jurisdiccion:
+    type: object
+    properties:
+      provincia:
+        $ref: "#/definitions/provincia"
+      desde:
+        $ref: "#/definitions/fecha"
+      hasta:
+        $ref: "#/definitions/fecha"
+      org:
+        type: integer
+        minimum: 900
+        maximum: 924
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - provincia
+      - desde
+      - org
+
+  email:
+    type: object
+    properties:
+      direccion:
+        type: string
+        format: email
+        maxLength: 100
+      orden:
+        type: integer
+        minimum: 1
+        maximum: 999
+      tipo:
+        type: integer
+        minimum: 1
+        maximum: 99
+      estado:
+        type: integer
+        minimum: 1
+        maximum: 99
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - orden
+      - direccion
+
+  archivo:
+    type: object
+    properties:
+      descripcion:
+        type: string
+      orden:
+        type: integer
+      tipo:
+        type: integer
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - orden
+      - tipo
+
+  categoria:
+    type: object
+    properties:
+      categoria:
+        type: integer
+        minimum: 1
+        maximum: 999
+      motivo:
+        type: integer
+        minimum: 1
+        maximum: 999999
+      estado:
+        $ref: "#/definitions/estado"
+      impuesto:
+        $ref: "https://metadata.afip.gob.ar/json-schemas/impuesto-v1.0.0#/definitions/codigo"
+      periodo:
+        $ref: "#/definitions/periodomensual"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - categoria
+      - impuesto
+      - periodo
+      - estado
+
+  etiqueta:
+    type: object
+    properties:
+      etiqueta:
+        type: integer
+        minimum: 1
+        maximum: 9999
+      periodo:
+        $ref: "#/definitions/periododiario"
+      estado:
+        $ref: "#/definitions/estado"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - etiqueta
+      - periodo
+      - estado
+
+  contribucionmunicipal:
+    type: object
+    properties:
+      impuesto:
+        $ref: "https://metadata.afip.gob.ar/json-schemas/impuesto-v1.0.0#/definitions/codigo"
+      municipio:
+        type: integer
+        minimum: 1
+        maximum: 9999
+      provincia:
+        $ref: "#/definitions/provincia"
+      desde:
+        $ref: "#/definitions/fecha"
+      hasta:
+        $ref: "#/definitions/fecha"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - impuesto
+      - municipio
+      - provincia
+      - desde
+
+  relacion:
+    type: object
+    properties:
+      persona:
+        $ref: "#/definitions/cuit"
+      tipo:
+        type: integer
+        minimum: 1
+        maximum: 999
+      subtipo:
+        type: integer
+        minimum: 1
+        maximum: 999
+      desde:
+        $ref: "#/definitions/fecha"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - persona
+      - tipo
+      - subtipo
+      - desde
+
+  cmsede:
+    type: object
+    properties:
+      provincia:
+        $ref: "#/definitions/provincia"
+      desde:
+        $ref: "#/definitions/fecha"
+      hasta:
+        $ref: "#/definitions/fecha"
+      ds:
+        $ref: "#/definitions/fecha"
+    additionalProperties: false
+    required:
+      - provincia
+      - desde
+
+  ch: # TODO ¿distinguir ch-fisica de ch-juridica para que no se permitan campos de persona fisica en un ch de persona jurídica y viceversa?
+    type: array
+    uniqueItems: true
+    items:
+      type: string
+      enum:
+        - activoid
+        - apellido
+        - contratosocial
+        - documento
+        - ds
+        - estado
+        - fallecimiento
+        - formajuridica
+        - id
+        - inscripcion
+        - materno
+        - mescierre
+        - nacimiento
+        - nombre
+        - pais
+        - razonsocial
+        - sexo
+        - tipo
+        - tipoid

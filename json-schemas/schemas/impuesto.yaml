@@ -1,0 +1,32 @@
+$schema: http://json-schema.org/draft-07/schema#
+
+$id: https://metadata.afip.gob.ar/json-schemas/impuesto-v1.0.0#
+
+type: object
+
+properties:
+  codigo:
+    $ref: '#/definitions/codigo'
+  org:
+    $ref: "https://metadata.afip.gob.ar/json-schemas/organismo-v1.0.0#"
+  nombre:
+    type: string
+    minLength: 1
+    maxLength: 200
+  abreviatura:
+    type: string
+    minLength: 1
+    maxLength: 30
+
+required:
+  - codigo
+  - org
+  - nombre
+  - abreviatura
+
+definitions:
+
+  codigo:
+    type: integer
+    minimum: 1
+    maximum: 9999

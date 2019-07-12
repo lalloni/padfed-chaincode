@@ -1,0 +1,47 @@
+name: Física con domicilios con organismos
+schema: persona
+document:
+  id: 20242643772
+  domicilios:
+    1.1:
+      orden: 1
+      org: 1
+      tipo: 1
+      calle: "9 de Julio"
+      numero: 1000
+      provincia: 0
+      adicional:
+        tipo: 1
+        dato: "asda das das das dasd asd a sd"
+      baja: "2019-12-12"
+    2.1:
+      orden: 1
+      org: 1
+      tipo: 2
+      calle: "Corrientes"
+      numero: 348
+      provincia: 1
+    2.2:
+      orden: 2
+      org: 910
+      tipo: 2
+      calle: "Corrientes"
+      numero: 348
+      provincia: 10
+assert:
+  match: valid
+---
+name: Física con domicilio con organismo inválido
+schema: persona
+document:
+  id: 20242643772
+  domicilios:
+    1.1:
+      orden: 1
+      org: 10
+      tipo: 1
+assert:
+  match: include
+  errors:
+    - field: domicilios.1.1.org
+      description: Debe ser uno de AFIP (1), Provincia (900-924)

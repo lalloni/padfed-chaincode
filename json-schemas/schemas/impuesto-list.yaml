@@ -1,0 +1,8 @@
+$schema: http://json-schema.org/draft-07/schema#
+
+$id: https://metadata.afip.gob.ar/json-schemas/impuesto-list-v1.0.0#
+
+type: array
+
+items:
+  $ref: https://metadata.afip.gob.ar/json-schemas/impuesto-v1.0.0#

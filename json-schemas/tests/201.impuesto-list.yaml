@@ -1,0 +1,13 @@
+name: List básica de impuestos
+schema: impuesto-list
+document:
+  - codigo: 30
+    org: 1
+    abreviatura: IVA
+    nombre: Impuesto al valor agregado
+  - codigo: 20
+    org: 1
+    abreviatura: MONOTRIBUTO
+    nombre: Monotributo
+assert:
+  match: valid

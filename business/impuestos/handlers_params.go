@@ -6,6 +6,7 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/handler/param"
 	"github.com/pkg/errors"
 
+	schemas "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/json-schemas"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
@@ -16,8 +17,8 @@ var (
 )
 
 var (
-	impuestoListSchema = validator.MustLoadSchema("impuesto-list")
-	impuestoSchema     = validator.MustLoadSchema("impuesto")
+	impuestoListSchema = schemas.MustLoadSchema("impuesto-list")
+	impuestoSchema     = schemas.MustLoadSchema("impuesto")
 )
 
 func parseImpuesto(bs []byte) (interface{}, error) {

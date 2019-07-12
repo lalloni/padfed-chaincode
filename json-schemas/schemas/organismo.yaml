@@ -1,0 +1,12 @@
+$schema: http://json-schema.org/draft-07/schema#
+
+$id: https://metadata.afip.gob.ar/json-schemas/organismo-v1.0.0#
+
+type: integer
+
+anyOf:
+  - title: "AFIP (1)"
+    const: 1
+  - title: "Provincia (900-924)"
+    minimum: 900
+    maximum: 924

@@ -7,6 +7,7 @@ import (
 
 	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
+	schemas "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/json-schemas"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
@@ -32,7 +33,7 @@ func ArgToPersonas(bs []byte, personas *[]model.Persona) *fabric.Response {
 	return &fabric.Response{}
 }
 
-var personaSchema = validator.MustLoadSchema("persona")
+var personaSchema = schemas.MustLoadSchema("persona")
 
 func validatePersonaJSON(bs []byte) *fabric.Response {
 	res, err := validator.Validate(personaSchema, bs)
@@ -45,7 +46,7 @@ func validatePersonaJSON(bs []byte) *fabric.Response {
 	return nil
 }
 
-var personaListSchema = validator.MustLoadSchema("persona-list")
+var personaListSchema = schemas.MustLoadSchema("persona-list")
 
 func validatePersonaListJSON(bs []byte) *fabric.Response {
 	res, err := validator.Validate(personaListSchema, bs)

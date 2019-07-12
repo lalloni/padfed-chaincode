@@ -1,0 +1,18 @@
+name: Lista básica
+schema: persona-list
+document:
+  - id: 20111111112
+    emails:
+      1:
+        orden: 1
+        direccion: pablo@nowhere.com
+  - id: 30679638943
+    persona:
+      tipo: J
+      id: 30679638943
+      tipoid: C
+      estado: A
+      razonsocial: "blabla sa"
+      ds: "2019-01-01"
+assert:
+  match: valid

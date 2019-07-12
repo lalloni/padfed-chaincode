@@ -1,0 +1,165 @@
+name: Jurídica Completa
+schema: persona
+document:
+  id: 33693450239
+  persona:
+    tipo: J
+    id: 33693450239
+    tipoid: C
+    activoid: 20111111112
+    estado: A
+    pais: 101
+    inscripcion:
+      registro: 1
+      numero: 1
+    razonsocial: AFIP
+    formajuridica: 2
+    duracion: 10
+    mescierre: 5
+    ch:
+      - pais
+      - estado
+    ds: "2019-03-25"
+  jurisdicciones:
+    0:
+      provincia: 0
+      org: 900
+      desde: "2018-04-01"
+      ds: "2019-01-10"
+  archivos:
+    1:
+      orden: 1
+      tipo: 1
+      descripcion: "asdadasd asd as da sdasda sd"
+      ds: "2018-01-01"
+    2:
+      orden: 2
+      tipo: 1
+      descripcion: "asdadasd asd as da sdasda sd asd asd adas das a"
+      ds: "2018-01-01"
+  actividades:
+    883-12345:
+      actividad: "883-12345"
+      org: 1
+      orden: 1
+      desde: "2001-12-01"
+      hasta: "2004-04-30"
+      ds: "2001-03-11"
+    883-56789:
+      actividad: "883-56789"
+      org: 1
+      orden: 2
+      desde: "2002-05-01"
+      hasta: "2004-04-30"
+      ds: "2001-12-21"
+  impuestos:
+    20:
+      impuesto: 20
+      inscripcion: "2000-10-15"
+      estado: AC
+      periodo: 201010
+      dia: 20
+      motivo: 
+        id: 1
+      ds: "2016-10-11"
+    30:
+      impuesto: 30
+      inscripcion: "2000-10-15"
+      estado: BD
+      periodo: 201010
+      dia: 20
+      motivo: 
+        id: 1
+      ds: "2016-10-11"
+  domicilios:
+    1.1:
+      orden: 1
+      tipo: 1
+      org: 1
+      calle: "9 de Julio"
+      numero: 1000
+      provincia: 0
+    2.2:
+      orden: 2
+      tipo: 2
+      org: 1
+      adicional:
+        tipo: 1
+        dato: "asda das das das dasd asd a sd"
+      baja: "2019-12-12"
+      calle: "Corrientes"
+      numero: 348
+      provincia: 1
+  telefonos:
+    1:
+      orden: 1
+      pais: 54
+      area: 911
+      numero: 34020264
+    2:
+      orden: 2
+      pais: 54
+      area: 11
+      numero: 47881881
+  emails:
+    1:
+      orden: 1
+      direccion: pp@nowhere.com
+      tipo: 1
+      estado: 1
+      ds: "2018-01-01"
+    2:
+      orden: 2
+      direccion: pp@nowhere.com
+      tipo: 2
+      estado: 1
+      ds: "2018-01-01"
+  categorias:
+    1:
+      categoria: 1
+      estado: AC
+      impuesto: 20
+      periodo: 201010
+      ds: "2019-01-10"
+    2:
+      categoria: 2
+      estado: AC
+      impuesto: 20
+      periodo: 201010
+      ds: "2019-01-10"
+  contribmunis:
+    20.1:
+      impuesto: 20
+      municipio: 1
+      provincia: 0
+      desde: "2010-01-01"
+      hasta: "2015-01-01"
+      ds: "2019-01-31"
+    20.10:
+      impuesto: 20
+      municipio: 10
+      provincia: 1
+      desde: "2010-01-01"
+      hasta: "2015-01-01"
+      ds: "2019-01-31"
+  relaciones:
+    20111111112.1.2:
+      persona: 20111111112
+      tipo: 1
+      subtipo: 1
+      desde: "2010-01-01"
+      ds: "2019-01-01"
+    20111111112.1.4:
+      persona: 20111111112
+      tipo: 1
+      subtipo: 4
+      desde: "2010-01-01"
+      ds: "2019-01-01"
+  cmsedes:
+    1:
+      provincia: 0
+      desde: "2019-06-23"
+      hasta: "2019-04-14"
+      ds: "2019-04-14"
+assert:
+  match: valid

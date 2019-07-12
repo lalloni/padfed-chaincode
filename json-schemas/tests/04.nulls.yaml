@@ -1,0 +1,103 @@
+name: null en colecciones
+schema: persona
+document:
+  id: 20242643772
+  actividades:
+    883-12345: null
+    883-56789:
+      actividad: "883-56789"
+      org: 1
+      orden: 2
+      desde: "2002-06-01"
+      hasta: "2004-04-30"
+      ds: "2001-12-21"
+  impuestos:
+    20:
+      impuesto: 20
+      inscripcion: "2000-10-15"
+      estado: AC
+      periodo: 201001
+      dia: 20
+      motivo: 
+        id: 2
+      ds: "2016-10-11"
+    30: null
+  domicilios:
+    1.1: null
+    2.2:
+      orden: 2
+      tipo: 2
+      org: 1
+      calle: "Corrientes"
+      numero: 348
+      provincia: 0
+  domisroles:
+   1.1: null
+   2.2: 
+      orden: 2
+      tipo: 2
+      org: 1
+      rol: 3
+  telefonos:
+    1:
+      orden: 1
+      pais: 54
+      area: 911
+      numero: 34020264
+    2: null
+  jurisdicciones:
+    0:
+      provincia: 0
+      org: 900
+      desde: "2018-04-01"
+      ds: "2019-01-10"
+    1: null
+  emails:
+    1: null
+    2:
+      orden: 2
+      direccion: pp@nowhere.com
+      tipo: 2
+      estado: 1
+      ds: "2018-01-01"
+  archivos:
+    1:
+      orden: 1
+      tipo: 1
+      descripcion: "asdadasd asd as da sdasda sd"
+      ds: "2018-01-01"
+    2: null
+  categorias:
+    1:
+      categoria: 1
+      estado: AC
+      impuesto: 20
+      periodo: 201010
+      ds: "2019-01-10"
+    2: null
+  contribmunis:
+    1: null
+    2:
+      impuesto: 20
+      municipio: 10
+      provincia: 1
+      desde: "2010-01-01"
+      hasta: "2015-01-01"
+      ds: "2019-01-31"
+  relaciones:
+    20111111112.1.2: null
+    20111111112.1.4:
+      persona: 20111111112
+      tipo: 1
+      subtipo: 4
+      desde: "2010-01-01"
+      ds: "2019-01-01"
+  cmsedes: 
+    1: 
+      provincia: 0
+      desde: "2019-06-23"
+      hasta: "2019-04-14"
+      ds: "2019-04-14"
+    2: null
+assert:
+  match: valid

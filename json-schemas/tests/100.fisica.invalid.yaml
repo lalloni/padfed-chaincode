@@ -1,0 +1,25 @@
+name: Física con CUIT de jurídica
+schema: persona
+document:
+  id: 33693450239
+  persona:
+    tipo: F
+    id: 33693450239
+assert:
+  match: include
+  errors:
+    - field: persona.id
+      description: "Debe ser menor o igual que 29999999999"
+---
+name: Física no debe tener inscripcion
+schema: persona
+document:
+  id: 20242643772
+  persona:
+    tipo: F
+    id: 20242643772
+  inscripcion:
+    registro: 1
+    numero: 1
+assert:
+  match: invalid

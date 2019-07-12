@@ -1,0 +1,46 @@
+name: actividades vacías prohibidas
+schema: persona
+document:
+  id: 20242643772
+  actividades: {}
+  impuestos: {}
+  domicilios: {}
+  telefonos: {}
+  jurisdicciones: {}
+  emails: {}
+  archivos: {}
+  categorias: {}
+  contribmunis: {}
+  domisroles: {}
+  cmsedes: {}
+  relaciones: {}
+  etiquetas: {}
+assert:
+  match: all
+  errors:
+    - field: domicilios
+      description: Debe tener al menos 1 propiedades
+    - field: domisroles
+      description: Debe tener al menos 1 propiedades
+    - field: archivos
+      description: Debe tener al menos 1 propiedades
+    - field: categorias
+      description: Debe tener al menos 1 propiedades
+    - field: emails
+      description: Debe tener al menos 1 propiedades
+    - field: jurisdicciones
+      description: Debe tener al menos 1 propiedades
+    - field: contribmunis
+      description: Debe tener al menos 1 propiedades
+    - field: impuestos
+      description: Debe tener al menos 1 propiedades
+    - field: telefonos
+      description: Debe tener al menos 1 propiedades
+    - field: actividades
+      description: Debe tener al menos 1 propiedades
+    - field: etiquetas
+      description: Debe tener al menos 1 propiedades
+    - field: relaciones
+      description: Debe tener al menos 1 propiedades
+    - field: cmsedes
+      description: Debe tener al menos 1 propiedades
