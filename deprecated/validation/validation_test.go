@@ -3,9 +3,9 @@ package validation_test
 import (
 	"testing"
 
+	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/test"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/validation"
-	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func TestValidPersona(t *testing.T) {

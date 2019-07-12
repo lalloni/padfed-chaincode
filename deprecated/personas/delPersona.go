@@ -8,8 +8,8 @@ import (
 
 	"github.com/lalloni/fabrikit/chaincode/store"
 
+	persona "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func DelPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {

@@ -1,10 +1,9 @@
-package impuesto
+package impuestos
 
 import (
 	"github.com/lalloni/fabrikit/chaincode/router"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
-	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/impuesto"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
 )
 
 func AddHandlers(r router.Router) {
@@ -25,5 +24,5 @@ func addHandlers(r router.Router, testing bool) {
 	if !testing {
 		opts = append(opts, common.WithWriteCheck(common.AFIP))
 	}
-	common.AddCRUDHandlers(r, model.Schema, opts...)
+	common.AddCRUDHandlers(r, Schema, opts...)
 }

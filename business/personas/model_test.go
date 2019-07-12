@@ -1,4 +1,4 @@
-package persona
+package personas
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git/convert"
 )
 

@@ -1,4 +1,4 @@
-package persona
+package personas
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/handler/param"
 	"github.com/pkg/errors"
 
-	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
@@ -21,7 +20,7 @@ func validateCUIT(v interface{}) (interface{}, error) {
 	return v, nil
 }
 
-var PersonaParam = param.Typed("Persona JSON", reflect.TypeOf(&model.Persona{}), parsePersona)
+var PersonaParam = param.Typed("Persona JSON", reflect.TypeOf(&Persona{}), parsePersona)
 
 func parsePersona(bs []byte) (interface{}, error) {
 
@@ -33,7 +32,7 @@ func parsePersona(bs []byte) (interface{}, error) {
 		return nil, errors.Errorf("invalid persona: %s", res.String())
 	}
 
-	per := &model.Persona{}
+	per := &Persona{}
 	if err = json.Unmarshal(bs, per); err != nil {
 		return nil, errors.Wrap(err, "unmarshalling persona")
 	}
@@ -44,7 +43,7 @@ func parsePersona(bs []byte) (interface{}, error) {
 
 var personaSchema = validator.MustLoadSchema("persona")
 
-var PersonaListParam = param.Typed("Persona List JSON", reflect.TypeOf([]model.Persona(nil)), parsePersonaList)
+var PersonaListParam = param.Typed("Persona List JSON", reflect.TypeOf([]Persona(nil)), parsePersonaList)
 
 func parsePersonaList(bs []byte) (interface{}, error) {
 
@@ -56,7 +55,7 @@ func parsePersonaList(bs []byte) (interface{}, error) {
 		return nil, errors.Errorf("invalid persona list: %s", res.String())
 	}
 
-	pers := []*model.Persona{}
+	pers := []*Persona{}
 	err = json.Unmarshal(bs, &pers)
 	if err != nil {
 		return nil, errors.Wrap(err, "unmarshalling persona list")

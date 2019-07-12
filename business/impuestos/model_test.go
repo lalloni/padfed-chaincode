@@ -1,4 +1,4 @@
-package impuesto
+package impuestos
 
 import (
 	"testing"

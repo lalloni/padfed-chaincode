@@ -1,4 +1,4 @@
-package impuesto
+package impuestos
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/handler/param"
 	"github.com/pkg/errors"
 
-	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/impuesto"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
@@ -29,7 +28,7 @@ func parseImpuesto(bs []byte) (interface{}, error) {
 	if !res.Valid() {
 		return nil, errors.Errorf("invalid impuesto: %s", res.String())
 	}
-	i := &model.Impuesto{}
+	i := &Impuesto{}
 	err = json.Unmarshal(bs, i)
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing impuesto JSON")
@@ -45,7 +44,7 @@ func parseImpuestoList(bs []byte) (interface{}, error) {
 	if !res.Valid() {
 		return nil, errors.Errorf("invalid impuesto list: %s", res.String())
 	}
-	is := []*model.Impuesto(nil)
+	is := []*Impuesto(nil)
 	err = json.Unmarshal(bs, &is)
 	if err != nil {
 		return nil, errors.Wrap(err, "parsing impuesto list JSON")

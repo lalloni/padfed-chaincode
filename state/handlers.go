@@ -8,7 +8,7 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/response"
 	"github.com/lalloni/fabrikit/chaincode/router"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
 )
 
 func AddHandlers(r router.Router) {

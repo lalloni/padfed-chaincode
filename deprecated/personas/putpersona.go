@@ -6,9 +6,9 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
+	persona "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/validation"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func PutPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {

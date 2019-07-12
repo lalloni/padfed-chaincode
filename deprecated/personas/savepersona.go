@@ -4,11 +4,10 @@ import (
 	"fmt"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
-
 	"github.com/lalloni/fabrikit/chaincode/store"
 
+	persona "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
 )
 
 func SavePersona(stub shim.ChaincodeStubInterface, p *persona.Persona) *fabric.Response {

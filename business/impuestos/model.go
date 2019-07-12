@@ -1,4 +1,4 @@
-package impuesto
+package impuestos
 
 type Impuesto struct {
 	Codigo      uint64 `json:"codigo,omitempty"`

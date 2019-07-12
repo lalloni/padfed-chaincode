@@ -1,4 +1,4 @@
-package impuesto
+package impuestos
 
 import (
 	"encoding/json"
@@ -12,8 +12,6 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/test"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
-
-	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/impuesto"
 )
 
 func TestPutImpuesto(t *testing.T) {
@@ -27,7 +25,7 @@ func TestPutImpuesto(t *testing.T) {
 
 	mock := test.NewMock("test", r)
 
-	imp1 := &model.Impuesto{
+	imp1 := &Impuesto{
 		Codigo:      1,
 		Org:         1,
 		Abreviatura: "IVA",
@@ -39,7 +37,7 @@ func TestPutImpuesto(t *testing.T) {
 	a.Empty(payload)
 	a.EqualValues(status.OK, res.Status)
 
-	imp2 := &model.Impuesto{}
+	imp2 := &Impuesto{}
 	bs, err := mock.GetState("imp:1")
 	a.NoError(err)
 	err = json.Unmarshal(bs, imp2)
@@ -75,7 +73,7 @@ func TestPutImpuestoList(t *testing.T) {
 
 	mock := test.NewMock("test", r)
 
-	imps := []*model.Impuesto{
+	imps := []*Impuesto{
 		{
 			Codigo:      1,
 			Org:         1,
@@ -94,7 +92,7 @@ func TestPutImpuestoList(t *testing.T) {
 	a.EqualValues(2, payload.Content)
 	a.EqualValues(status.OK, res.Status)
 
-	imp := &model.Impuesto{}
+	imp := &Impuesto{}
 	bs, err := mock.GetState("imp:1")
 	a.NoError(err)
 	err = json.Unmarshal(bs, imp)
@@ -105,7 +103,7 @@ func TestPutImpuestoList(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues("1", string(bs))
 
-	imp = &model.Impuesto{}
+	imp = &Impuesto{}
 	bs, err = mock.GetState("imp:2")
 	a.NoError(err)
 	err = json.Unmarshal(bs, imp)
@@ -142,7 +140,7 @@ func TestGetImpuesto(t *testing.T) {
 	mock := test.NewMock("test", r)
 	test.MockTransactionStart(t, mock)
 
-	imp1 := &model.Impuesto{
+	imp1 := &Impuesto{
 		Codigo:      1,
 		Org:         1,
 		Abreviatura: "IVA",
@@ -159,7 +157,7 @@ func TestGetImpuesto(t *testing.T) {
 	_, res, payload, err := test.MockInvoke(t, mock, "GetImpuesto", 1)
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
-	imp2 := &model.Impuesto{}
+	imp2 := &Impuesto{}
 	err = mapstructure.Decode(payload.Content, imp2)
 	a.NoError(err)
 	a.EqualValues(imp1, imp2)
@@ -179,7 +177,7 @@ func TestHasImpuesto(t *testing.T) {
 
 	test.MockTransactionStart(t, mock)
 
-	imp1 := &model.Impuesto{
+	imp1 := &Impuesto{
 		Codigo:      1,
 		Org:         1,
 		Abreviatura: "IVA",
@@ -213,7 +211,7 @@ func TestDelImpuesto(t *testing.T) {
 
 	test.MockTransactionStart(t, mock)
 
-	imp1 := &model.Impuesto{
+	imp1 := &Impuesto{
 		Codigo:      1,
 		Org:         1,
 		Abreviatura: "IVA",
@@ -250,7 +248,7 @@ func TestGetImpuestoAll(t *testing.T) {
 
 	mock := test.NewMock("test", r)
 
-	imps := []*model.Impuesto{
+	imps := []*Impuesto{
 		{
 			Codigo:      1,
 			Org:         1,
@@ -273,7 +271,7 @@ func TestGetImpuestoAll(t *testing.T) {
 	a.NoError(err)
 	a.EqualValues(status.OK, res.Status)
 	a.NotEmpty(payload)
-	imps2 := []*model.Impuesto{}
+	imps2 := []*Impuesto{}
 	err = mapstructure.Decode(payload.Content, &imps2)
 	a.NoError(err)
 	a.EqualValues(imps, imps2)

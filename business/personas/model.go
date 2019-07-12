@@ -1,7 +1,7 @@
-package persona
+package personas
 
 import (
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
 )
 
 type Persona struct {

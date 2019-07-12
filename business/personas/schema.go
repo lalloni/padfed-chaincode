@@ -1,9 +1,9 @@
-package persona
+package personas
 
 import (
 	"github.com/lalloni/fabrikit/chaincode/store"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
 )
 
 var Schema = store.MustPrepare(store.Composite{

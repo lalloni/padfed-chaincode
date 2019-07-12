@@ -7,13 +7,13 @@ import (
 	"github.com/lalloni/fabrikit/chaincode/logging"
 	"github.com/lalloni/fabrikit/chaincode/router"
 
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/impuestos"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/personas"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/impuesto"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/state"
+	deprecatedpersonas "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/personas"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/state"
 )
 
 const name = "padfedcc"
@@ -31,8 +31,8 @@ func main() {
 	r.SetHandler("GetFunctions", common.Free, router.FunctionsHandler(r))
 
 	// Business
-	persona.AddHandlers(r)
-	impuesto.AddHandlers(r)
+	personas.AddHandlers(r)
+	impuestos.AddHandlers(r)
 
 	// States
 	state.AddHandlers(r)
@@ -43,15 +43,15 @@ func main() {
 	// no presentan al cliente una interfaz robusta, consistente y homogenea.
 	//
 	// TODO eliminar bloque antes de 1.0.0
-	r.SetHandler("putPersona", common.AFIP, deprecated.Adapter(personas.PutPersona, "PutPersona"))
-	r.SetHandler("delPersona", common.AFIP, deprecated.Adapter(personas.DelPersona, "DelPersona"))
-	r.SetHandler("getPersona", common.Free, deprecated.Adapter(personas.GetPersonaAPI, "GetPersona"))
-	r.SetHandler("putPersonas", common.AFIP, deprecated.Adapter(personas.PutPersonas, "PutPersonaList"))
-	r.SetHandler("delPersonasByRange", common.AFIP, deprecated.Adapter(personas.DelPersonasByRange, "DelPersonaRange"))
+	r.SetHandler("putPersona", common.AFIP, deprecated.Adapter(deprecatedpersonas.PutPersona, "PutPersona"))
+	r.SetHandler("delPersona", common.AFIP, deprecated.Adapter(deprecatedpersonas.DelPersona, "DelPersona"))
+	r.SetHandler("getPersona", common.Free, deprecated.Adapter(deprecatedpersonas.GetPersonaAPI, "GetPersona"))
+	r.SetHandler("putPersonas", common.AFIP, deprecated.Adapter(deprecatedpersonas.PutPersonas, "PutPersonaList"))
+	r.SetHandler("delPersonasByRange", common.AFIP, deprecated.Adapter(deprecatedpersonas.DelPersonasByRange, "DelPersonaRange"))
 	r.SetHandler("deleteAll", common.AFIP, deprecated.Adapter(fabric.DeleteAll, "DelStates"))
 	r.SetHandler("deleteByKeyRange", common.AFIP, deprecated.Adapter(fabric.DeleteByKeyRange, "DelStates"))
-	r.SetHandler("queryPersona", common.Free, deprecated.Adapter(personas.QueryPersona, "GetStates"))
-	r.SetHandler("queryAllPersona", common.Free, deprecated.Adapter(personas.QueryAllPersona, "GetStates"))
+	r.SetHandler("queryPersona", common.Free, deprecated.Adapter(deprecatedpersonas.QueryPersona, "GetStates"))
+	r.SetHandler("queryAllPersona", common.Free, deprecated.Adapter(deprecatedpersonas.QueryAllPersona, "GetStates"))
 	r.SetHandler("queryHistory", common.Free, deprecated.Adapter(fabric.QueryHistory, "GetStatesHistory"))
 	r.SetHandler("queryByKey", common.Free, deprecated.Adapter(fabric.QueryByKey, "GetStates"))
 	r.SetHandler("queryByKeyRange", common.Free, deprecated.Adapter(fabric.QueryByKeyRange, "GetStates"))
