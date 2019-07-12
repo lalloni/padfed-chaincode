@@ -224,7 +224,7 @@ tasks:
       - cmd: git clone . '{{ .target }}/release'
       - cmd: sed -e 's/dev/{{ .version }}/' version.go >'{{ .target }}/release/version.go'
       - cmd: cd '{{ .target }}/release' && echo "checking out v{{.version}} at $(pwd)" && git checkout --quiet 'v{{ .version }}'
-      - cmd: task --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
+      - cmd: task -v --dir '{{ .target }}/release' publish package='{{ .package }}' publishversion='{{ .version }}' credentials='{{ .credentials }}'
       - cmd: git push '{{ .remote }}' tag 'v{{ .version }}'
 
   coverreport:
