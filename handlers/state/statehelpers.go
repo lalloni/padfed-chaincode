@@ -4,9 +4,8 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/hyperledger/fabric/protos/common"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
+	"github.com/lalloni/fabrikit/chaincode/context"
+	"github.com/lalloni/fabrikit/chaincode/response/status"
 )
 
 func setKeyValue(ctx *context.Context, key string, value []byte) error {

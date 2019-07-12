@@ -1,11 +1,12 @@
 package impuesto
 
 import (
+	"github.com/lalloni/fabrikit/chaincode/store"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
-var Schema = meta.MustPrepare(meta.Composite{
+var Schema = store.MustPrepare(store.Composite{
 	Name:            "impuesto",
 	Creator:         func() interface{} { return &Impuesto{} },
 	IdentifierField: "Codigo",

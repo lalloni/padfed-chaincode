@@ -1,9 +1,8 @@
 package state
 
 import (
+	"github.com/lalloni/fabrikit/chaincode/context"
 	"github.com/pkg/errors"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
 )
 
 func queryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {

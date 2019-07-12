@@ -3,11 +3,12 @@ package state
 import (
 	"github.com/pkg/errors"
 
+	"github.com/lalloni/fabrikit/chaincode/context"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/response"
+	"github.com/lalloni/fabrikit/chaincode/router"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
 
 func AddHandlers(r router.Router) {

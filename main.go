@@ -2,6 +2,10 @@ package main
 
 import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/logging"
+	"github.com/lalloni/fabrikit/chaincode/router"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
@@ -10,10 +14,6 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/impuesto"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/persona"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/state"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/chaincode"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/logging"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
 
 const name = "padfedcc"

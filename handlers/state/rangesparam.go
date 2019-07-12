@@ -3,7 +3,7 @@ package state
 import (
 	"reflect"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler/param"
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
 )
 
 var RangesParam = param.Typed("key ranges", reflect.TypeOf(&Ranges{}), parser)

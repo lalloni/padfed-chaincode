@@ -6,8 +6,9 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/lalloni/fabrikit/chaincode/store/key"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/test"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 )
 
 func TestQueryByKey(t *testing.T) {

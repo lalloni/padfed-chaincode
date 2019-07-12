@@ -8,7 +8,7 @@ import (
 	"github.com/lalloni/afip/cuit"
 	words "github.com/moul/number-to-words"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
+	"github.com/lalloni/fabrikit/chaincode/test"
 )
 
 func SummaryPersonasID(pers []Persona) (index map[uint64]Persona, ids []uint64) {

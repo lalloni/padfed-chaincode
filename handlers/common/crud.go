@@ -3,15 +3,13 @@ package common
 import (
 	"strings"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
-
-	auth "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/context"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler/param"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
+	auth "github.com/lalloni/fabrikit/chaincode/authorization"
+	"github.com/lalloni/fabrikit/chaincode/context"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
+	"github.com/lalloni/fabrikit/chaincode/response"
+	"github.com/lalloni/fabrikit/chaincode/router"
+	"github.com/lalloni/fabrikit/chaincode/store"
 )
 
 type Validator func(*context.Context, interface{}) *response.Response
@@ -96,7 +94,7 @@ var Defaults = []Option{
 	WithDefaultCheck(Free),
 }
 
-func AddCRUDHandlers(r router.Router, s *meta.Schema, opts ...Option) {
+func AddCRUDHandlers(r router.Router, s *store.Schema, opts ...Option) {
 	o := &opt{}
 	for _, opt := range opts {
 		opt(o)
@@ -149,7 +147,7 @@ func add(r router.Router, name string, c auth.Check, h handler.Handler) {
 	r.SetHandler(router.Name(name), c, h)
 }
 
-func GetHandler(s *meta.Schema, id param.Param) handler.Handler {
+func GetHandler(s *store.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id)
 		if err != nil {
@@ -166,7 +164,7 @@ func GetHandler(s *meta.Schema, id param.Param) handler.Handler {
 	}
 }
 
-func GetAllHandler(s *meta.Schema) handler.Handler {
+func GetAllHandler(s *store.Schema) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		v, err := c.Store.GetCompositeAll(s)
 		if err != nil {
@@ -176,7 +174,7 @@ func GetAllHandler(s *meta.Schema) handler.Handler {
 	}
 }
 
-func GetRangeHandler(s *meta.Schema, id param.Param) handler.Handler {
+func GetRangeHandler(s *store.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id, id)
 		if err != nil {
@@ -190,7 +188,7 @@ func GetRangeHandler(s *meta.Schema, id param.Param) handler.Handler {
 	}
 }
 
-func PutHandler(s *meta.Schema, val param.Param, valid Validator) handler.Handler {
+func PutHandler(s *store.Schema, val param.Param, valid Validator) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], val)
 		if err != nil {
@@ -210,7 +208,7 @@ func PutHandler(s *meta.Schema, val param.Param, valid Validator) handler.Handle
 	}
 }
 
-func DelHandler(s *meta.Schema, id param.Param) handler.Handler {
+func DelHandler(s *store.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id)
 		if err != nil {
@@ -231,7 +229,7 @@ func DelHandler(s *meta.Schema, id param.Param) handler.Handler {
 	}
 }
 
-func DelRangeHandler(s *meta.Schema, id param.Param) handler.Handler {
+func DelRangeHandler(s *store.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id, id)
 		if err != nil {
@@ -245,7 +243,7 @@ func DelRangeHandler(s *meta.Schema, id param.Param) handler.Handler {
 	}
 }
 
-func HasHandler(s *meta.Schema, id param.Param) handler.Handler {
+func HasHandler(s *store.Schema, id param.Param) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], id)
 		if err != nil {
@@ -259,7 +257,7 @@ func HasHandler(s *meta.Schema, id param.Param) handler.Handler {
 	}
 }
 
-func PutListHandler(s *meta.Schema, list param.Param, valid Validator) handler.Handler {
+func PutListHandler(s *store.Schema, list param.Param, valid Validator) handler.Handler {
 	return func(c *context.Context) *response.Response {
 		args, err := handler.ExtractArgs(c.Stub.GetArgs()[1:], list)
 		if err != nil {

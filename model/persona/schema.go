@@ -1,21 +1,22 @@
 package persona
 
 import (
+	"github.com/lalloni/fabrikit/chaincode/store"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/common"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/meta"
 )
 
-var Schema = meta.MustPrepare(meta.Composite{
+var Schema = store.MustPrepare(store.Composite{
 	Name:            "persona",
 	KeyBaseName:     "per",
 	IdentifierField: "ID",
 	IdentifierKey:   common.Uint64Key("per"),
 	KeyIdentifier:   common.Uint64Identifier(0),
 	Creator:         func() interface{} { return &Persona{} },
-	Singletons: []meta.Singleton{
+	Singletons: []store.Singleton{
 		{Tag: "per", Field: "Persona"},
 	},
-	Collections: []meta.Collection{
+	Collections: []store.Collection{
 		{Tag: "act", Field: "Actividades"},
 		{Tag: "imp", Field: "Impuestos"},
 		{Tag: "dom", Field: "Domicilios"},

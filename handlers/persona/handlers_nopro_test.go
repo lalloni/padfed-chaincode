@@ -5,13 +5,13 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/lalloni/afip/cuit"
+	"github.com/lalloni/fabrikit/chaincode/response/status"
+	"github.com/lalloni/fabrikit/chaincode/router"
+	"github.com/lalloni/fabrikit/chaincode/test"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
 
 	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
 
 func TestDelPersonaRangeHandler(t *testing.T) {

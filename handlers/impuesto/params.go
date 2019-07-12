@@ -3,10 +3,10 @@ package impuesto
 import (
 	"encoding/json"
 
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
 	"github.com/pkg/errors"
 
 	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/impuesto"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/handler/param"
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 

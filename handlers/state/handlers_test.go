@@ -6,12 +6,11 @@ import (
 	"testing"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode/response/status"
+	"github.com/lalloni/fabrikit/chaincode/router"
+	"github.com/lalloni/fabrikit/chaincode/test"
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
 
 func TestGetPutDelStatesHandler(t *testing.T) {

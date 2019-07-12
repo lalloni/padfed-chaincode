@@ -6,8 +6,8 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
+	"github.com/lalloni/fabrikit/chaincode/store"
+	"github.com/lalloni/fabrikit/chaincode/test"
 )
 
 func TestPut(t *testing.T) {

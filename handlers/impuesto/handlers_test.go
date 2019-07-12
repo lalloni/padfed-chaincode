@@ -7,13 +7,13 @@ import (
 	"unicode/utf8"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode/response/status"
+	"github.com/lalloni/fabrikit/chaincode/router"
+	"github.com/lalloni/fabrikit/chaincode/test"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
 
 	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/impuesto"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/response/status"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/test"
 )
 
 func TestPutImpuesto(t *testing.T) {

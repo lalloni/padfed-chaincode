@@ -1,6 +1,6 @@
 package common
 
-import "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/authorization"
+import "github.com/lalloni/fabrikit/chaincode/authorization"
 
 var (
 	AFIP = authorization.MSPID("AFIP")

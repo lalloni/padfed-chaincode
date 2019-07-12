@@ -6,9 +6,10 @@ import (
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 
+	"github.com/lalloni/fabrikit/chaincode/store"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/persona"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store"
 )
 
 func DelPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {

@@ -7,9 +7,10 @@ import (
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/pkg/errors"
 
+	"github.com/lalloni/fabrikit/chaincode/store/key"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/helpers"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/store/key"
 )
 
 func QueryPersonasByRangeFormated(stub shim.ChaincodeStubInterface, cuitInicio string, cuitFin string, full bool) *fabric.Response {

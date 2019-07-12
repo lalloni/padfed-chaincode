@@ -1,9 +1,10 @@
 package impuesto
 
 import (
+	"github.com/lalloni/fabrikit/chaincode/router"
+
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/handlers/common"
 	model "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/model/impuesto"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/ng/router"
 )
 
 func AddHandlers(r router.Router) {
