@@ -4,6 +4,8 @@ expansions: 10
 
 output: prefixed
 
+
+
 vars:
 
   # Para deploy a Nexus
@@ -140,9 +142,11 @@ tasks:
 
   package:
     desc: 'Empaqueta fuentes para instalar en Fabric'
-    deps: [ check, test, compile ]
     silent: true
     cmds:
+      - task: check
+      - task: test
+      - task: compile
       - tar -caf "{{ .package }}" --exclude="{{ .target }}/*" --exclude-vcs --exclude-vcs-ignore *
     sources:
       - '**/*.go'
