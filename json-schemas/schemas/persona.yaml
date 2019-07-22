@@ -317,8 +317,11 @@ definitions:
         maximum: 999
       articulo:
         type: integer
-        minimum: 1
-        maximum: 999
+        anyOf:
+          - minimum: 6
+            maximum: 13
+          - const: 2
+          - const: 0
       desde:
         $ref: "#/definitions/fecha"
       hasta:
