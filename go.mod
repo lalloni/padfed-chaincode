@@ -14,6 +14,7 @@ require (
 	github.com/gopherjs/gopherjs v0.0.0-20190430165422-3e4dfb77656c // indirect
 	github.com/hashicorp/go-version v1.2.0 // indirect
 	github.com/hyperledger/fabric v1.4.1
+	github.com/jszwec/csvutil v1.2.1
 	github.com/lalloni/afip v1.6.1
 	github.com/lalloni/fabrikit v0.0.0-20190712132741-8e9b3d4d49a9
 	github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505
@@ -38,7 +39,6 @@ require (
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
 	golang.org/x/text v0.3.2 // indirect
-	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20190620144150-6af8c5fc6601 // indirect
 	google.golang.org/grpc v1.21.1 // indirect
 	gopkg.in/yaml.v2 v2.2.2
