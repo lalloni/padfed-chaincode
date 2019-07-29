@@ -318,10 +318,13 @@ definitions:
       articulo:
         type: integer
         anyOf:
-          - minimum: 6
+          - title: "0"
+            const: 0
+          - title: "2"
+            const: 2
+          - title: "6-13"
+            minimum: 6
             maximum: 13
-          - const: 2
-          - const: 0
       desde:
         $ref: "#/definitions/fecha"
       hasta:
