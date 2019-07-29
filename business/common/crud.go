@@ -166,6 +166,10 @@ func GetHandler(s *store.Schema, id param.Param) handler.Handler {
 
 func GetAllHandler(s *store.Schema) handler.Handler {
 	return func(c *context.Context) *response.Response {
+		_, err := handler.ExtractArgs(c.Stub.GetArgs()[1:]) // no parameters
+		if err != nil {
+			return response.BadRequest(err.Error())
+		}
 		v, err := c.Store.GetCompositeAll(s)
 		if err != nil {
 			return response.Error("getting %s: %v", s.Name(), err)
