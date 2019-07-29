@@ -94,7 +94,7 @@ tasks:
         env:
           GO111MODULE: on
     sources:
-      - 'json-schemas/schemas/*.yaml'
+      - 'resources/*/*'
     generates:
       - 'packrd/packed-packr.go'
 

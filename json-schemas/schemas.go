@@ -1,22 +1,20 @@
 package jsonschemas
 
 import (
-	packr "github.com/gobuffalo/packr/v2"
 	"github.com/lalloni/gojsonschema"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/resources"
 
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
-var fs = packr.New("schemas", "./schemas/")
-
 func Schemas() []string {
-	return validator.Schemas(fs)
+	return validator.Schemas(resources.Schemas)
 }
 
 func MustLoadSchema(name string) *gojsonschema.Schema {
-	return validator.MustLoadSchema(fs, name)
+	return validator.MustLoadSchema(resources.Schemas, name)
 }
 
 func LoadSchema(name string) (*gojsonschema.Schema, error) {
-	return validator.LoadSchema(fs, name)
+	return validator.LoadSchema(resources.Schemas, name)
 }
