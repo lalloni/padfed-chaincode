@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func queryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {
+func QueryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {
 	if query.IsSingle() {
 		s, err := queryKeyItem(ctx, query.Single())
 		if err != nil {

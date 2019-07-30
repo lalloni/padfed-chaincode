@@ -24,7 +24,7 @@ func Parse(bs []byte) (*Ranges, error) {
 			}
 			switch len(keys) {
 			case 1:
-				a, b := prefixRange(keys[0].MustString())
+				a, b := PrefixRange(keys[0].MustString())
 				query = append(query, Range(a, b))
 			case 2:
 				query = append(query, Range(keys[0].MustString(), keys[1].MustString()))
@@ -38,7 +38,7 @@ func Parse(bs []byte) (*Ranges, error) {
 	return List(query...), nil
 }
 
-func prefixRange(key string) (string, string) {
+func PrefixRange(key string) (string, string) {
 	return key, key + string(utf8.MaxRune)
 }
 

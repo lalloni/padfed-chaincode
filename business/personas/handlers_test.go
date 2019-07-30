@@ -288,3 +288,81 @@ func TestGetPersonaAllHandler(t *testing.T) {
 	a.ElementsMatch(pers, rpers)
 
 }
+
+func TestQueryPersonaBasicaHandler(t *testing.T) {
+
+	a := assert.New(t)
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	for _, fun := range []string{"QueryPersonaBasica"} {
+		_, res, _, err := test.MockInvoke(t, mock, fun, "20104249729")
+		a.NoError(err)
+		a.EqualValues(404, res.Status)
+		a.EqualValues("", res.Message)
+
+		_, res, _, err = test.MockInvoke(t, mock, fun)
+		a.NoError(err)
+		a.EqualValues(400, res.Status)
+		a.EqualValues("invalid argument: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
+
+		_, res, _, err = test.MockInvoke(t, mock, fun, "-1")
+		a.NoError(err)
+		a.EqualValues(400, res.Status)
+		a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
+	}
+
+	per := RandomPersonas(1, nil)
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per[0])
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	_, res, _, err = test.MockInvoke(t, mock, "QueryPersonaBasica", &per[0].ID)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+}
+
+func TestQueryPersonaHandler(t *testing.T) {
+
+	a := assert.New(t)
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	for _, fun := range []string{"QueryPersona"} {
+		_, res, _, err := test.MockInvoke(t, mock, fun, "20104249729")
+		a.NoError(err)
+		a.EqualValues(200, res.Status)
+		a.EqualValues("", res.Message)
+
+		_, res, _, err = test.MockInvoke(t, mock, fun)
+		a.NoError(err)
+		a.EqualValues(400, res.Status)
+		a.EqualValues("invalid argument: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
+
+		_, res, _, err = test.MockInvoke(t, mock, fun, "-1")
+		a.NoError(err)
+		a.EqualValues(400, res.Status)
+		a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
+	}
+
+	per := RandomPersonas(1, nil)
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per[0])
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	_, res, _, err = test.MockInvoke(t, mock, "QueryPersona", &per[0].ID)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+}

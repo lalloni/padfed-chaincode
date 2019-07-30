@@ -74,7 +74,7 @@ func PutStatesHandler(ctx *context.Context) *response.Response {
 var GetStatesHandler = handler.MustFunc(getStates, RangesParam)
 
 func getStates(ctx *context.Context, query *Ranges) *response.Response {
-	r, err := queryKeyRanges(ctx, query)
+	r, err := QueryKeyRanges(ctx, query)
 	if err != nil {
 		return response.Error(err.Error())
 	}
