@@ -3,15 +3,13 @@ package personas
 import (
 	"strconv"
 
-	"github.com/lalloni/fabrikit/chaincode/handler"
-
 	"github.com/lalloni/fabrikit/chaincode/context"
 	"github.com/lalloni/fabrikit/chaincode/handlerutil/crud"
 	"github.com/lalloni/fabrikit/chaincode/response"
 	"github.com/lalloni/fabrikit/chaincode/router"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/state"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/state"
 )
 
 func AddHandlers(r router.Router) {
@@ -75,7 +73,7 @@ func QueryPersonaHandler(ctx *context.Context) *response.Response {
 	if err != nil {
 		return response.Error(err.Error())
 	}
-	if r == nil {
+	if r == nil || len(r.([]*state.State)) == 0 {
 		return response.NotFound()
 	}
 	return response.OK(r)

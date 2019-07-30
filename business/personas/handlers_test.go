@@ -1,6 +1,7 @@
 package personas
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -289,7 +290,7 @@ func TestGetPersonaAllHandler(t *testing.T) {
 
 }
 
-func TestQueryPersonaBasicaHandler(t *testing.T) {
+func TestQueryPersonaHandlers(t *testing.T) {
 
 	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
@@ -300,8 +301,9 @@ func TestQueryPersonaBasicaHandler(t *testing.T) {
 
 	mock := test.NewMock("test", r)
 
-	for _, fun := range []string{"QueryPersonaBasica"} {
-		_, res, _, err := test.MockInvoke(t, mock, fun, "20104249729")
+	for _, fun := range []string{"QueryPersonaBasica", "QueryPersona"} {
+
+		_, res, _, err := test.MockInvoke(t, mock, fun, 20104249729)
 		a.NoError(err)
 		a.EqualValues(404, res.Status)
 		a.EqualValues("", res.Message)
@@ -315,54 +317,20 @@ func TestQueryPersonaBasicaHandler(t *testing.T) {
 		a.NoError(err)
 		a.EqualValues(400, res.Status)
 		a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
+
+		pers := RandomPersonas(10, nil)
+		for _, per := range pers {
+			t.Run(fun+"#per#"+strconv.FormatUint(per.ID, 10), func(t *testing.T) {
+				a := assert.New(t)
+
+				_, res, _, err := test.MockInvoke(t, mock, "PutPersona", per)
+				a.NoError(err)
+				a.EqualValues(status.OK, res.Status)
+
+				_, res, _, err = test.MockInvoke(t, mock, fun, per.ID)
+				a.NoError(err)
+				a.EqualValues(status.OK, res.Status)
+			})
+		}
 	}
-
-	per := RandomPersonas(1, nil)
-	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per[0])
-	a.NoError(err)
-	a.EqualValues(status.OK, res.Status)
-
-	_, res, _, err = test.MockInvoke(t, mock, "QueryPersonaBasica", &per[0].ID)
-	a.NoError(err)
-	a.EqualValues(status.OK, res.Status)
-
-}
-
-func TestQueryPersonaHandler(t *testing.T) {
-
-	a := assert.New(t)
-	shim.SetLoggingLevel(shim.LogDebug)
-
-	r := router.New()
-
-	addTestingHandlers(r)
-
-	mock := test.NewMock("test", r)
-
-	for _, fun := range []string{"QueryPersona"} {
-		_, res, _, err := test.MockInvoke(t, mock, fun, "20104249729")
-		a.NoError(err)
-		a.EqualValues(200, res.Status)
-		a.EqualValues("", res.Message)
-
-		_, res, _, err = test.MockInvoke(t, mock, fun)
-		a.NoError(err)
-		a.EqualValues(400, res.Status)
-		a.EqualValues("invalid argument: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
-
-		_, res, _, err = test.MockInvoke(t, mock, fun, "-1")
-		a.NoError(err)
-		a.EqualValues(400, res.Status)
-		a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
-	}
-
-	per := RandomPersonas(1, nil)
-	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", &per[0])
-	a.NoError(err)
-	a.EqualValues(status.OK, res.Status)
-
-	_, res, _, err = test.MockInvoke(t, mock, "QueryPersona", &per[0].ID)
-	a.NoError(err)
-	a.EqualValues(status.OK, res.Status)
-
 }

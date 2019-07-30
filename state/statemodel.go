@@ -7,15 +7,15 @@ import (
 	"github.com/hyperledger/fabric/protos/ledger/queryresult"
 )
 
-type state struct {
+type State struct {
 	Key      string      `json:"key,omitempty"`
 	Content  interface{} `json:"content,omitempty"`
 	Encoding string      `json:"encoding,omitempty"`
 	Nil      bool        `json:"-"`
 }
 
-func newstate(key string, content []byte) *state {
-	s := &state{Key: key}
+func New(key string, content []byte) *State {
+	s := &State{Key: key}
 	if content == nil {
 		s.Nil = true
 		return s
