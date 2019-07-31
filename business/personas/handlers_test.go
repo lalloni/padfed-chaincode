@@ -296,16 +296,14 @@ func TestQueryPersonaHandlers(t *testing.T) {
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
-
 	addTestingHandlers(r)
-
 	mock := test.NewMock("test", r)
 
 	for _, fun := range []string{"QueryPersonaBasica", "QueryPersona"} {
 
 		_, res, _, err := test.MockInvoke(t, mock, fun, 20104249729)
 		a.NoError(err)
-		a.EqualValues(404, res.Status)
+		a.EqualValues(200, res.Status)
 		a.EqualValues("", res.Message)
 
 		_, res, _, err = test.MockInvoke(t, mock, fun)
