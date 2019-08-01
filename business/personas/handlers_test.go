@@ -300,6 +300,7 @@ func TestQueryPersonaHandlers(t *testing.T) {
 	mock := test.NewMock("test", r)
 
 	for _, fun := range []string{"QueryPersonaBasica", "QueryPersona"} {
+		fun := fun
 
 		_, res, _, err := test.MockInvoke(t, mock, fun, 20104249729)
 		a.NoError(err)
@@ -318,6 +319,7 @@ func TestQueryPersonaHandlers(t *testing.T) {
 
 		pers := RandomPersonas(10, nil)
 		for _, per := range pers {
+			per := per
 			t.Run(fun+"#per#"+strconv.FormatUint(per.ID, 10), func(t *testing.T) {
 				a := assert.New(t)
 
