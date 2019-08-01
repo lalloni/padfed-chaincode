@@ -2,6 +2,7 @@ package personas
 
 import (
 	"github.com/lalloni/fabrikit/chaincode/context"
+	"github.com/lalloni/fabrikit/chaincode/handlerutil/crud"
 	"github.com/lalloni/fabrikit/chaincode/response"
 	"github.com/lalloni/fabrikit/chaincode/router"
 
@@ -18,16 +19,16 @@ func addTestingHandlers(r router.Router) {
 
 func addHandlers(r router.Router, testing bool) {
 	opts := append(
-		common.Defaults, // i.e. get, getrange, has, put, putlist, del, delrange
-		common.WithIDParam(CUITParam),
-		common.WithItemParam(PersonaParam),
-		common.WithListParam(PersonaListParam),
-		common.WithValidator(validatePersona),
+		crud.Defaults, // i.e. get, getrange, has, put, putlist, del, delrange
+		crud.WithIDParam(CUITParam),
+		crud.WithItemParam(PersonaParam),
+		crud.WithListParam(PersonaListParam),
+		crud.WithValidator(validatePersona),
 	)
 	if !testing {
-		opts = append(opts, common.WithWriteCheck(common.AFIP))
+		opts = append(opts, crud.WithWriteCheck(common.AFIP))
 	}
-	common.AddCRUDHandlers(r, Schema, opts...)
+	crud.AddHandlers(r, Schema, opts...)
 }
 
 func validatePersona(ctx *context.Context, v interface{}) *response.Response {

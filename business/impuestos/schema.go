@@ -2,15 +2,14 @@ package impuestos
 
 import (
 	"github.com/lalloni/fabrikit/chaincode/store"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
+	"github.com/lalloni/fabrikit/chaincode/storeutil"
 )
 
 var Schema = store.MustPrepare(store.Composite{
 	Name:            "impuesto",
 	Creator:         func() interface{} { return &Impuesto{} },
 	IdentifierField: "Codigo",
-	IdentifierKey:   common.Uint64Key("imp"),
-	KeyIdentifier:   common.Uint64Identifier(0),
+	IdentifierKey:   storeutil.Uint64Key("imp"),
+	KeyIdentifier:   storeutil.Uint64Identifier(0),
 	KeyBaseName:     "imp",
 })

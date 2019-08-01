@@ -2,16 +2,15 @@ package personas
 
 import (
 	"github.com/lalloni/fabrikit/chaincode/store"
-
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
+	"github.com/lalloni/fabrikit/chaincode/storeutil"
 )
 
 var Schema = store.MustPrepare(store.Composite{
 	Name:            "persona",
 	KeyBaseName:     "per",
 	IdentifierField: "ID",
-	IdentifierKey:   common.Uint64Key("per"),
-	KeyIdentifier:   common.Uint64Identifier(0),
+	IdentifierKey:   storeutil.Uint64Key("per"),
+	KeyIdentifier:   storeutil.Uint64Identifier(0),
 	Creator:         func() interface{} { return &Persona{} },
 	Singletons: []store.Singleton{
 		{Tag: "per", Field: "Persona"},
