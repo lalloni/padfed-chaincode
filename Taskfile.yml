@@ -29,6 +29,10 @@ vars:
   buildtime:
     sh: date +%s
 
+  # Control de uso de vendoring (para evitar el uso de vendoring usar task xxx vendor=no)
+  vendormode:
+    sh: test "{{ .vendor }}" != "" || echo "-mod=vendor"
+
 env:
   GO111MODULE: on
 
@@ -55,7 +59,7 @@ tasks:
       - eval "$(go version | sed -Ee 's/^.* go([^ ]+) .*$/\1/' | sed -Ee 's/[^0-9]*([0-9]*)[.]([0-9]*)(:?[.]([0-9]*))?([0-9A-Za-z-]*)/MAJOR="\1";MINOR="\2";PATCH="\3";EXTRA="\4"/')" && test $MAJOR -eq 1 -a $MINOR -gt 10 || (echo "La version de Go debe ser 1.11 o superior" ; exit 1)
       - command -v golangci-lint > /dev/null || sh -c 'curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.15.0'
       - command -v packr2 > /dev/null || go get -u github.com/gobuffalo/packr/v2/packr2
-      - mkdir '{{ .target }}' > /dev/null 2>&1 ; touch '{{ .target }}/tools.{{ .buildtime }}.witness'
+      - mkdir '{{ .target }}' > /dev/null 2>&1 ; rm {{ .target }}/tools.*.witness > /dev/null 2>&1 ; touch '{{ .target }}/tools.{{ .buildtime }}.witness'
     sources:
       - '{{ .target }}/tools.{{ .buildtime }}.witness'
     generates:
@@ -119,7 +123,7 @@ tasks:
     deps: [ pre, vendor, gen ]
     silent: true
     cmds:
-      - go test -mod=vendor ./...
+      - go test {{ .vendormode }} ./...
       - touch "{{ .target }}/test.witness"
     sources:
       - '**/*.go'
@@ -134,7 +138,7 @@ tasks:
       binary: '{{ .target }}/chaincode'
     silent: true
     cmds:
-      - go build -mod=vendor -o "{{ .binary }}" main.go version.go
+      - go build {{ .vendormode }} -o "{{ .binary }}" main.go version.go
     sources:
       - '**/*.go'
     generates:
@@ -236,7 +240,7 @@ tasks:
     deps: [ pre, vendor ]
     silent: true
     cmds:
-      - go test -mod=vendor -cover -coverprofile='{{ .target }}/cover.dat' ./...
+      - go test {{ .vendormode }} -cover -coverprofile='{{ .target }}/cover.dat' ./...
       - touch '{{ .target }}/cover.witness'
     sources:
       - '**/*.go'
