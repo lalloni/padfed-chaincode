@@ -13,7 +13,19 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
 )
 
-func Adapter(old chaincode.Handler, use string) handler.Handler {
+func Adapter(old chaincode.Handler) handler.Handler {
+	return func(ctx *context.Context) *response.Response {
+		c, res := chaincode.SetContext(ctx.Stub, ctx.Version(), false)
+		if !res.IsOK() {
+			return response.Direct(chaincode.PeerResponse(c, res))
+		}
+		_, args := ctx.Stub.GetFunctionAndParameters()
+		res = old(ctx.Stub, args)
+		return response.Direct(chaincode.PeerResponse(c, res))
+	}
+}
+
+func WarningAdapter(old chaincode.Handler, use string) handler.Handler {
 	w := fmt.Sprintf("This function is DEPRECATED and will be REMOVED! Please migrate to using function %q.", use)
 	return func(ctx *context.Context) *response.Response {
 		ctx.Logger().Notice("deprecated function called instead of %q", use)

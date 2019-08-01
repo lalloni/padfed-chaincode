@@ -47,17 +47,19 @@ func keyHistory(ctx *context.Context, key string) ([]*statemod, error) {
 		return nil, errors.Wrap(err, "getting key history")
 	}
 	defer hi.Close()
+	count := uint64(0)
 	mods := []*statemod{}
 	for hi.HasNext() {
 		km, err := hi.Next()
 		if err != nil {
 			return nil, errors.Wrap(err, "getting key modification")
 		}
+		count++
 		b, err := txBlock(ctx, km.GetTxId())
 		if err != nil {
 			return nil, err
 		}
-		mods = append(mods, newstatemod(km, b))
+		mods = append(mods, newstatemod(km, b, count))
 	}
 	return mods, nil
 }
