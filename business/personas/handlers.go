@@ -1,12 +1,16 @@
 package personas
 
 import (
+	"strconv"
+
 	"github.com/lalloni/fabrikit/chaincode/context"
+	"github.com/lalloni/fabrikit/chaincode/handler"
 	"github.com/lalloni/fabrikit/chaincode/handlerutil/crud"
 	"github.com/lalloni/fabrikit/chaincode/response"
 	"github.com/lalloni/fabrikit/chaincode/router"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/state"
 )
 
 func AddHandlers(r router.Router) {
@@ -29,6 +33,9 @@ func addHandlers(r router.Router, testing bool) {
 		opts = append(opts, crud.WithWriteCheck(common.AFIP))
 	}
 	crud.AddHandlers(r, Schema, opts...)
+
+	r.SetHandler("QueryPersona", common.Free, QueryPersonaHandler)
+	r.SetHandler("QueryPersonaBasica", common.Free, QueryPersonaBasicaHandler)
 }
 
 func validatePersona(ctx *context.Context, v interface{}) *response.Response {
@@ -52,5 +59,34 @@ func validatePersona(ctx *context.Context, v interface{}) *response.Response {
 	}
 
 	return nil
+}
 
+func QueryPersonaHandler(ctx *context.Context) *response.Response {
+	args, err := handler.ExtractArgs(ctx.Stub.GetArgs()[1:], CUITParam)
+	if err != nil {
+		return response.BadRequest("invalid argument: %v", err)
+	}
+
+	prefix := "per:" + strconv.FormatUint(args[0].(uint64), 10) + "#"
+	query := state.Single(state.Range(state.PrefixRange(prefix)))
+
+	r, err := state.QueryKeyRanges(ctx, query)
+	if err != nil {
+		return response.Error(err.Error())
+	}
+	return response.OK(r)
+}
+
+func QueryPersonaBasicaHandler(ctx *context.Context) *response.Response {
+	args, err := handler.ExtractArgs(ctx.Stub.GetArgs()[1:], CUITParam)
+	if err != nil {
+		return response.BadRequest("invalid argument: %v", err)
+	}
+	key := "per:" + strconv.FormatUint(args[0].(uint64), 10) + "#per"
+	query := state.Single(state.Point(key))
+	r, err := state.QueryKeyRanges(ctx, query)
+	if err != nil {
+		return response.Error(err.Error())
+	}
+	return response.OK(r)
 }

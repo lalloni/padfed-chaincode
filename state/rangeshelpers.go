@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func queryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {
+func QueryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {
 	if query.IsSingle() {
 		s, err := queryKeyItem(ctx, query.Single())
 		if err != nil {
@@ -14,7 +14,7 @@ func queryKeyRanges(ctx *context.Context, query *Ranges) (interface{}, error) {
 		if query.Single().IsPoint() {
 			// caso especial: si se pide getstate(x) se devuelve solo <valor> de
 			// contenido en lugar de {key:x,content:<valor>}
-			st := s.(*state)
+			st := s.(*State)
 			if st.Nil {
 				return nil, nil
 			}

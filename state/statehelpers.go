@@ -16,27 +16,27 @@ func setKeyValue(ctx *context.Context, key string, value []byte) error {
 	return nil
 }
 
-func keyState(ctx *context.Context, key string) (*state, error) {
+func keyState(ctx *context.Context, key string) (*State, error) {
 	bs, err := ctx.Stub.GetState(key)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting key")
 	}
-	return newstate(key, bs), nil
+	return New(key, bs), nil
 }
 
-func keyRangeStates(ctx *context.Context, key1, key2 string) ([]*state, error) {
+func keyRangeStates(ctx *context.Context, key1, key2 string) ([]*State, error) {
 	it, err := ctx.Stub.GetStateByRange(key1, key2)
 	if err != nil {
 		return nil, errors.Wrap(err, "getting key range")
 	}
 	defer it.Close()
-	ss := []*state{}
+	ss := []*State{}
 	for it.HasNext() {
 		kv, err := it.Next()
 		if err != nil {
 			return nil, errors.Wrap(err, "getting next key in range")
 		}
-		ss = append(ss, newstate(kv.Key, kv.Value))
+		ss = append(ss, New(kv.Key, kv.Value))
 	}
 	return ss, nil
 }
