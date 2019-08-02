@@ -292,7 +292,6 @@ func TestGetPersonaAllHandler(t *testing.T) {
 
 func TestQueryPersonaHandlers(t *testing.T) {
 
-	a := assert.New(t)
 	shim.SetLoggingLevel(shim.LogDebug)
 
 	r := router.New()
@@ -301,36 +300,40 @@ func TestQueryPersonaHandlers(t *testing.T) {
 
 	for _, fun := range []string{"QueryPersonaBasica", "QueryPersona"} {
 		fun := fun
+		t.Run(fun, func(t *testing.T) {
+			a := assert.New(t)
 
-		_, res, _, err := test.MockInvoke(t, mock, fun, 20104249729)
-		a.NoError(err)
-		a.EqualValues(200, res.Status)
-		a.EqualValues("", res.Message)
+			_, res, _, err := test.MockInvoke(t, mock, fun, 20104249729)
+			a.NoError(err)
+			a.EqualValues(200, res.Status)
+			a.EqualValues("", res.Message)
 
-		_, res, _, err = test.MockInvoke(t, mock, fun)
-		a.NoError(err)
-		a.EqualValues(400, res.Status)
-		a.EqualValues("invalid argument: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
+			_, res, _, err = test.MockInvoke(t, mock, fun)
+			a.NoError(err)
+			a.EqualValues(400, res.Status)
+			a.EqualValues("invalid argument: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
 
-		_, res, _, err = test.MockInvoke(t, mock, fun, "-1")
-		a.NoError(err)
-		a.EqualValues(400, res.Status)
-		a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
+			_, res, _, err = test.MockInvoke(t, mock, fun, "-1")
+			a.NoError(err)
+			a.EqualValues(400, res.Status)
+			a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
 
-		pers := RandomPersonas(10, nil)
-		for _, per := range pers {
-			per := per
-			t.Run(fun+"#per#"+strconv.FormatUint(per.ID, 10), func(t *testing.T) {
-				a := assert.New(t)
+			pers := RandomPersonas(10, nil)
+			for _, per := range pers {
+				per := per
+				t.Run(strconv.FormatUint(per.ID, 10), func(t *testing.T) {
+					a := assert.New(t)
 
-				_, res, _, err := test.MockInvoke(t, mock, "PutPersona", per)
-				a.NoError(err)
-				a.EqualValues(status.OK, res.Status)
+					_, res, _, err := test.MockInvoke(t, mock, "PutPersona", per)
+					a.NoError(err)
+					a.EqualValues(status.OK, res.Status)
 
-				_, res, _, err = test.MockInvoke(t, mock, fun, per.ID)
-				a.NoError(err)
-				a.EqualValues(status.OK, res.Status)
-			})
-		}
+					_, res, _, err = test.MockInvoke(t, mock, fun, per.ID)
+					a.NoError(err)
+					a.EqualValues(status.OK, res.Status)
+				})
+			}
+
+		})
 	}
 }
