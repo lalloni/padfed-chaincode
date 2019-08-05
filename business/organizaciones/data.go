@@ -10,9 +10,10 @@ import (
 )
 
 var (
-	orgArray       = []*Org{}
-	orgByIDIndex   = map[uint64]*Org{}
-	orgByCUITIndex = map[uint64]*Org{}
+	orgArray   = []*Org{}
+	orgByID    = map[uint64]*Org{}
+	orgByCUIT  = map[uint64]*Org{}
+	orgByMSPID = map[string]*Org{}
 )
 
 func init() {
@@ -20,9 +21,12 @@ func init() {
 	for _, org := range orgs {
 		org := org // alocar nueva variable y copiarle el valor
 		orgArray = append(orgArray, &org)
-		orgByIDIndex[org.ID] = &org
-		orgByCUITIndex[org.CUIT] = &org
+		orgByID[org.ID] = &org
+		orgByCUIT[org.CUIT] = &org
+		orgByMSPID[org.MSPID] = &org
 	}
+	AFIP = orgByID[1]
+	MORGS = orgByID[100]
 }
 
 func mustLoad() []Org {

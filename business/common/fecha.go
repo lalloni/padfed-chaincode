@@ -1,6 +1,7 @@
 package common
 
 import (
+	"reflect"
 	"strings"
 	"time"
 )
@@ -30,4 +31,18 @@ func FechaHoy() *Fecha {
 func FechaEn(año, mes, día int) *Fecha {
 	d := Fecha(time.Date(año, time.Month(mes), día, 0, 0, 0, 0, time.Local))
 	return &d
+}
+
+func FechaDecodeHook(f, t reflect.Type, data interface{}) (interface{}, error) {
+	if f.Kind() != reflect.String {
+		return data, nil
+	}
+	if t != reflect.TypeOf(Fecha{}) {
+		return data, nil
+	}
+	d, err := time.Parse(layout, data.(string))
+	if err != nil {
+		return nil, err
+	}
+	return Fecha(d), nil
 }

@@ -12,34 +12,43 @@ import (
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
-var CUITParam = param.SpecializeTyped(param.Uint64, "CUIT", validateCUIT)
+var CUITParam = CUITParamVar(nil)
 
-func validateCUIT(v interface{}) (interface{}, error) {
-	if !cuit.IsValid(v.(uint64)) {
-		return nil, errors.Errorf("invalid cuit/cuil number")
-	}
-	return v, nil
+func CUITParamVar(ref *uint64) param.TypedParam {
+	return param.SpecializeTyped(param.Uint64, "CUIT", func(v interface{}) (interface{}, error) {
+		c := v.(uint64)
+		if !cuit.IsValid(c) {
+			return nil, errors.Errorf("invalid cuit/cuil number")
+		}
+		if ref != nil {
+			*ref = c
+		}
+		return c, nil
+	})
 }
 
-var PersonaParam = param.Typed("Persona JSON", reflect.TypeOf(&Persona{}), parsePersona)
+var PersonaParam = PersonaParamVar(nil)
 
-func parsePersona(bs []byte) (interface{}, error) {
+func PersonaParamVar(ref *Persona) param.TypedParam {
+	return param.Typed("Persona JSON", reflect.TypeOf(&Persona{}), func(bs []byte) (interface{}, error) {
+		res, err := validator.Validate(personaSchema, bs)
+		if err != nil {
+			return nil, errors.Wrap(err, "validating persona")
+		}
+		if !res.Valid() {
+			return nil, errors.Errorf("invalid persona: %s", res.String())
+		}
 
-	res, err := validator.Validate(personaSchema, bs)
-	if err != nil {
-		return nil, errors.Wrap(err, "validating persona")
-	}
-	if !res.Valid() {
-		return nil, errors.Errorf("invalid persona: %s", res.String())
-	}
+		per := &Persona{}
+		if err = json.Unmarshal(bs, per); err != nil {
+			return nil, errors.Wrap(err, "unmarshalling persona")
+		}
 
-	per := &Persona{}
-	if err = json.Unmarshal(bs, per); err != nil {
-		return nil, errors.Wrap(err, "unmarshalling persona")
-	}
-
-	return per, nil
-
+		if ref != nil {
+			*ref = *per
+		}
+		return per, nil
+	})
 }
 
 var personaSchema = schemas.MustLoadSchema("persona")
@@ -72,3 +81,28 @@ func parsePersonaList(bs []byte) (interface{}, error) {
 }
 
 var personaListSchema = schemas.MustLoadSchema("persona-list")
+
+var EstadoParam = EstadoParamVar(nil)
+
+func EstadoParamVar(ref *string) param.TypedParam {
+	return param.SpecializeTyped(param.String, "Estado", func(v interface{}) (interface{}, error) {
+		s := v.(string)
+		if !estados[s] {
+			return nil, errors.Errorf("invalid estado: '%s'", s)
+		}
+		if ref != nil {
+			*ref = s
+		}
+		return s, nil
+	})
+}
+
+var estados map[string]bool
+
+func init() {
+	valid := []string{"AC", "NA", "BD", "BP", "EX"}
+	estados = make(map[string]bool, len(valid))
+	for _, v := range valid {
+		estados[v] = true
+	}
+}

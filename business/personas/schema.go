@@ -31,3 +31,5 @@ var Schema = store.MustPrepare(store.Composite{
 		{Tag: "cms", Field: "CMSedes"},
 	},
 })
+
+var Impuestos = Schema.Collection("imp")

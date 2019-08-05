@@ -10,10 +10,24 @@ import (
 	validator "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-validator.git"
 )
 
+var CodigoImpuestoParam = CodigoImpuestoParamVar(nil)
+
+func CodigoImpuestoParamVar(ref *uint64) param.TypedParam {
+	return param.SpecializeTyped(param.Uint64, "código impuesto", func(v interface{}) (interface{}, error) {
+		c := v.(uint64)
+		if c == 0 {
+			return nil, errors.New("must be greater than zero")
+		}
+		if ref != nil {
+			*ref = c
+		}
+		return c, nil
+	})
+}
+
 var (
-	ImpuestoParam       = param.New("Impuesto JSON", parseImpuesto)
-	ImpuestoListParam   = param.New("Impuesto List JSON", parseImpuestoList)
-	CodigoImpuestoParam = param.SpecializeTyped(param.Uint64, "código impuesto", notZero)
+	ImpuestoParam     = param.New("Impuesto JSON", parseImpuesto)
+	ImpuestoListParam = param.New("Impuesto List JSON", parseImpuestoList)
 )
 
 var (
@@ -55,11 +69,4 @@ func parseImpuestoList(bs []byte) (interface{}, error) {
 		r = append(r, i)
 	}
 	return r, nil
-}
-
-func notZero(v interface{}) (interface{}, error) {
-	if v.(uint64) == 0 {
-		return nil, errors.New("must be greater than zero")
-	}
-	return v, nil
 }

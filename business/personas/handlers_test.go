@@ -2,6 +2,7 @@ package personas
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"strconv"
 	"testing"
@@ -10,9 +11,14 @@ import (
 	"github.com/lalloni/afip/cuit"
 	"github.com/lalloni/fabrikit/chaincode/response/status"
 	"github.com/lalloni/fabrikit/chaincode/router"
+	"github.com/lalloni/fabrikit/chaincode/store"
 	"github.com/lalloni/fabrikit/chaincode/test"
 	"github.com/mitchellh/mapstructure"
 	"github.com/stretchr/testify/assert"
+
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/impuestos"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/organizaciones"
 )
 
 func TestGetPutDelPersonaHandler(t *testing.T) {
@@ -432,12 +438,12 @@ func TestQueryPersonaHandlers(t *testing.T) {
 			_, res, _, err = test.MockInvoke(t, mock, fun)
 			a.NoError(err)
 			a.EqualValues(400, res.Status)
-			a.EqualValues("invalid argument: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
+			a.EqualValues("invalid arguments: argument count mismatch: received 0 while expecting 1 (CUIT)", res.Message)
 
 			_, res, _, err = test.MockInvoke(t, mock, fun, "-1")
 			a.NoError(err)
 			a.EqualValues(400, res.Status)
-			a.EqualValues("invalid argument: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
+			a.EqualValues("invalid arguments: CUIT argument 1: invalid natural integer: invalid syntax: '-1'", res.Message)
 
 			pers := RandomPersonas(10, nil)
 			for _, per := range pers {
@@ -457,4 +463,138 @@ func TestQueryPersonaHandlers(t *testing.T) {
 
 		})
 	}
+}
+
+func TestSetPersonaImpuestoEstadoHandler(t *testing.T) {
+
+	a := assert.New(t)
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	st := store.New(mock)
+
+	// Preparar datos
+
+	mock.MockTransactionStart("a")
+	a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
+		Codigo:      10,
+		Org:         organizaciones.AFIP.ID,
+		Abreviatura: "IMP10",
+		Nombre:      "Impuesto 10",
+	}))
+	a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
+		Codigo:      5001,
+		Org:         organizaciones.GetByMSPID("AGIP").ID,
+		Abreviatura: "IMP5001",
+		Nombre:      "Impuesto 5001",
+	}))
+	a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
+		Codigo:      5002,
+		Org:         organizaciones.GetByMSPID("ARBA").ID,
+		Abreviatura: "IMP5002",
+		Nombre:      "Impuesto 5002",
+	}))
+	mock.MockTransactionEnd("a")
+
+	persona := RandomPersonas(1, nil)[0]
+
+	persona.Impuestos = map[string]*Impuesto{
+		"10": {
+			Impuesto:    10,
+			Inscripcion: common.FechaEn(2010, 1, 1),
+			Estado:      "AC",
+			Dia:         1,
+			Periodo:     201000,
+			Motivo:      &common.Motivo{ID: 10, Desde: common.FechaEn(2010, 1, 1), Hasta: common.FechaEn(2010, 12, 31)},
+		},
+		"5001": {
+			Impuesto:    5001,
+			Inscripcion: common.FechaEn(2010, 1, 1),
+			Estado:      "AC",
+			Dia:         1,
+			Periodo:     201000,
+			Motivo:      &common.Motivo{ID: 10, Desde: common.FechaEn(2010, 1, 1), Hasta: common.FechaEn(2010, 12, 31)},
+		},
+	}
+
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", persona)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	// Pruebas
+
+	// no permitir estado "XX"
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 10, "XX")
+	a.NoError(err)
+	a.EqualValues(status.BadRequest, res.Status)
+	a.EqualValues("invalid arguments: Estado argument 3: invalid estado: 'XX'", res.Message)
+
+	// no permitir estado "AC"
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 10, "AC")
+	a.NoError(err)
+	a.EqualValues(status.BadRequest, res.Status)
+	a.EqualValues("setting estado to 'AC' is not allowed", res.Message)
+
+	// caso de éxito
+	testClientMSPID = "AFIP"
+	testClientCUIT = organizaciones.AFIP.CUIT
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 10, "BD")
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	// escribió?
+	_, res, payload, err := test.MockInvoke(t, mock, "GetPersonaImpuestosItem", persona.ID, 10)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+	i := &Impuesto{}
+	dec, err := mapstructure.NewDecoder(&mapstructure.DecoderConfig{Result: i, DecodeHook: common.FechaDecodeHook})
+	a.NoError(err)
+	a.NoError(dec.Decode(payload.Content))
+	a.EqualValues("BD", i.Estado) // guardó bien
+
+	// no permitir si org(mspid) not in [afip,morgs] && org(mspid) != imp.org
+	testClientMSPID = "COMARB"
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 10, "NA")
+	a.NoError(err)
+	a.EqualValues(status.Forbidden, res.Status)
+	a.EqualValues("organización 900 (COMISIÓN ARBITRAL DEL CONVENIO MULTILATERAL) can not set estado inscripción impuesto 10 (AFIP)", res.Message)
+
+	// permitir si org(mspid) not in [afip,morgs] && org(mspid) == imp.org
+	testClientMSPID = "AGIP"
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 5001, "NA")
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	// no permitir si org(mspid)==morgs && org(cuit) != imp.org
+	testClientMSPID = "MORGS"
+	testClientCUIT = organizaciones.GetByMSPID("ARBA").CUIT
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 5001, "EX")
+	a.NoError(err)
+	a.EqualValues(status.Forbidden, res.Status)
+	a.EqualValues("organización 902 (ARBA - BUENOS AIRES) can not set estado inscripción impuesto 5001 (AGIP - CABA)", res.Message)
+
+	// permitir si org(mspid)==morgs && org(cuit) == imp.org
+	testClientMSPID = "MORGS"
+	testClientCUIT = organizaciones.GetByMSPID("AGIP").CUIT
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 5001, "EX")
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	// no existe inscripción
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 5002, "EX")
+	a.NoError(err)
+	a.EqualValues(status.NotFound, res.Status)
+	a.EqualValues(fmt.Sprintf("inscripción persona %v impuesto 5002 not found", persona.ID), res.Message)
+
+	// no existe impuesto
+	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 5003, "EX")
+	a.NoError(err)
+	a.EqualValues(status.BadRequest, res.Status)
+	a.EqualValues("impuesto 5003 not found", res.Message)
+
 }
