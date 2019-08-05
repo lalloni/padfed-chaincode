@@ -16,7 +16,7 @@ require (
 	github.com/hyperledger/fabric v1.4.1
 	github.com/jszwec/csvutil v1.2.1
 	github.com/lalloni/afip v1.6.1
-	github.com/lalloni/fabrikit v0.0.0-20190801135854-612fbe399049
+	github.com/lalloni/fabrikit v0.0.0-20190805132832-e12a951e56dc
 	github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/miekg/pkcs11 v1.0.2 // indirect

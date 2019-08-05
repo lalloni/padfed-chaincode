@@ -28,15 +28,26 @@ func RandomPersonas(q int, rnd *rand.Rand) []Persona {
 	if rnd == nil {
 		rnd = test.NewTimeRand()
 	}
+	check := map[uint64]bool{}
 	pers := []Persona{}
 	for n := 0; n < q; n++ {
 		id := cuit.Random(rnd)
+		for check[id] { // don't repeat
+			id = cuit.Random(rnd)
+		}
+		check[id] = true
 		per := Persona{
 			ID: id,
 			Persona: &Basica{
 				ID:     id,
 				TipoID: "C",
 				Estado: "A",
+			},
+			Emails: map[string]*Email{
+				"1": {Direccion: "foo@bar.com", Orden: 1, Tipo: 1, Estado: 1},
+			},
+			Archivos: map[string]*Archivo{
+				"1": {Descripcion: "Archivo X", Orden: 1, Tipo: 10},
 			},
 			Etiquetas: map[string]*Etiqueta{
 				"1":  {Etiqueta: 1, Periodo: 20101001, Estado: "AC"},

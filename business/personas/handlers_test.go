@@ -1,6 +1,8 @@
 package personas
 
 import (
+	"encoding/json"
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -287,6 +289,125 @@ func TestGetPersonaAllHandler(t *testing.T) {
 	_, rids := SummaryPersonasID(rpers)
 	a.EqualValues(ids, rids)
 	a.ElementsMatch(pers, rpers)
+}
+
+func TestGetPersonaBasicaHandler(t *testing.T) {
+
+	a := assert.New(t)
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	per := RandomPersonas(1, nil)[0]
+
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", per)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	_, res, payload, err := test.MockInvoke(t, mock, "GetPersonaBasica", per.ID)
+	a.NoError(err)
+	a.NotNil(payload)
+	a.EqualValues(status.OK, res.Status)
+	var pb Basica
+	a.NoError(mapstructure.Decode(payload.Content, &pb))
+	a.EqualValues(per.Persona, &pb)
+
+}
+
+func TestGetPersonaCollectionHandler(t *testing.T) {
+
+	a := assert.New(t)
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	per := RandomPersonas(1, nil)[0]
+
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", per)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	for _, col := range Schema.Collections() {
+		col := col
+		t.Run(col.Name, func(t *testing.T) {
+			_, res, payload, err := test.MockInvoke(t, mock, "GetPersona"+col.Name, per.ID)
+			a.NoError(err)
+			a.NotNil(payload)
+			colval := reflect.ValueOf(col.Getter(per))
+			if colval.Len() == 0 {
+				a.EqualValues(status.NotFound, res.Status)
+				return
+			}
+			a.EqualValues(status.OK, res.Status)
+			bs, err := json.Marshal(col.Getter(per))
+			a.NoError(err)
+			want := map[string]interface{}{}
+			a.NoError(json.Unmarshal(bs, &want))
+			a.EqualValues(want, payload.Content)
+		})
+	}
+
+	_, res, payload, err := test.MockInvoke(t, mock, "GetPersonaEtiquetas", per.ID)
+	a.NoError(err)
+	a.NotNil(payload)
+	a.EqualValues(status.OK, res.Status)
+	var es map[string]*Etiqueta
+	a.NoError(mapstructure.Decode(payload.Content, &es))
+	a.EqualValues(per.Etiquetas, es)
+
+}
+
+func TestGetPersonaCollectionItemHandler(t *testing.T) {
+
+	a := assert.New(t)
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	per := RandomPersonas(1, nil)[0]
+
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", per)
+	a.NoError(err)
+	a.EqualValues(status.OK, res.Status)
+
+	for _, col := range Schema.Collections() {
+		col := col
+		t.Run(col.Name, func(t *testing.T) {
+			colval := reflect.ValueOf(col.Getter(per))
+			if colval.Len() == 0 {
+				t.Skipf("collection %s is empty", col.Name)
+				return
+			}
+			item := colval.MapKeys()[0].String()
+			_, res, payload, err := test.MockInvoke(t, mock, "GetPersona"+col.Name+"Item", per.ID, item)
+			a.NoError(err)
+			a.NotNil(payload)
+			a.EqualValues(status.OK, res.Status)
+			itemval := col.ItemCreator()
+			a.NoError(mapstructure.Decode(payload.Content, &itemval))
+			a.EqualValues(colval.MapIndex(reflect.ValueOf(item)).Interface(), itemval)
+		})
+	}
+
+	_, res, payload, err := test.MockInvoke(t, mock, "GetPersonaEtiquetas", per.ID)
+	a.NoError(err)
+	a.NotNil(payload)
+	a.EqualValues(status.OK, res.Status)
+	var es map[string]*Etiqueta
+	a.NoError(mapstructure.Decode(payload.Content, &es))
+	a.EqualValues(per.Etiquetas, es)
 
 }
 

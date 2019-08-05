@@ -27,7 +27,7 @@ func addHandlers(r router.Router, testing bool) {
 		crud.WithIDParam(CUITParam),
 		crud.WithItemParam(PersonaParam),
 		crud.WithListParam(PersonaListParam),
-		crud.WithValidator(validatePersona),
+		crud.WithPutValidator(validatePersona),
 	)
 	if !testing {
 		opts = append(opts, crud.WithWriteCheck(common.AFIP))

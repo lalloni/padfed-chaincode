@@ -176,6 +176,8 @@ github.com/lalloni/fabrikit v0.0.0-20190712132741-8e9b3d4d49a9 h1:GefmZTBLS/UtmF
 github.com/lalloni/fabrikit v0.0.0-20190712132741-8e9b3d4d49a9/go.mod h1:oH7g+DsL3IbL4AUVxRDSu9c7UM6wsxx+UrjMF0vpGCY=
 github.com/lalloni/fabrikit v0.0.0-20190801135854-612fbe399049 h1:Ldgmkg9eSFzmOwpssKboshi7COYXFu+79ilV3J8kkRw=
 github.com/lalloni/fabrikit v0.0.0-20190801135854-612fbe399049/go.mod h1:WTUgjJK+S/jGqYOzsLxwKES94+UKRKNymDunT45/sP0=
+github.com/lalloni/fabrikit v0.0.0-20190805132832-e12a951e56dc h1:9+jsy2qwt3PWfMfKp66lwBJ16IyVigJgzPNoAXEUsDQ=
+github.com/lalloni/fabrikit v0.0.0-20190805132832-e12a951e56dc/go.mod h1:WTUgjJK+S/jGqYOzsLxwKES94+UKRKNymDunT45/sP0=
 github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505 h1:K+I1SpQoQ2QzVp6ogVzWk5YqA70cOoyCHH85S3jI6Zc=
 github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505/go.mod h1:booBaA00DfddFHdbQGjROj8emtf1bPavYaIlmiJ4NkE=
 github.com/magefile/mage v1.8.1-0.20190314142316-8dce728c572d h1:9B94w7V0dTEeyVbfhmSddncd7arG9V1SWNy5I1A+0SE=

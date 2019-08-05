@@ -13,7 +13,7 @@ var Schema = store.MustPrepare(store.Composite{
 	KeyIdentifier:   storeutil.Uint64Identifier(0),
 	Creator:         func() interface{} { return &Persona{} },
 	Singletons: []store.Singleton{
-		{Tag: "per", Field: "Persona"},
+		{Tag: "per", Name: "Basica", Field: "Persona"},
 	},
 	Collections: []store.Collection{
 		{Tag: "act", Field: "Actividades"},
