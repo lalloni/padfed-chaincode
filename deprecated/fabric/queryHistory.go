@@ -6,13 +6,17 @@ import (
 	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
 )
 
-func QueryHistory(stub shim.ChaincodeStubInterface, args []string) *Response {
-	if len(args) != 1 {
-		return ClientErrorResponse("Número incorrecto de parámetros. Se esperaba 1 con {asset_key}")
+func QueryHistory(stub shim.ChaincodeStubInterface, _ []string) *Response {
+	args, err := handler.ExtractArgs(stub.GetArgs()[1:], param.String)
+	if err != nil {
+		return ClientErrorResponse(err.Error())
 	}
-	pKey := args[0]
+
+	pKey := args[0].(string)
 	resultsIterator, err := stub.GetHistoryForKey(pKey)
 	if err != nil {
 		return SystemErrorResponse(err.Error())
