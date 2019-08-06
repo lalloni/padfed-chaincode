@@ -63,7 +63,7 @@ func validatePersona(ctx *context.Context, v interface{}) *response.Response {
 			return response.BadRequest("persona is required when putting a new instance")
 		}
 	} else if per.Persona.ID != per.ID {
-		return response.BadRequest("id %v and id %v must be equal", per.ID, per.Persona.ID)
+		return response.BadRequest("root id %d must equal persona id %d", per.ID, per.Persona.ID)
 	}
 
 	return nil

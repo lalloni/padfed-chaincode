@@ -3,9 +3,11 @@ package personas
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"reflect"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/lalloni/afip/cuit"
@@ -20,6 +22,31 @@ import (
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/impuestos"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/organizaciones"
 )
+
+func TestPutPersonaValidationsHandler(t *testing.T) {
+
+	a := assert.New(t)
+
+	shim.SetLoggingLevel(shim.LogDebug)
+
+	r := router.New()
+
+	addTestingHandlers(r)
+
+	mock := test.NewMock("test", r)
+
+	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	p1 := RandomPersonas(1, rnd)[0]
+
+	p1.ID = cuit.Random(rnd)
+
+	_, res, _, err := test.MockInvoke(t, mock, "PutPersona", p1)
+	a.NoError(err)
+	a.EqualValues(status.BadRequest, res.Status)
+	a.EqualValues(fmt.Sprintf("root id %d must equal persona id %d", p1.ID, p1.Persona.ID), res.Message)
+
+}
 
 func TestGetPutDelPersonaHandler(t *testing.T) {
 
