@@ -138,7 +138,6 @@ func TestGetImpuesto(t *testing.T) {
 	addTestHandlers(r)
 
 	mock := test.NewMock("test", r)
-	test.MockTransactionStart(t, mock)
 
 	imp1 := &Impuesto{
 		Codigo:      1,
@@ -147,12 +146,12 @@ func TestGetImpuesto(t *testing.T) {
 		Nombre:      "Impuesto al valor agregado",
 	}
 
-	bs, err := json.Marshal(imp1)
-	a.NoError(err)
-	err = mock.PutState("imp:1", bs)
-	a.NoError(err)
-	err = mock.PutState("imp:1#wit", []byte("1"))
-	a.NoError(err)
+	test.InTransaction(mock, func(tx string) {
+		bs, err := json.Marshal(imp1)
+		a.NoError(err)
+		a.NoError(mock.PutState("imp:1", bs))
+		a.NoError(mock.PutState("imp:1#wit", []byte("1")))
+	})
 
 	_, res, payload, err := test.MockInvoke(t, mock, "GetImpuesto", 1)
 	a.NoError(err)
@@ -175,8 +174,6 @@ func TestHasImpuesto(t *testing.T) {
 
 	mock := test.NewMock("test", r)
 
-	test.MockTransactionStart(t, mock)
-
 	imp1 := &Impuesto{
 		Codigo:      1,
 		Org:         1,
@@ -184,12 +181,12 @@ func TestHasImpuesto(t *testing.T) {
 		Nombre:      "Impuesto al valor agregado",
 	}
 
-	bs, err := json.Marshal(imp1)
-	a.NoError(err)
-	err = mock.PutState("imp:1", bs)
-	a.NoError(err)
-	err = mock.PutState("imp:1#wit", []byte("1"))
-	a.NoError(err)
+	test.InTransaction(mock, func(tx string) {
+		bs, err := json.Marshal(imp1)
+		a.NoError(err)
+		a.NoError(mock.PutState("imp:1", bs))
+		a.NoError(mock.PutState("imp:1#wit", []byte("1")))
+	})
 
 	_, res, payload, err := test.MockInvoke(t, mock, "HasImpuesto", 1)
 	a.NoError(err)
@@ -209,8 +206,6 @@ func TestDelImpuesto(t *testing.T) {
 
 	mock := test.NewMock("test", r)
 
-	test.MockTransactionStart(t, mock)
-
 	imp1 := &Impuesto{
 		Codigo:      1,
 		Org:         1,
@@ -218,12 +213,12 @@ func TestDelImpuesto(t *testing.T) {
 		Nombre:      "Impuesto al valor agregado",
 	}
 
-	bs, err := json.Marshal(imp1)
-	a.NoError(err)
-	err = mock.PutState("imp:1", bs)
-	a.NoError(err)
-	err = mock.PutState("imp:1#wit", []byte("1"))
-	a.NoError(err)
+	test.InTransaction(mock, func(tx string) {
+		bs, err := json.Marshal(imp1)
+		a.NoError(err)
+		a.NoError(mock.PutState("imp:1", bs))
+		a.NoError(mock.PutState("imp:1#wit", []byte("1")))
+	})
 
 	_, res, payload, err := test.MockInvoke(t, mock, "DelImpuesto", 1)
 	a.NoError(err)

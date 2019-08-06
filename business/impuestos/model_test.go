@@ -24,15 +24,13 @@ func TestPut(t *testing.T) {
 		Abreviatura: "IVA",
 	}
 
-	tx := test.MockTransactionStart(t, mock)
-	err := st.PutComposite(Schema, imp1)
-	a.NoError(err)
-	test.MockTransactionEnd(t, mock, tx)
+	test.InTransaction(mock, func(tx string) {
+		err := st.PutComposite(Schema, imp1)
+		a.NoError(err)
+	})
 
-	tx = test.MockTransactionStart(t, mock)
 	imp2, err := st.GetComposite(Schema, uint64(10))
 	a.NoError(err)
 	a.EqualValues(imp1, imp2)
-	test.MockTransactionEnd(t, mock, tx)
 
 }

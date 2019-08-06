@@ -507,26 +507,26 @@ func TestSetPersonaImpuestoEstadoHandler(t *testing.T) {
 
 	// Preparar datos
 
-	mock.MockTransactionStart("a")
-	a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
-		Codigo:      10,
-		Org:         organizaciones.AFIP.ID,
-		Abreviatura: "IMP10",
-		Nombre:      "Impuesto 10",
-	}))
-	a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
-		Codigo:      5001,
-		Org:         organizaciones.GetByMSPID("AGIP").ID,
-		Abreviatura: "IMP5001",
-		Nombre:      "Impuesto 5001",
-	}))
-	a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
-		Codigo:      5002,
-		Org:         organizaciones.GetByMSPID("ARBA").ID,
-		Abreviatura: "IMP5002",
-		Nombre:      "Impuesto 5002",
-	}))
-	mock.MockTransactionEnd("a")
+	test.InTransaction(mock, func(tx string) {
+		a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
+			Codigo:      10,
+			Org:         organizaciones.AFIP.ID,
+			Abreviatura: "IMP10",
+			Nombre:      "Impuesto 10",
+		}))
+		a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
+			Codigo:      5001,
+			Org:         organizaciones.GetByMSPID("AGIP").ID,
+			Abreviatura: "IMP5001",
+			Nombre:      "Impuesto 5001",
+		}))
+		a.NoError(st.PutComposite(impuestos.Schema, &impuestos.Impuesto{
+			Codigo:      5002,
+			Org:         organizaciones.GetByMSPID("ARBA").ID,
+			Abreviatura: "IMP5002",
+			Nombre:      "Impuesto 5002",
+		}))
+	})
 
 	persona := RandomPersonas(1, nil)[0]
 
