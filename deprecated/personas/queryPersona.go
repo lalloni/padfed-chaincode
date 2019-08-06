@@ -1,6 +1,7 @@
 package personas
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -21,12 +22,12 @@ func QueryPersona(stub shim.ChaincodeStubInterface, _ []string) *fabric.Response
 	case 1:
 		_, err := handler.ExtractArgs(args, persona.CUITParamVar(&cuit))
 		if err != nil {
-			return fabric.ClientErrorResponse(err.Error())
+			return fabric.ClientErrorResponse(fmt.Sprintf("invalid arguments: %v", err))
 		}
 	case 2:
 		_, err := handler.ExtractArgs(args, persona.CUITParamVar(&cuit), param.BoolVar(&full))
 		if err != nil {
-			return fabric.ClientErrorResponse(err.Error())
+			return fabric.ClientErrorResponse(fmt.Sprintf("invalid arguments: %v", err))
 		}
 	default:
 		return fabric.ClientErrorResponse("Número incorrecto de parámetros. Se esperaba {<CUIT>, [P_FULL]}")
