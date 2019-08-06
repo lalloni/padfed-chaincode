@@ -26,7 +26,7 @@ func Adapter(old chaincode.Handler) handler.Handler {
 }
 
 func WarningAdapter(old chaincode.Handler, use string) handler.Handler {
-	w := fmt.Sprintf("This function is DEPRECATED and will be REMOVED! Please migrate to using function %q.", use)
+	w := fmt.Sprintf("WARNING: This function is DEPRECATED! Please migrate to using function %q.", use)
 	return func(ctx *context.Context) *response.Response {
 		ctx.Logger().Notice("deprecated function called instead of %q", use)
 		c, res := chaincode.SetContext(ctx.Stub, ctx.Version(), false)

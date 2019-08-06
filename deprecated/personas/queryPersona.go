@@ -4,28 +4,33 @@ import (
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
 
+	persona "gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
-	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/helpers"
 )
 
-func QueryPersona(stub shim.ChaincodeStubInterface, args []string) *fabric.Response {
-	var err error
-	if _, err = helpers.GetCUIT(args[0]); err != nil {
-		return fabric.ClientErrorResponse("CUIT [" + args[0] + "] invalido. " + err.Error())
-	}
-	full := false
-	// se esta usando fallthrough, importante no cambiar el orden de los case's
+func QueryPersona(stub shim.ChaincodeStubInterface, _ []string) *fabric.Response {
+	var (
+		cuit uint64
+		full bool
+	)
+	args := stub.GetArgs()[1:]
 	switch len(args) {
 	case 1:
-		break
-	case 2:
-		full, err = strconv.ParseBool(args[1])
+		_, err := handler.ExtractArgs(args, persona.CUITParamVar(&cuit))
 		if err != nil {
-			return fabric.ClientErrorResponse("full [" + args[1] + "] invalido. " + err.Error())
+			return fabric.ClientErrorResponse(err.Error())
+		}
+	case 2:
+		_, err := handler.ExtractArgs(args, persona.CUITParamVar(&cuit), param.BoolVar(&full))
+		if err != nil {
+			return fabric.ClientErrorResponse(err.Error())
 		}
 	default:
 		return fabric.ClientErrorResponse("Número incorrecto de parámetros. Se esperaba {<CUIT>, [P_FULL]}")
 	}
-	return QueryPersonasByRangeFormated(stub, args[0], args[0], full)
+	scuit := strconv.FormatUint(cuit, 10)
+	return QueryPersonasByRangeFormated(stub, scuit, scuit, full)
 }

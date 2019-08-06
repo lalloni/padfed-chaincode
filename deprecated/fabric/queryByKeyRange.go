@@ -4,13 +4,21 @@ import (
 	"bytes"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/helpers"
 )
 
-func QueryByKeyRange(stub shim.ChaincodeStubInterface, args []string) *Response {
-	startKey := args[0]
-	endKey := args[1] + "z"
+func QueryByKeyRange(stub shim.ChaincodeStubInterface, _ []string) *Response {
+
+	args, err := handler.ExtractArgs(stub.GetArgs()[1:], param.String, param.String)
+	if err != nil {
+		return ClientErrorResponse(err.Error())
+	}
+
+	startKey := args[0].(string)
+	endKey := args[1].(string) + "z"
 
 	Log.Info("Getting from: " + startKey + " to: " + endKey)
 	resultsIterator, err := stub.GetStateByRange(startKey, endKey)

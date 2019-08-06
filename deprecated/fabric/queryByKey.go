@@ -5,12 +5,20 @@ import (
 	"log"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
+	"github.com/lalloni/fabrikit/chaincode/handler"
+	"github.com/lalloni/fabrikit/chaincode/handler/param"
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/helpers"
 )
 
-func QueryByKey(stub shim.ChaincodeStubInterface, args []string) *Response {
-	key := args[0]
+func QueryByKey(stub shim.ChaincodeStubInterface, _ []string) *Response {
+	var key string
+
+	_, err := handler.ExtractArgs(stub.GetArgs()[1:], param.StringVar(&key))
+	if err != nil {
+		return ClientErrorResponse(err.Error())
+	}
+
 	registerAsBytes, err := stub.GetState(key)
 	if err != nil {
 		return SystemErrorResponse(err.Error())

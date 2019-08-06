@@ -27,18 +27,11 @@ func BuildHandlers(version string, testing bool) Handlers {
 
 	// API Personas
 	h["putPersona"] = onlyAFIP(testing, personas.PutPersona)
-	h["delPersona"] = onlyAFIP(testing, personas.DelPersona)
 	h["getPersona"] = personas.GetPersonaAPI
 	h["putPersonas"] = onlyAFIP(testing, personas.PutPersonas)
 
-	// Internas / development / testing
-	h["delPersonasByRange"] = onlyAFIP(testing, personas.DelPersonasByRange)
-	h["deleteAll"] = onlyAFIP(testing, fabric.DeleteAll)
-	h["deleteByKeyRange"] = onlyAFIP(testing, fabric.DeleteByKeyRange)
-
 	// API Bajo Nivel
 	h["queryPersona"] = personas.QueryPersona
-	h["queryAllPersona"] = personas.QueryAllPersona
 	h["queryHistory"] = fabric.QueryHistory
 	h["queryByKey"] = fabric.QueryByKey
 	h["queryByKeyRange"] = fabric.QueryByKeyRange

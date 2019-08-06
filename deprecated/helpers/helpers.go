@@ -42,19 +42,6 @@ func GetTxConfirmableKey(idOrganismo int, idTxc uint64) string {
 	return "ORG_" + idOrganismoStr + "_TXC_" + idTxcStr
 }
 
-// func findPersona(stub shim.ChaincodeStubInterface, cuit uint64) (Persona, []byte, error) {
-// 	var cuitStr = strconv.FormatUint(cuit, 10)
-// 	personaAsBytes, err := stub.GetState("PER_" + cuitStr)
-// 	var persona Persona
-// 	if err != nil {
-// 		return persona, personaAsBytes, errors.New("Error al buscar la Persona " + cuitStr)
-// 	} else if personaAsBytes == nil {
-// 		return persona, personaAsBytes, errors.New("No existe Persona para " + cuitStr)
-// 	}
-// 	err = argToPersona(personaAsBytes, &persona, JSON)
-// 	return persona, personaAsBytes, nil
-// }
-
 func ValidateDate(dateStr string) error {
 	if dateStr != "" {
 		res := dateRegexp.FindStringSubmatch(dateStr)
