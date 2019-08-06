@@ -172,12 +172,8 @@ github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/lalloni/afip v1.6.1 h1:To+dY3/O+GG3c0eN6QXDFjc0ATfOfq9kikcllXjzhhE=
 github.com/lalloni/afip v1.6.1/go.mod h1:1kWJdB8gSoTnRtYSTC2+pT4KalPL+KT1i7S++DXVixE=
-github.com/lalloni/fabrikit v0.0.0-20190712132741-8e9b3d4d49a9 h1:GefmZTBLS/UtmF3UryIFyywbsOwRoBQ5dUGxYflajQg=
-github.com/lalloni/fabrikit v0.0.0-20190712132741-8e9b3d4d49a9/go.mod h1:oH7g+DsL3IbL4AUVxRDSu9c7UM6wsxx+UrjMF0vpGCY=
-github.com/lalloni/fabrikit v0.0.0-20190801135854-612fbe399049 h1:Ldgmkg9eSFzmOwpssKboshi7COYXFu+79ilV3J8kkRw=
-github.com/lalloni/fabrikit v0.0.0-20190801135854-612fbe399049/go.mod h1:WTUgjJK+S/jGqYOzsLxwKES94+UKRKNymDunT45/sP0=
-github.com/lalloni/fabrikit v0.0.0-20190805132832-e12a951e56dc h1:9+jsy2qwt3PWfMfKp66lwBJ16IyVigJgzPNoAXEUsDQ=
-github.com/lalloni/fabrikit v0.0.0-20190805132832-e12a951e56dc/go.mod h1:WTUgjJK+S/jGqYOzsLxwKES94+UKRKNymDunT45/sP0=
+github.com/lalloni/fabrikit v0.0.0-20190806201215-75eda33e5637 h1:tLC6dTBOz1Sc6hXlvqjepGL+9quyQwSri05RKXeszwY=
+github.com/lalloni/fabrikit v0.0.0-20190806201215-75eda33e5637/go.mod h1:/oji20Or0t79LeN7+oZgPNFhveSwypYqDubDLX/jZBk=
 github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505 h1:K+I1SpQoQ2QzVp6ogVzWk5YqA70cOoyCHH85S3jI6Zc=
 github.com/lalloni/gojsonschema v1.1.1-0.20190328194815-d8f6c0272505/go.mod h1:booBaA00DfddFHdbQGjROj8emtf1bPavYaIlmiJ4NkE=
 github.com/magefile/mage v1.8.1-0.20190314142316-8dce728c572d h1:9B94w7V0dTEeyVbfhmSddncd7arG9V1SWNy5I1A+0SE=
@@ -192,6 +188,8 @@ github.com/miekg/pkcs11 v0.0.0-20190225171305-6120d95c0e95/go.mod h1:WCBAbTOdfhH
 github.com/miekg/pkcs11 v1.0.2 h1:CIBkOawOtzJNE0B+EpRiUBzuVW7JEQAwdwhSS6YhIeg=
 github.com/miekg/pkcs11 v1.0.2/go.mod h1:XsNlhZGX73bx86s2hdc/FuaLm2CPZJemRLMA+WTFxgs=
 github.com/mitchellh/go-homedir v1.1.0/go.mod h1:SfyaCUpYCn1Vlf4IUYiD9fPX4A5wJrkLzIz1N1q0pr0=
+github.com/mitchellh/hashstructure v1.0.0 h1:ZkRJX1CyOoTkar7p/mLS5TZU4nJ1Rn/F8u9dGS02Q3Y=
+github.com/mitchellh/hashstructure v1.0.0/go.mod h1:QjSHrPWS+BGUVBYkbTZWEnOh3G1DutKwClXU/ABz6AQ=
 github.com/mitchellh/mapstructure v1.1.2 h1:fmNYVwqnSfB9mZU6OS2O6GsXM+wcskZDuKQzvN1EDeE=
 github.com/mitchellh/mapstructure v1.1.2/go.mod h1:FVVH3fgwuzCH5S8UJGiWEs2h04kUh9fWfEaFds41c1Y=
 github.com/moul/number-to-words v0.1.1-0.20190711060344-5cc86f704788 h1:vctynvW/MlVS2XnYvF97t9vWd4xTL+1PuQNbJLwDRBs=
@@ -247,7 +245,6 @@ github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.3.0 h1:hI/7Q+DtNZ2kINb6qt/lS+IyXnHQe9e90POfeewL/ME=
 github.com/sirupsen/logrus v1.3.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
-github.com/sirupsen/logrus v1.4.1/go.mod h1:ni0Sbl8bgC9z8RoU9G6nDWqqs/fq4eDPysMBDgk/93Q=
 github.com/sirupsen/logrus v1.4.2 h1:SPIRibHv4MatM3XXNO2BJeFLZwZ2LvZgfQ5+UNI2im4=
 github.com/sirupsen/logrus v1.4.2/go.mod h1:tLMulIdttU9McNUspp0xgXVQah82FyeX6MwdIuYE2rE=
 github.com/smartystreets/assertions v0.0.0-20180927180507-b2de0cb4f26d h1:zE9ykElWQ6/NYmHa3jpm/yHnI4xSofP+UP6SpjHcSeM=
@@ -346,7 +343,6 @@ golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJ
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 h1:YUO/7uOKsKeq9UokNS62b8FYywz3ker1l1vDZRCRefw=
 golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
-golang.org/x/sync v0.0.0-20190227155943-e225da77a7e6/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58 h1:8gQV6CLnAEikrhgkHFbMAEhagSSnXWGV915qUMm9mrU=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sys v0.0.0-20180830151530-49385e6e1522/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
@@ -360,7 +356,6 @@ golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a h1:1BGLXjeY4akVXGgbC9HugT3Jv
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190310054646-10058d7d4faa/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190403152447-81d4e9dc473e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
-golang.org/x/sys v0.0.0-20190405154228-4b34438f7a67/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d h1:+R4KGOnez64A81RvjARKc4UT5/tI9ujCIVX+P5KiHuI=
 golang.org/x/sys v0.0.0-20190412213103-97732733099d/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20190422165155-953cdadca894/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
