@@ -47,7 +47,7 @@ func main() {
 	r.SetHandler("getPersona", common.Free, deprecated.WarningAdapter(deprecatedpersonas.GetPersonaAPI, "GetPersona"))
 	r.SetHandler("putPersonas", common.AFIP, deprecated.WarningAdapter(deprecatedpersonas.PutPersonas, "PutPersonaList"))
 	r.SetHandler("queryPersona", common.Free, deprecated.WarningAdapter(deprecatedpersonas.QueryPersona, "GetStates"))
-	r.SetHandler("queryHistory", common.Free, deprecated.Adapter(fabric.QueryHistory))
+	r.SetHandler("queryHistory", common.Free, deprecated.WarningAdapter(fabric.QueryHistory, "GetStatesHistory"))
 	r.SetHandler("queryByKey", common.Free, deprecated.WarningAdapter(fabric.QueryByKey, "GetStates"))
 	r.SetHandler("queryByKeyRange", common.Free, deprecated.WarningAdapter(fabric.QueryByKeyRange, "GetStates"))
 	//
