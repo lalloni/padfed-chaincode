@@ -9,6 +9,7 @@ import (
 
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/common"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/impuestos"
+	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/organizaciones"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/business/personas"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated"
 	"gitlab.cloudint.afip.gob.ar/blockchain-team/padfed-chaincode.git/deprecated/fabric"
@@ -33,6 +34,7 @@ func main() {
 	// Business
 	personas.AddHandlers(r)
 	impuestos.AddHandlers(r)
+	organizaciones.AddHandlers(r)
 
 	// States
 	state.AddHandlers(r)
