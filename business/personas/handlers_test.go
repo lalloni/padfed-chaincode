@@ -568,7 +568,7 @@ func TestSetPersonaImpuestoEstadoHandler(t *testing.T) {
 	a.EqualValues("setting estado to 'AC' is not allowed", res.Message)
 
 	// caso de éxito
-	testClientMSPID = "AFIP"
+	testClientMSPID = organizaciones.AFIP.MSPID
 	testClientCUIT = organizaciones.AFIP.CUIT
 	_, res, _, err = test.MockInvoke(t, mock, "SetPersonaImpuestoEstado", persona.ID, 10, "BD")
 	a.NoError(err)

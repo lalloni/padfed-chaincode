@@ -126,6 +126,7 @@ func SetPersonaImpuestoEstadoHandler(clientMSPID MSPIDProvider, clientCUIT CUITP
 		if v == nil {
 			return response.BadRequest("impuesto %v not found", codimp)
 		}
+		impuesto := v.(*impuestos.Impuesto)
 		itemid := strconv.FormatUint(codimp, 10)
 		item, err := ctx.Store.GetCompositeCollectionItem(Impuestos, cuit, itemid)
 		if err != nil {
@@ -153,7 +154,7 @@ func SetPersonaImpuestoEstadoHandler(clientMSPID MSPIDProvider, clientCUIT CUITP
 				return response.BadRequest("organización with CUIT %v not found", callercuit)
 			}
 		}
-		impuesto := v.(*impuestos.Impuesto)
+		// Validación de autorización
 		if !organizaciones.IsAFIP(org) && org.ID != impuesto.Org {
 			return response.Forbidden("organización %v (%s) can not set estado inscripción impuesto %v (%s)", org.ID, org.Nombre, impuesto.Codigo, organizaciones.GetByID(impuesto.Org).Nombre)
 		}
