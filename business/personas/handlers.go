@@ -32,7 +32,10 @@ func addHandlers(r router.Router, testing bool) {
 		crud.WithPutValidator(validatePersona),
 	)
 	if !testing {
-		opts = append(opts, crud.WithWriteCheck(common.AFIP))
+		opts = append(opts,
+			crud.WithWriteCheck(common.AFIP),
+			crud.WithGetAllCheck(common.AFIP),
+		)
 	}
 	crud.AddHandlers(r, Schema, opts...)
 
