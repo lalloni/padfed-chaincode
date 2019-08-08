@@ -58,7 +58,7 @@ func QueryHistory(stub shim.ChaincodeStubInterface, _ []string) *Response {
 
 		buffer.WriteString(", \"Timestamp\":")
 		buffer.WriteString("\"")
-		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).String())
+		buffer.WriteString(time.Unix(response.Timestamp.Seconds, int64(response.Timestamp.Nanos)).In(time.Local).Format(time.RFC3339Nano))
 		buffer.WriteString("\"")
 
 		buffer.WriteString(", \"IsDelete\":")
