@@ -82,21 +82,33 @@ Donde:
 
 ## Funciones
 
-| Nombre           | ACL      | Argumentos                                              | Payload                                                             |
-| ---------------- | -------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
-| GetVersion       | -        | -                                                       | version [String](#string)                                           |
-| GetFunctions     | -        | -                                                       | functions [JSON](#json) string array                                |
-| GetPersona       | -        | cuit [DecimalString](#decimalstring)                    | [Persona](#persona) [JSON](#json)                                   |
-| DelPersona       | OnlyAFIP | cuit [DecimalString](#decimalstring)                    | -                                                                   |
-| PutPersona       | OnlyAFIP | [persona](#persona) [JSON](#json)                       | -                                                                   |
-| PutPersonaList   | OnlyAFIP | [personalist](#personalist) [JSON](#json)               | cantidad [DecimalString](#decimalstring)                            |
-| GetPersonaRange  | OnlyAFIP | cuit1, cuit2 [DecimalString](#decimalstring)            | [Persona](#persona) [JSON](#json) array                             |
-| DelPersonaRange  | OnlyAFIP | cuit1, cuit2 [DecimalString](#decimalstring)            | ids [JSON](#json) number array                                      |
-| GetPersonaAll    | OnlyAFIP | -                                                       | [Persona](#persona) [JSON](#json) array                             |
-| PutStates        | OnlyAFIP | key [String](#string), value [Bytes](#bytes), ...       | cantidad [DecimalString](#decimalstring)                            |
-| GetStates        | OnlyAFIP | key [String](#string) ǁ [Ranges](#ranges) [JSON](#json) | [GetStatesResponse](#getstatesresponse) [JSON](#json)               |
-| DelStates        | OnlyAFIP | key [String](#string) ǁ [Ranges](#ranges) [JSON](#json) | keys [JSON](#json) string array                                     |
-| GetStatesHistory | OnlyAFIP | key [String](#string) ǁ [Ranges](#ranges) [JSON](#json) | [GetStatesHistoryResponse](#getstateshistoryresponse) [JSON](#json) |
+| Nombre                              | ACL      | Argumentos                                                     | Payload                                                             |
+| ----------------------------------- | -------- | -------------------------------------------------------------- | ------------------------------------------------------------------- |
+| GetVersion                          | -        | -                                                              | version [String](#string)                                           |
+| GetFunctions                        | -        | -                                                              | functions [JSON](#json) string array                                |
+| GetPersona                          | -        | cuit [DecimalString](#decimalstring)                           | [Persona](#persona) [JSON](#json)                                   |
+| GetPersonaBasica                    | -        | cuit [DecimalString](#decimalstring)                           | PersonaBasica [JSON](#json) object                                  |
+| GetPersona[{Collection}](#cols)     | -        | cuit [DecimalString](#decimalstring)                           | [JSON](#json) array                                                 |
+| GetPersona[{Collection}](#cols)Item | -        | cuit [DecimalString](#decimalstring), itemid [String](#string) | [JSON](#json)                                                       |
+| DelPersona                          | OnlyAFIP | cuit [DecimalString](#decimalstring)                           | -                                                                   |
+| PutPersona                          | OnlyAFIP | [persona](#persona) [JSON](#json)                              | -                                                                   |
+| PutPersonaList                      | OnlyAFIP | [personalist](#personalist) [JSON](#json)                      | cantidad [DecimalString](#decimalstring)                            |
+| GetPersonaRange                     | OnlyAFIP | cuit1, cuit2 [DecimalString](#decimalstring)                   | [Persona](#persona) [JSON](#json) array                             |
+| DelPersonaRange                     | OnlyAFIP | cuit1, cuit2 [DecimalString](#decimalstring)                   | ids [JSON](#json) number array                                      |
+| GetPersonaAll                       | OnlyAFIP | -                                                              | [Persona](#persona) [JSON](#json) array                             |
+| GetImpuesto                         | -        | cuit [DecimalString](#decimalstring)                           | [Impuesto](#impuesto) [JSON](#json)                                 |
+| DelImpuesto                         | OnlyAFIP | codigoimpuesto [DecimalString](#decimalstring)                 | -                                                                   |
+| PutImpuesto                         | OnlyAFIP | [impuesto](#impuesto) [JSON](#json)                            | -                                                                   |
+| PutImpuestoList                     | OnlyAFIP | [impuestolist](#impuestolist) [JSON](#json)                    | cantidad [DecimalString](#decimalstring)                            |
+| GetImpuestoRange                    | -        | codigo1, codigo2 [DecimalString](#decimalstring)               | [Impuesto](#impuesto) [JSON](#json) array                           |
+| DelImpuestoRange                    | OnlyAFIP | codigo1, codigo2 [DecimalString](#decimalstring)               | ids [JSON](#json) number array                                      |
+| GetImpuestoAll                      | -        | -                                                              | [Impuesto](#impuesto) [JSON](#json) array                           |
+| GetOrganizacion                     | -        | id [DecimalString](#decimalstring)                             | [Organización](#organizacion) [JSON](#json)                         |
+| GetOrganizacionAll                  | -        | -                                                              | [Organización](#organizacion) [JSON](#json) array                   |
+| PutStates                           | OnlyAFIP | key [String](#string), value [Bytes](#bytes), ...              | cantidad [DecimalString](#decimalstring)                            |
+| GetStates                           | OnlyAFIP | key [String](#string) ǁ [Ranges](#ranges) [JSON](#json)        | [GetStatesResponse](#getstatesresponse) [JSON](#json)               |
+| DelStates                           | OnlyAFIP | key [String](#string) ǁ [Ranges](#ranges) [JSON](#json)        | keys [JSON](#json) string array                                     |
+| GetStatesHistory                    | OnlyAFIP | key [String](#string) ǁ [Ranges](#ranges) [JSON](#json)        | [GetStatesHistoryResponse](#getstateshistoryresponse) [JSON](#json) |
 
 ## Tipos básicos
 
@@ -118,13 +130,47 @@ Es un [documento JSON válido](https://json.org) representado como una cadena de
 
 ## Estructuras
 
+### Organismo
+
+[JSON](#json) que cumple el [schema de organización](https://github.com/padfed/padfed-chaincode/blob/master/resources/schemas/organismo.yaml).
+
+### Impuesto
+
+[JSON](#json) que cumple el [schema de impuesto](https://github.com/padfed/padfed-chaincode/blob/master/resources/schemas/impuesto.yaml).
+
 ### Persona
 
-[JSON](#json) que cumple el [schema de persona](https://github.com/padfed/padfed-validator/blob/master/doc/schemas/persona.json).
+[JSON](#json) que cumple el [schema de persona](https://github.com/padfed/padfed-chaincode/blob/master/resources/schemas/persona.yaml).
+
+#### Colecciones de una persona {id=cols}
+
+Son las colecciones contenidas en [Persona](#persona) [JSON](#json).
+
+Actualmente éstas son:
+
+- Actividades
+- Impuestos
+- Domicilios
+- DomiciliosRoles
+- Telefonos
+- Jurisdicciones
+- Emails
+- Archivos
+- Categorias
+- Etiquetas
+- Contribuciones
+- Relaciones
+- CMSedes
+
+Cada una cumplirá con el sub-schema correspondiente del [schema de persona](https://github.com/padfed/padfed-chaincode/blob/master/resources/schemas/persona.yaml).
 
 ### PersonaList
 
-[JSON](#json) que cumple el [schema de lista de personas](https://github.com/padfed/padfed-validator/blob/master/doc/schemas/persona-list.json).
+[JSON](#json) que cumple el [schema de lista de personas](https://github.com/padfed/padfed-chaincode/blob/master/resources/schemas/persona-list.yaml).
+
+### PersonaBasica
+
+[JSON](#json) que cumple el sub-schema `#/definitions/persona` del [schema de persona](https://github.com/padfed/padfed-chaincode/blob/master/resources/schemas/persona.yaml).
 
 ### GetStatesResponse
 
