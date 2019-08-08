@@ -216,32 +216,7 @@ properties:
   id:
     $ref: "#/definitions/cuit"
   persona:
-    type: object
-    anyOf:
-      - type: object
-        title: personafisica
-        properties:
-          <<: *common-properties
-          <<: *personafisica-properties
-        additionalProperties: false
-        required:
-          - tipo
-          - id
-          - tipoid
-          - estado
-          - apellido
-      - type: object
-        title: personajuridica
-        properties:
-          <<: *common-properties
-          <<: *personajuridica-properties
-        additionalProperties: false
-        required:
-          - tipo
-          - id
-          - tipoid
-          - estado
-          - razonsocial
+    $ref: "#/definitions/persona"
   <<: *common-collections
 
 ################################
@@ -302,6 +277,34 @@ definitions:
     minimum: 19000000
     maximum: 21001231
     format: periododiario
+
+  persona:
+    type: object
+    anyOf:
+      - type: object
+        title: personafisica
+        properties:
+          <<: *common-properties
+          <<: *personafisica-properties
+        additionalProperties: false
+        required:
+          - tipo
+          - id
+          - tipoid
+          - estado
+          - apellido
+      - type: object
+        title: personajuridica
+        properties:
+          <<: *common-properties
+          <<: *personajuridica-properties
+        additionalProperties: false
+        required:
+          - tipo
+          - id
+          - tipoid
+          - estado
+          - razonsocial
 
   actividad:
     type: object
